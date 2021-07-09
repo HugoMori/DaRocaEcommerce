@@ -1,0 +1,126 @@
+DROP TABLE IF EXISTS compra;
+DROP TABLE IF EXISTS produto;
+DROP TABLE IF EXISTS cliente;
+
+-- **************** USER *************
+
+CREATE TABLE IF NOT EXISTS user(
+-- fazer checagem de tamanho da string
+cpf VARCHAR(11) PRIMARY KEY,
+nome VARCHAR(50) NOT NULL,
+data_nasc DATE NOT NULL CHECK(data_nasc > '01/01/1900'),
+email VARCHAR(50) UNIQUE NOT NULL,
+telefone VARCHAR(50) UNIQUE NOT NULL,
+--checar tamanho minimo
+senha_cadastro VARCHAR(12) UNIQUE NOT NULL,
+endereco TEXT NOT NULL,
+-- chechar se é somente numero
+cep VARCHAR(8) NOT NULL,
+estado CHAR(2) NOT NULL,
+--checagem se a data é menor que a data atual
+data_cadastro DATE NOT NULL,
+last_update DATE,
+last_entrance DATE
+);
+
+CREATE TABLE IF NOT EXISTS foto_user(
+id_foto SERIAL PRIMARY KEY,
+fk_user_foto VARCHAR(11) NOT NULL,
+caminho TEXT NOT NULL,
+FOREIGN KEY (fk_user_foto) REFERENCES user(cpf) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- **************** PRODUTO *************
+
+-- categoria:
+-- 1:Frutas 2:Verduras 3:Legumes 4:Bebidas 5:Frios 6:Especiarias
+-- tipo_venda:
+-- 1:Kg 2:Caixa 3:Litro 4:Dúzia 5:unidade
+-- status:
+-- 0: desativo 1: ativo
+
+CREATE TABLE IF NOT EXISTS produto(
+id_produto SERIAL PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+preco NUMERIC NOT NULL CHECK(preco > 0),
+categoria SMALLINT NOT NULL CHECK(
+	categoria = 1 OR
+	categoria = 2 OR
+	categoria = 3 OR
+	categoria = 4 OR
+	categoria = 5 OR
+	categoria = 6),
+tipo_venda SMALLINT NOT NULL CHECK(
+	tipo_venda = 1 OR
+	tipo_venda = 2 OR
+	tipo_venda = 3 OR
+	tipo_venda = 4 OR
+	tipo_venda = 5 ),
+descricao TEXT,
+qntd_disponivel NUMERIC NOT NULL CHECK (qntd_disponivel >= 0),
+qntd_min_compra NUMERIC DEFAULT 0,
+data_cadastro DATE NOT NULL,
+update DATE,
+status SMALLINT CHECK(
+	status = 0 OR
+	status = 1 ) DEFAULT 1,
+produtor_fk VARCHAR(11) NOT NULL,
+FOREING KEY (produtor_fk) REFERENCES user(cpf) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS foto_product(
+id_foto SERIAL PRIMARY KEY,
+fk_product_foto VARCHAR(11) NOT NULL,
+caminho TEXT NOT NULL,
+FOREIGN KEY (fk_product_foto) REFERENCES produto(id_produto) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- **************** COMPRA *************
+--status:
+0: compra cancelada 1: compra realizada 2: pedido em aprovação 3: pedido confirmado 4: pedido em transito 5: pedido entregue 6: erro no pedido
+
+--carrinho: Ao fazer a compra, o pedido sai do carrinho
+0: pedido fora do carrinho 1: pedido incluso no carrinho
+
+
+
+CREATE TABLE IF NOT EXISTS compra(
+id_compra SERIAL PRIMARY KEY,
+status SMALLINT NOT NULL CHECK(
+	status = 0 OR
+	status = 1 OR
+	status = 2 OR
+	status = 3 OR
+	status = 4 OR
+	status = 5 OR
+	status = 6 ),
+carrinho SMALLINT CHECK(
+	carrinho = 0 OR
+	carrinho = 1 ) DEFAULT 1,
+-- fazer checagem se a data e maior que a data de cadastro do produto
+update DATE NOT NULL,
+-- checagem na trigger se a qntd nao e maior que o qntd disponivel
+qntd_comprada NUMERIC NOT NULL CHECK(qntd_comprada > 0),
+endereco_compra TEXT NOT NULL,
+pagamento
+opiniao_produto
+opiniao_vendedor
+frete
+
+);
+
+CREATE TABLE IF NOT EXISTS data_status(
+compra_fk
+status
+data DATE NOT NULL
+descricao),
+
+CREATE TABLE IF NOT EXISTS frete(
+cod_frete
+compra_fk
+empresa
+data_entrada
+cod_rastreio
+status),

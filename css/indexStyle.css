@@ -1,0 +1,124 @@
+/* =============== Section Home ===============*/
+
+#home{
+    height: 100%;
+    overflow-x: hidden;
+}
+
+#cadastreText{
+    font-size: xx-large;
+    margin-bottom: 0;
+}
+
+.capa{
+    text-align: center;
+}
+
+.capa h1{
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    margin-bottom: 50px;
+    color: white;
+}
+
+.capa h1 strong:hover{
+    color: #3bbf1b;
+}
+
+.capa img{
+    width: 20%;
+}
+
+#imgBtnVeg{
+    margin-inline: auto;
+}
+
+.btn-custom{
+    color: white;
+    border-radius: 500px;
+    -webkit-border-radius: 500px;
+    -moz-border-radius: 500px;
+    text-transform: uppercase;
+    transition: background 0.4s, color 0.4s;
+    margin: 10px 20px;
+}
+
+.btn-veg:hover{
+    background: #3bbf1b;
+    color: black;
+}
+
+.carousel-item p{
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: white;
+}
+
+.carousel-item p strong:hover{
+    color: #3bbf1b;
+}
+/* =============== Section Categories ===============*/
+
+#categories{
+    background: white;
+    padding-bottom: 40px;
+}
+
+.veg-img{
+    border-radius: 2rem;
+}
+
+#searchCategories h2{
+    margin: auto;
+    text-align: center;
+}
+
+#searchCategories h5{
+    text-align: center;
+    padding: 5%;
+}
+
+.searchBarForm{
+    justify-content: center;
+}
+
+.searchBarForm-input{
+    border: 0.1px solid black;
+}
+
+.searchBarForm-btn{
+    background: #3bbf1b;
+}
+
+.searchBarForm-btn i{
+    color: whitesmoke;
+}
+
+.navCategories-link{
+    margin-left: 30%;
+}
+
+/* =============== responsive ===============*/
+@media (min-width: 300px) and (max-width: 767.98px) {
+    
+    .capa h1{
+        font-weight: 600;
+        letter-spacing: -0.05em;
+        margin-bottom: 50px;
+        color: white;
+    }
+
+    .capa img{
+        width: 35%;
+    }
+
+    .navCategories{
+        flex-direction: inherit;
+    }
+
+    .colCategories{
+        padding-left: 0;
+        padding-right: 11%;
+    }
+}

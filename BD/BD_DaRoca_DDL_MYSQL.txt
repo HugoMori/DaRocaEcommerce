@@ -1,0 +1,27 @@
+DROP TABLE IF EXISTS cliente;
+CREATE TABLE cliente(
+cpf VARCHAR(20) PRIMARY KEY,
+nome TEXT NOT NULL, 
+data_nasc DATE NOT NULL,
+telefone VARCHAR(20) NOT NULL,
+email VARCHAR(100) NOT NULL,
+senha VARCHAR(12) NOT NULL,
+endereco TEXT NOT NULL, 
+cep VARCHAR(20) NOT NULL,
+cidade VARCHAR(50) NOT NULL,
+estado CHAR(2) NOT NULL,
+caminho_foto_perfil TEXT,
+avaliacao NUMERIC DEFAULT 0,
+status SMALLINT DEFAULT 1,
+vendedor SMALLINT DEFAULT 0,
+data_cadastro TIMESTAMP,
+last_login TIMESTAMP,
+update_reg TIMESTAMP,
+UNIQUE(telefone),
+UNIQUE(email)
+);
+
+
+ALTER TABLE cliente ADD CHECK (data_nasc >= '01/01/1900');
+ALTER TABLE cliente ADD CHECK (vendedor = 0 OR vendedor = 1);
+ALTER TABLE cliente ADD CHECK (status = 0 OR status = 1);

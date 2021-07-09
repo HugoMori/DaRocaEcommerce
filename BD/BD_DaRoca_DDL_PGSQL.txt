@@ -1,0 +1,207 @@
+DROP TABLE IF EXISTS frete;
+DROP TABLE IF EXISTS opiniao_produto;
+DROP TABLE IF EXISTS opiniao_produtor;
+DROP TABLE IF EXISTS compra;
+DROP TABLE IF EXISTS chat;
+DROP TABLE IF EXISTS carrinho;
+DROP TABLE IF EXISTS favoritos;
+DROP TABLE IF EXISTS img_produto;
+DROP TABLE IF EXISTS produto;
+DROP TABLE IF EXISTS cliente;
+
+
+-- **************** CLIENTE *************
+
+CREATE TABLE cliente(
+cpf VARCHAR(20) PRIMARY KEY,
+nome TEXT NOT NULL, 
+data_nasc DATE NOT NULL CHECK(data_nasc >= '01/01/1900'),
+telefone VARCHAR(20) UNIQUE NOT NULL,
+email VARCHAR(100) UNIQUE NOT NULL,
+senha VARCHAR(12) NOT NULL,
+endereco TEXT NOT NULL, 
+cep VARCHAR(20) NOT NULL,
+cidade VARCHAR(50) NOT NULL,
+estado CHAR(2) NOT NULL,
+caminho_foto_perfil TEXT,
+avaliacao NUMERIC DEFAULT 0,
+status SMALLINT CHECK(status = 0 OR status = 1) DEFAULT 1,
+vendedor SMALLINT CHECK(vendedor = 0 OR vendedor = 1) DEFAULT 0,
+data_cadastro TIMESTAMP,
+last_login TIMESTAMP,
+update_reg TIMESTAMP
+);
+
+
+-- **************** PRODUTO *************
+-- categoria:
+-- 1:Frutas 2:Verduras 3:Legumes 4:Bebidas 5:Frios 6:Especiarias
+-- tipo_venda:
+-- 1:Kg 2:Caixa 3:Litro 4:Dúzia 5:unidade
+-- status:
+-- 0: desativo 1: ativo
+
+
+CREATE TABLE produto(
+codigo SERIAL PRIMARY KEY,
+nome VARCHAR(100) NOT NULL,
+preco NUMERIC NOT NULL CHECK(preco > 0),
+qntd_disponivel NUMERIC NOT NULL CHECK(qntd_disponivel > 0), 
+categoria SMALLINT NOT NULL CHECK(
+	categoria = 1 OR
+	categoria = 2 OR
+	categoria = 3 OR
+	categoria = 4 OR
+	categoria = 5 OR
+	categoria = 6),
+tipo_venda SMALLINT NOT NULL CHECK(
+	tipo_venda = 1 OR
+	tipo_venda = 2 OR
+	tipo_venda = 3 OR
+	tipo_venda = 4 OR
+	tipo_venda = 5 ),
+qntd_min_vendida NUMERIC NOT NULL,
+produtor_fk VARCHAR(11) NOT NULL,
+descricao TEXT,
+status SMALLINT CHECK(
+	status = 0 OR
+	status = 1 ) DEFAULT 1,
+data_cadastro DATE,
+update_reg DATE,
+avaliacao NUMERIC DEFAULT 0,
+num_vendas INTEGER DEFAULT 0,
+FOREIGN KEY (produtor_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE 
+);
+
+-- *********** FOTO PRODUTO **********
+
+CREATE TABLE img_produto (
+ caminho_foto TEXT NOT NULL,
+ produto_fk INTEGER NOT NULL,
+ CONSTRAINT id_foto PRIMARY KEY(caminho_foto, produto_fk),
+ FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE
+) ;
+
+-- *************** CARRINHO ***********
+-- checar se a qntd desejada é menor ou igual a disponivel
+
+CREATE TABLE carrinho(
+cliente_fk VARCHAR(11) NOT NULL,
+produto_fk INTEGER NOT NULL,
+qtd_desejada NUMERIC NOT NULL CHECK(qtd_desejada > 0),
+CONSTRAINT id_carrinho PRIMARY KEY(cliente_fk, produto_fk),
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+
+-- **************** COMPRA *************
+-- forma_pagamento: 1:crédito 2:débito 3:PIX 4:Boleto
+--status: 0: compra cancelada 1: compra realizada 2: pedido em aprovação 3: pedido confirmado 4: pedido em transito 5: pedido entregue 6: erro no pedido 
+
+/* ================== FAZER TRIGGER VALOR TOTAL/DATA COMPRA/QNTD_DISPONIVEL - QNTD_COMPRADA/ UPDATE*/
+
+CREATE TABLE compra(
+--pedido é unico, de cada item comprado
+pedido SERIAL PRIMARY KEY,
+--compra é uma p/todos itens comprados juntos
+id_compra VARCHAR(11) NOT NULL,
+produto_fk INTEGER NOT NULL,
+cliente_fk VARCHAR(11) NOT NULL,
+qntd_comprada NUMERIC NOT NULL CHECK(qntd_comprada > 0),
+endereco TEXT NOT NULL,
+forma_pagamento SMALLINT NOT NULL CHECK (
+	forma_pagamento = 1 OR
+	forma_pagamento = 2 OR
+	forma_pagamento = 3 OR
+	forma_pagamento = 4),
+data_compra DATE,
+valor_total NUMERIC,
+status SMALLINT CHECK(
+	status = 0 OR
+	status = 1 OR
+	status = 2 OR
+	status = 3 OR
+	status = 4 OR
+	status = 5 OR
+	status = 6 ) DEFAULT 2,
+update_reg DATE,
+FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- **************** FRETE *************
+--status: 1: Entregue na transportadora 2: Em trânsito 3: Saindo para entrega 4: Entregue 5: Problema na entrega
+
+CREATE TABLE frete(
+id_frete SERIAL PRIMARY KEY,
+codigo_rastreio TEXT NOT NULL,
+empresa VARCHAR(100) NOT NULL,
+data_prazo DATE NOT NULL,
+pedido_fk INTEGER NOT NULL,
+status SMALLINT CHECK(
+	status = 1 OR
+	status = 2 OR
+	status = 3 OR
+	status = 4 OR
+	status = 5 ) DEFAULT 1,
+data_inicio DATE,
+update_reg DATE,
+FOREIGN KEY (pedido_fk) REFERENCES compra(pedido) ON UPDATE CASCADE ON DELETE CASCADE 
+);
+
+
+-- *********** OPINIAO PROD **********
+
+CREATE TABLE opiniao_produto(
+pedido_fk INTEGER NOT NULL,
+cliente_fk VARCHAR(11) NOT NULL,
+produto_fk INTEGER NOT NULL,
+rating NUMERIC NOT NULL CHECK(rating >= 0 AND rating <= 5),
+descricao TEXT,
+data_publicacao DATE,
+CONSTRAINT id_opiniao_produto PRIMARY KEY(cliente_fk, produto_fk, pedido_fk),
+FOREIGN KEY (pedido_fk) REFERENCES compra(pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- ******** OPINIAO VENDEDOR *********
+
+CREATE TABLE opiniao_produtor(
+pedido_fk INTEGER NOT NULL,
+cliente_fk VARCHAR(11) NOT NULL,
+produtor_fk VARCHAR(11) NOT NULL,
+rating NUMERIC NOT NULL CHECK(rating >= 0 AND rating <= 5),
+descricao TEXT,
+data_avaliacao DATE,
+CONSTRAINT id_opiniao_produtor PRIMARY KEY(cliente_fk, produtor_fk, pedido_fk),
+FOREIGN KEY (pedido_fk) REFERENCES compra(pedido) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (produtor_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- **************** CHAT *************
+
+CREATE TABLE chat(
+chat_reg SERIAL PRIMARY KEY,
+cliente_fk VARCHAR(11) NOT NULL,
+produtor_fk VARCHAR(11) NOT NULL,
+produto_fk INTEGER NOT NULL,
+conversa TEXT,
+data_inicio DATE,
+last_talk_date DATE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (produtor_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+-- **************** FAV *************
+
+CREATE TABLE favoritos(
+cliente_fk VARCHAR(11) NOT NULL,
+produto_fk INTEGER NOT NULL,
+CONSTRAINT id_favorito PRIMARY KEY(cliente_fk, produto_fk),
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE
+);

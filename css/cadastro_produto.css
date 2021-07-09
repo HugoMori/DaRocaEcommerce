@@ -1,0 +1,51 @@
+/* 
+  
+  */
+
+.form-group {
+    text-align: start;
+}
+
+.form-group label {
+    font-weight: bolder;
+    display: flex;
+}
+
+/* 
+ */
+
+.btn {
+    float: right;
+}
+
+/* 
+  */
+
+.row .row-precoProduto {
+    margin-left: 0;
+}
+
+.row .row-precoProduto span{
+    align-self: center;
+    background-color: lightgray;
+    border: 1px solid lightslategrey;
+    border-radius: 0.2rem;
+    padding-bottom: 2%;
+    padding-top: 2%;
+}
+
+.precoFreteProduto {
+    width: 88%;
+}
+
+.coluna{
+    padding-left: 0;
+}
+
+@media (min-width: 300px) and (max-width: 767.98px) {
+
+    .btn{
+        margin-top: 30px;
+        float: none!important;
+    }
+}

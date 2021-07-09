@@ -1,0 +1,29 @@
+
+  /* 
+  
+  */
+
+  .form-group{
+      text-align: start;
+  }
+
+  .form-group label{
+      font-weight: bolder;
+      display: flex;
+  }
+
+  /* 
+   */
+
+   #btnSubmit{
+    float: right;
+    margin-top: 30px;
+   }
+
+   @media (min-width: 300px) and (max-width: 767.98px) {
+
+    #btnSubmit{
+        margin-top: 30px;
+        float: none!important;
+    }
+}

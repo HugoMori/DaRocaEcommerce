@@ -1,0 +1,108 @@
+/* 
+    Corpo
+*/
+
+.corpo{
+    text-align: start!important;
+}
+
+.corpo .main{
+    margin-top: 10%;
+}
+
+.corpo section .container {
+    padding-bottom: 3%!important;
+}
+/* 
+ */
+
+#DadosConta-col {
+    display: inline-flex;
+    border-right: 1px solid lightgray;
+}
+
+#Foto_perfil {
+    width: 30%;
+    height: 50%;
+    border-radius: 2rem;
+}
+
+#img_aval {
+    width: 20%;
+}
+
+#DadosConta-col #dadosUser {
+    margin-left: 7%;
+    text-align: left;
+}
+
+#historicoCompraVenda-col {
+    margin-left: 5%;
+}
+
+.histBtn{
+    font-weight: bolder;
+    margin-bottom: 3%;
+    color: black;
+    border-color: #3BBF1B;
+}
+
+.histBtn:hover{
+    color: white;
+    background-color: #3BBF1B;
+    border-color: white;
+}
+
+.nav-link img{
+    width: 50%;
+}
+
+.link-img{
+    text-align: center;
+}
+
+.deslogar {
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.deslogar:hover {
+    color: #3bbf1b;
+    text-decoration: none;
+}
+
+#dropDelosg{
+    font-size: 0.7rem;
+    text-align-last: center;
+}
+
+#endUserMap{
+    text-decoration: none;
+    color: currentColor;
+}
+
+#endUserMap:hover{
+    color: #3bbf1b;
+}
+
+@media (min-width: 300px) and (max-width: 767.98px) {
+    
+    #DadosConta-col {
+        padding: 0%;
+        display: block;
+    }
+    #DadosConta-col img {
+        width: 80%;
+        height: 40%;
+        margin-right: 20%;
+    }
+
+    #DadosConta-col #dadosUser{
+        margin-top: 7%;
+    }
+
+    .nav-link img{
+        width: 70%;
+    }
+}

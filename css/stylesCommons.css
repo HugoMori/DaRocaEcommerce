@@ -1,0 +1,296 @@
+/* =============== Estrutruas Gerais ===============*/
+
+/* Grid content */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    background: url(../img/capa/CapaEscura.png), url(../img/capa/ruido.png), linear-gradient(50deg, black, lightgray);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-color: #cccccc;
+    background-position: center;
+    position: relative;
+    background-size: cover;
+    /* background-size: 100% 100%; */
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.caixa {
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+
+.btn{
+    align-self: stretch;
+}
+/* =============== Nav ===============*/
+
+/* estilo da navbar */
+
+nav.navbar-style {
+    padding: 15px 0px;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+/* Cor dos links da navbar */
+
+.navbar-light .navbar-nav .nav-link {
+    color: white;
+}
+
+/* Links da navbar ao passar o mouse */
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #3bbf1b;
+}
+
+/* =============== Logo ===============*/
+
+.navbar-brand img {
+    width: 40%;
+}
+
+/* =============== Menu Toogle ===============*/
+
+.navbar-collapse {
+    flex-grow: 0;
+}
+
+/* =============== Nav-principal ===============*/
+
+.nav-item {
+    margin: auto;
+}
+
+.nav-link:hover {
+    color: #3bbf1b;
+}
+
+.divisor {
+    width: 1px;
+    margin: 12px 15px;
+    background: white;
+}
+
+/*================ SearchBar*/
+
+.form-inline .form-control {
+    display: inline-block;
+    width: 50ch;
+    vertical-align: middle;
+}
+
+.form-inline {
+    width: auto;
+    margin: auto;
+}
+
+/*================ Carrinho*/
+
+.dropdown {
+    margin: 0;
+    padding: 20px;
+}
+
+.car_button {
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.car_button:hover {
+    color: #3bbf1b;
+    text-decoration: none;
+}
+
+.car_button>i {
+    margin-left: 25px;
+}
+
+#total {
+    font-weight: bolder;
+    pointer-events: none;
+}
+
+#checkout {
+    font-weight: bolder;
+    color: red;
+}
+
+/*================ SideNav */
+
+.mySidenav-link i {
+    margin-right: 5px;
+}
+
+#mySidenav {
+    background-color: rgba(0, 0, 0, 0.92);
+    border-radius: 0px 20px 20px 0px;
+}
+
+/* =============== Corpo =============== */
+
+.corpo {
+    width: 100%;
+    text-align: -webkit-center;
+}
+
+.corpo .main {
+    width: 100%;
+    margin-top: 11%;
+    border-radius: 1rem;
+    background-color: whitesmoke;
+    opacity: 0.88;
+}
+
+.corpo section .container {
+    margin-right: 0;
+    margin-left: 0;
+    padding: 0;
+}
+
+.corpo section .container .row {
+    width: 100%;
+    margin-top: 2%;
+    /* border: 1px solid red; */
+}
+
+/* =============== Breadcumb  */
+
+#breadcrumb {
+    padding: 30px 0px;
+    background: #FBFBFC;
+    border-bottom: 1px solid #E4E7ED;
+    margin-bottom: 30px;
+    text-align-last: left;
+}
+
+#breadcrumb .container {
+    margin-left: 0;
+}
+
+#breadcrumb .breadcrumb-header {
+    display: inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-right: 15px;
+    text-transform: uppercase;
+    font-weight: bolder;
+}
+
+#breadcrumb .breadcrumb-tree {
+    display: inline-block;
+}
+
+#breadcrumb .breadcrumb-tree li {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+#breadcrumb .breadcrumb-tree li+li {
+    margin-left: 10px;
+}
+
+#breadcrumb .breadcrumb-tree li+li:before {
+    content: '/';
+    display: inline-block;
+    color: #8D99AE;
+    margin-right: 10px;
+}
+
+#breadcrumb .breadcrumb-tree li a {
+    color: #8D99AE;
+    text-decoration: none;
+}
+
+#breadcrumb .breadcrumb-tree li a:hover {
+    color: #3BBF1B;
+}
+
+/* =============== Footer ===============*/
+
+#logoFooter {
+    align-self: center;
+}
+
+.colBuscados {
+    padding-left: 0;
+}
+
+footer {
+    background: #000;
+    padding: 50px 0px 20px 0px;
+    position: relative;
+}
+
+footer .navbar-nav a {
+    color: white;
+    font-size: 0.8em;
+}
+
+footer .navbar-nav a:hover {
+    color: #9bf0e1;
+    text-decoration: none;
+}
+
+footer ul {
+    list-style: none;
+}
+
+footer ul li {
+    float: right;
+}
+
+footer img {
+    width: 50%;
+}
+
+footer .col-md-6 {
+    align-self: center;
+}
+
+footer .col-md-6 img {
+    width: 100%;
+}
+
+/* =============== responsive ===============*/
+
+@media (min-width: 300px) and (max-width: 767.98px) {
+    /* Container dentro da Navbar */
+    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
+        justify-content: flex-start;
+    }
+    /* Dropdown do carrinho */
+    .dropdown {
+        margin-right: 5%;
+        padding: 0;
+    }
+    /* posicionamento do dropdown do carrinho */
+    .dropdown-menu {
+        left: -160%;
+    }
+    /* tamanho do espaço da searchBar */
+    .form-inline .form-control {
+        width: 20ch;
+    }
+    .corpo .main {
+        margin-top: 29%;
+    }
+
+    footer .navbar-nav a {
+        font-size: 1.2em;
+    }
+}

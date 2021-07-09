@@ -1,0 +1,73 @@
+-- trigger para preencher a data de cadastro do cliente
+
+CREATE OR REPLACE FUNCTION ()
+RETURNS trigger AS $$
+
+-- trigger para mudar o campo vendedor para 1 caso coloque um produto a venda
+-- trigger p/arrumar campo avaliacao quando um cliente avaliar um vendedor
+-- trigger para arrumar campo num_vendas sempre que algum cliente comprar um produto
+
+-- trigger para data de cadastro
+-- trigger para arrumar campo update sempre que a tabela passar por um update
+-- Trigger para verificar se a qntd minima vendida não é maior que a disponivel e preencher a data de cadastro do produto
+-- trigger para arrumar campo update sempre que a tabela passar por um update
+-- trigger para arrumar campo num_vendas sempre que algum cliente comprar um produto
+
+-- trigger p/arrumar qntd_disponivel produto quando for comprado e verificar se qntd condiz
+-- trigger colocar data da compra quando for comprado
+-- trigger p/colocar valor total
+-- trigger update
+
+--triger verificar qntd
+
+--trigger data_inicio
+--trigger update
+
+--trigger data_publicacao
+
+--trigger data_publicacao
+
+--trigger data_inicio
+-- trigger last_talk
+
+
+/*verificar se o cliente tem mais de 18 anos*/
+CREATE OR REPLACE FUNCTION cadastro_cliente()
+RETURNS trigger AS $$
+	DECLARE
+		idade INTEGER := (SELECT DATE_PART('year',AGE(CURRENT_DATE, new.data_nasc)));
+	BEGIN
+		IF(idade >= 18) THEN
+			RETURN NEW;
+		ELSE
+			RAISE EXCEPTION 'Cadastro não realizado. O usuário % tem menos de 18 anos.
+			Idade: %', new.cpf, idade;
+		END IF;
+	END;
+$$ LANGUAGE plpgsql;
+
+CREATE trigger cadastro_cliente BEFORE INSERT OR UPDATE ON cliente
+FOR EACH ROW EXECUTE PROCEDURE cadastro_cliente();
+
+/*PRODUTO*/
+
+CREATE OR REPLACE FUNCTION cadastro_produto()
+RETURNS trigger AS $$
+	DECLARE
+		/* num_vendas_produtor INTEGER := (SELECT num_vendas FROM cliente 
+										WHERE new.produtor_fk = cliente.cpf);*/										
+	BEGIN
+		IF(new.qntd_disponivel >= new.qntd_min_vendida) THEN
+			new.data_cadastro := (SELECT NOW()::TIMESTAMP(0));
+			new.update_reg := (SELECT NOW()::TIMESTAMP(0));
+			UPDATE cliente SET vendedor = 1 WHERE new.produtor_fk = cliente.cpf;
+			--UPDATE cliente SET (vendedor = 1) AND (num_vendas = num_vendas + 1) WHERE new.produtor_fk = cliente.cpf;
+			RETURN NEW;
+		ELSE
+			RAISE EXCEPTION 'Quantidade minima a ser vendida é maior que a disponível.';
+		END IF;
+	END;
+$$ LANGUAGE plpgsql;
+
+CREATE trigger cadastro_cliente BEFORE INSERT OR UPDATE ON cliente
+FOR EACH ROW EXECUTE PROCEDURE cadastro_cliente();
