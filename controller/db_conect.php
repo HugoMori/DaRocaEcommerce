@@ -9,8 +9,6 @@ class db_conect
     private $user;
     private $password;
 
-
-    // Elephant
     public function __construct($host = 'localhost', $dbname = 'daroca', 
     $user = 'root', $password = '')
     {
@@ -23,38 +21,10 @@ class db_conect
         $this->conectDB();
     }
 
-    // // Heroku
-    // public function __construct($host = 'ec2-52-5-1-20.compute-1.amazonaws.com', $port = '5432', 
-    // $dbname = 'dcppdl8vp99mqe', $user = 'yjigivmvumknrk', 
-    // $password = '5cbc61461b5afd0c761a384e5255db0494e36a7cc3fbffeedeaa839e1e322bb2')
-    // {
-    //     // Fazer selecao de tipo de usuario
-
-    //     $this->host = $host;
-    //     $this->port = $port;
-    //     $this->dbname = $dbname;
-    //     $this->user = $user;
-    //     $this->password = $password;
-    //     $this->conectDB();
-    // }
-
-    // // 'localhost', '5432', 'daroca', 'postgres', '140566'
-    // public function __construct($host = 'localhost', $port = '5432', $dbname = 'daroca',
-    //  $user = 'postgres', $password = '140566')
-    // {
-    //     // Fazer selecao de tipo de usuario
-
-    //     $this->host = $host;
-    //     $this->port = $port;
-    //     $this->dbname = $dbname;
-    //     $this->user = $user;
-    //     $this->password = $password;
-    //     $this->conectDB();
-    // }
-
     public function conectDB()
     {
         self::$conn = mysqli_connect($this->host, $this->user, $this->password, $this->dbname);
+        mysqli_set_charset(self::$conn,'utf8');
         // Check connection
         if (mysqli_connect_errno()) {
             echo "<script>console.log('Não foi possível conectar. Erro: ".mysqli_connect_error()."' );</script>";
@@ -79,32 +49,69 @@ class db_conect
             $result = mysqli_stmt_get_result($resultSttmt);
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            // Close connection
-            mysqli_close(self::$conn);
             //verificar se foi cadastrado
             return $result;
         }
         else{
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            // Close connection
-            mysqli_close(self::$conn);
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
             //verificar se foi cadastrado
             return 0;
         }
         
     }
 
-    /********* CLIENTE ********* */ 
+// ************************************** CLIENTE ****************************************************************************
 
-    // cadastro
-    public function insertCliente($cpf, $nome, $data_nasc, $telefone, $email, 
-    $senha, $endereco, $cep, $cidade, $estado, $caminho_foto_perfil)
-    {
+// cadastro
+public function insertCliente($cpf, $nome, $data_nasc, $telefone, $email, 
+$senha, $endereco, $cep, $cidade, $estado, $caminho_foto_perfil)
+{
+    //query insert
+    $query = 'INSERT INTO cliente( cpf, nome, data_nasc, telefone, email, senha, 
+    endereco, cep, cidade, estado, caminho_foto_perfil) VALUES (?, ?, ?, ?, ?, ?,
+    ?, ?, ?, ?, ?)';
+    // Prepare a query for execution
+    if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+        /*
+            Character	Description
+            i	corresponding variable has type integer
+            d	corresponding variable has type double
+            s	corresponding variable has type string
+            b	corresponding variable is a binary (such as image, PDF file, etc.)
+        */
+        //bind param
+        mysqli_stmt_bind_param($resultSttmt,'sssssssssss', $cpf, $nome, $data_nasc, $telefone, $email, 
+        $senha, $endereco, $cep, $cidade, $estado, $caminho_foto_perfil);
+
+        mysqli_stmt_execute($resultSttmt);
+
+        // Close statement
+        mysqli_stmt_close($resultSttmt);
+        //verificar se foi cadastrado
+        return 1;
+    }
+    else{
+        echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
+
+        // Close statement
+        mysqli_stmt_close($resultSttmt);
+        //verificar se foi cadastrado
+        return 0;
+    }
+    
+}
+
+// alterar cadastro
+public function updateCliente($nome, $telefone, $email, 
+$senha, $endereco, $cep, $cidade, $estado, $caminho_foto_perfil, $contemFoto)
+{
+    if($contemFoto){
         //query insert
-        $query = 'INSERT INTO cliente( cpf, nome, data_nasc, telefone, email, senha, 
-        endereco, cep, cidade, estado, caminho_foto_perfil) VALUES (?, ?, ?, ?, ?, ?,
-        ?, ?, ?, ?, ?)';
+        $query = 'UPDATE cliente SET nome = ?, telefone = ?, senha = ?, 
+        endereco = ?, cep = ?, cidade = ?, estado = ?, caminho_foto_perfil = ?, update_reg = ? 
+        WHERE email = ?';
         // Prepare a query for execution
         if($resultSttmt = mysqli_prepare(self::$conn, $query)){
             /*
@@ -115,124 +122,31 @@ class db_conect
                 b	corresponding variable is a binary (such as image, PDF file, etc.)
             */
             //bind param
-            mysqli_stmt_bind_param($resultSttmt,'sssssssssss', $cpf, $nome, $data_nasc, $telefone, $email, 
-            $senha, $endereco, $cep, $cidade, $estado, $caminho_foto_perfil);
+            mysqli_stmt_bind_param($resultSttmt,'ssssssssss', $nome, $telefone, $senha, $endereco, 
+            $cep, $cidade, $estado, $caminho_foto_perfil, date("d-m-Y h:i:sa"), $email);
 
             mysqli_stmt_execute($resultSttmt);
 
-            echo "Records inserted successfully.";
-
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            // Close connection
-            mysqli_close(self::$conn);
             //verificar se foi cadastrado
             return 1;
         }
         else{
-            echo "Records not inserted.";
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
 
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            // Close connection
-            mysqli_close(self::$conn);
             //verificar se foi cadastrado
             return 0;
         }
-        
     }
-
-    // alterar cadastro
-    public function updateCliente($nome, $telefone, $email, 
-    $senha, $endereco, $cep, $cidade, $estado, $caminho_foto_perfil, $contemFoto)
-    {
-        if($contemFoto){
-            //query insert
-            $query = 'UPDATE cliente SET nome = ?, telefone = ?, senha = ?, 
-            endereco = ?, cep = ?, cidade = ?, estado = ?, caminho_foto_perfil = ?, update_reg = ? 
-            WHERE email = ?';
-            // Prepare a query for execution
-            if($resultSttmt = mysqli_prepare(self::$conn, $query)){
-                /*
-                    Character	Description
-                    i	corresponding variable has type integer
-                    d	corresponding variable has type double
-                    s	corresponding variable has type string
-                    b	corresponding variable is a binary (such as image, PDF file, etc.)
-                */
-                //bind param
-                mysqli_stmt_bind_param($resultSttmt,'ssssssssss', $nome, $telefone, $senha, $endereco, 
-                $cep, $cidade, $estado, $caminho_foto_perfil, date("d-m-Y h:i:sa"), $email);
-
-                mysqli_stmt_execute($resultSttmt);
-
-                echo "Records updated successfully.";
-
-                // Close statement
-                mysqli_stmt_close($resultSttmt);
-                // Close connection
-                mysqli_close(self::$conn);
-                //verificar se foi cadastrado
-                return 1;
-            }
-            else{
-                echo "Records not inserted.";
-
-                // Close statement
-                mysqli_stmt_close($resultSttmt);
-                // Close connection
-                mysqli_close(self::$conn);
-                //verificar se foi cadastrado
-                return 0;
-            }
-        }
-        else{
-            //query insert
-            $query = 'UPDATE cliente SET nome = ?, telefone = ?, senha = ?, 
-            endereco = ?, cep = ?, cidade = ?, estado = ?, update_reg = ? 
-            WHERE email = ?';
-            // Prepare a query for execution
-            if($resultSttmt = mysqli_prepare(self::$conn, $query)){
-                /*
-                    Character	Description
-                    i	corresponding variable has type integer
-                    d	corresponding variable has type double
-                    s	corresponding variable has type string
-                    b	corresponding variable is a binary (such as image, PDF file, etc.)
-                */
-                //bind param
-                mysqli_stmt_bind_param($resultSttmt,'sssssssss', $nome, $telefone, $senha, $endereco, 
-                $cep, $cidade, $estado, date("d-m-Y h:i:sa"), $email);
-
-                mysqli_stmt_execute($resultSttmt);
-
-                echo "Records updated successfully.";
-
-                // Close statement
-                mysqli_stmt_close($resultSttmt);
-                // Close connection
-                mysqli_close(self::$conn);
-                //verificar se foi cadastrado
-                return 1;
-            }
-            else{
-                echo "Records not inserted.";
-
-                // Close statement
-                mysqli_stmt_close($resultSttmt);
-                // Close connection
-                mysqli_close(self::$conn);
-                //verificar se foi cadastrado
-                return 0;
-            }
-        }
-    }
-
-    // login
-    public function loginCliente($email, $pass)
-    {
+    else{
         //query insert
-        $query = 'SELECT COUNT(cpf) AS valida FROM cliente WHERE email = ? AND senha = ?';
+        $query = 'UPDATE cliente SET nome = ?, telefone = ?, senha = ?, 
+        endereco = ?, cep = ?, cidade = ?, estado = ?, update_reg = ? 
+        WHERE email = ?';
+        // Prepare a query for execution
         if($resultSttmt = mysqli_prepare(self::$conn, $query)){
             /*
                 Character	Description
@@ -241,72 +155,136 @@ class db_conect
                 s	corresponding variable has type string
                 b	corresponding variable is a binary (such as image, PDF file, etc.)
             */
-
             //bind param
-            mysqli_stmt_bind_param($resultSttmt,'ss', $email, $pass);
+            mysqli_stmt_bind_param($resultSttmt,'sssssssss', $nome, $telefone, $senha, $endereco, 
+            $cep, $cidade, $estado, date("d-m-Y h:i:sa"), $email);
+
             mysqli_stmt_execute($resultSttmt);
-            $result = mysqli_stmt_get_result($resultSttmt);
-            $rows = mysqli_fetch_assoc($result);
-
-            if($rows['valida'] == 1)
-            {
-                 //query insert
-                $query = 'UPDATE cliente SET last_login = ? WHERE email = ?';
-                // Prepare a query for execution
-                if($resultSttmt = mysqli_prepare(self::$conn, $query))
-                {
-                    /*
-                        Character	Description
-                        i	corresponding variable has type integer
-                        d	corresponding variable has type double
-                        s	corresponding variable has type string
-                        b	corresponding variable is a binary (such as image, PDF file, etc.)
-                    */
-                    //bind param
-                    mysqli_stmt_bind_param($resultSttmt,'sss', date("d-m-Y h:i:sa"), $email, $pass);
-                    mysqli_stmt_execute($resultSttmt);
-
-                    echo "<script>console.log('Conexão bem sucedida' );</script>";
-
-                    // Close statement
-                    mysqli_stmt_close($resultSttmt);
-                    // Close connection
-                    mysqli_close(self::$conn);
-                    //verificar se foi cadastrado
-                    return 1;
-                }
-            }
-            else{
-                //echo "Error! Login not successfully.";
-
-                // Close statement
-                mysqli_stmt_close($resultSttmt);
-                // Close connection
-                mysqli_close(self::$conn);
-                //verificar se foi cadastrado
-                echo "<script>console.log('Não foi possível realizar o  login. Erro: ".mysqli_connect_error()."' );</script>";
-                return 0;
-            }
-        }
-        else{
-            //echo "Error! Login not successfully.";
 
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            // Close connection
-            mysqli_close(self::$conn);
+            //verificar se foi cadastrado
+            return 1;
+        }
+        else{
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
+
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            //verificar se foi cadastrado
+            return 0;
+        }
+    }
+}
+
+// login
+public function loginCliente($email, $pass)
+{
+    //query insert
+    $query = 'SELECT COUNT(cpf) AS valida FROM cliente WHERE email = ? AND senha = ?';
+    if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+        /*
+            Character	Description
+            i	corresponding variable has type integer
+            d	corresponding variable has type double
+            s	corresponding variable has type string
+            b	corresponding variable is a binary (such as image, PDF file, etc.)
+        */
+
+        //bind param
+        mysqli_stmt_bind_param($resultSttmt,'ss', $email, $pass);
+        mysqli_stmt_execute($resultSttmt);
+        $result = mysqli_stmt_get_result($resultSttmt);
+        $rows = mysqli_fetch_assoc($result);
+
+        if($rows['valida'] == 1)
+        {
+             //query insert
+            $query = 'UPDATE cliente SET last_login = ? WHERE email = ?';
+            // Prepare a query for execution
+            if($resultSttmt = mysqli_prepare(self::$conn, $query))
+            {
+                /*
+                    Character	Description
+                    i	corresponding variable has type integer
+                    d	corresponding variable has type double
+                    s	corresponding variable has type string
+                    b	corresponding variable is a binary (such as image, PDF file, etc.)
+                */
+                //bind param
+                mysqli_stmt_bind_param($resultSttmt,'sss', date("d-m-Y h:i:sa"), $email, $pass);
+                mysqli_stmt_execute($resultSttmt);
+
+                echo "<script>console.log('Conexão bem sucedida' );</script>";
+
+                // Close statement
+                mysqli_stmt_close($resultSttmt);
+                //verificar se foi cadastrado
+                return 1;
+            }
+        }
+        else{
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
             //verificar se foi cadastrado
             echo "<script>console.log('Não foi possível realizar o  login. Erro: ".mysqli_connect_error()."' );</script>";
             return 0;
         }
     }
+    else{
+        // Close statement
+        mysqli_stmt_close($resultSttmt);
+        //verificar se foi cadastrado
+        echo "<script>console.log('Não foi possível realizar o  login. Erro: ".mysqli_connect_error()."' );</script>";
+        return 0;
+    }
+}
 
-    function requestDadosUser($email){
+function requestDadosUser($email){
 
+    //query insert
+    $query = 'SELECT cpf, nome, data_nasc, telefone, endereco, 
+    cep, cidade, estado, caminho_foto_perfil, avaliacao  
+    FROM cliente WHERE email = ?';
+    // Prepare a query for execution
+    if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+        /*
+            Character	Description
+            i	corresponding variable has type integer
+            d	corresponding variable has type double
+            s	corresponding variable has type string
+            b	corresponding variable is a binary (such as image, PDF file, etc.)
+        */
+        //bind param
+        mysqli_stmt_bind_param($resultSttmt,'s', $email);
+
+        mysqli_stmt_execute($resultSttmt);
+
+        $result = mysqli_stmt_get_result($resultSttmt);
+
+        $rows = mysqli_fetch_assoc($result);
+
+        // Close statement
+        mysqli_stmt_close($resultSttmt);
+        //verificar se foi cadastrado
+        return $rows;
+    }
+    else{
+        echo "<script>console.log('Não foi possível realizar a requsição de dados' );</script>";
+
+        return -1;
+    }
+}
+
+// ************************************** PRODUTO ****************************************************************************
+
+    // cadastro
+    public function insertProduto($name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+    $tipo_venda_prod, $qntd_min_prod, $descricao, $producao, $validade, $produtor)
+    {
         //query insert
-        $query = 'SELECT cpf, nome, data_nasc, telefone, endereco, 
-        cep, cidade, estado, caminho_foto_perfil, avaliacao  
-        FROM cliente WHERE email = ?';
+        $query = 'INSERT INTO produto(nome , preco, qntd_disponivel, categoria, tipo_venda, 
+        qntd_min_vendida, produtor_fk, data_producao, data_validade, descricao) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         // Prepare a query for execution
         if($resultSttmt = mysqli_prepare(self::$conn, $query)){
             /*
@@ -317,36 +295,193 @@ class db_conect
                 b	corresponding variable is a binary (such as image, PDF file, etc.)
             */
             //bind param
-            mysqli_stmt_bind_param($resultSttmt,'s', $email);
+            mysqli_stmt_bind_param($resultSttmt,'sddiidssss', $name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+            $tipo_venda_prod, $qntd_min_prod, $produtor, $producao, $validade, $descricao);
 
             mysqli_stmt_execute($resultSttmt);
 
-            echo "request successfully.";
-
-            $result = mysqli_stmt_get_result($resultSttmt);
- 
-            $rows = mysqli_fetch_assoc($result);
-
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            // Close connection
-            mysqli_close(self::$conn);
-            //verificar se foi cadastrado
-            return $rows;
+            
+            return 1;
         }
         else{
-            echo "<script>console.log('Não foi possível realizar a requsição de dados' );</script>";
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
 
             // Close statement
             mysqli_stmt_close($resultSttmt);
             // Close connection
-            mysqli_close(self::$conn);
-            return -1;
+            return 0;
+        }
+        
+    }
+
+    //remover
+    public function deleteProduto($codigoProduto, $produtorFk)
+    {
+        //query insert
+        $query = 'DELETE FROM produto WHERE (codigo = ? AND produtor_fk = (SELECT email FROM cliente WHERE cpf = ?));';
+        // Prepare a query for execution
+        if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+            /*
+                Character	Description
+                i	corresponding variable has type integer
+                d	corresponding variable has type double
+                s	corresponding variable has type string
+                b	corresponding variable is a binary (such as image, PDF file, etc.)
+            */
+            //bind param
+            mysqli_stmt_bind_param($resultSttmt,'is', $codigoProduto, $produtorFk);
+
+            mysqli_stmt_execute($resultSttmt);
+
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+
+            $query = 'SELECT caminho_foto FROM img_produto WHERE produto_fk = '.$codigoProduto.';';
+            $caminhos = $this->selectCustom($query);
+            $diretorio = "../img/produto/".$codigoProduto;
+
+            while ($rows = mysqli_fetch_assoc($caminhos)){
+                unlink($rows['caminho_foto']);
+            }
+            rmdir($diretorio);
+
+             //query insert
+            $query = 'DELETE FROM img_produto WHERE produto_fk = ? ;';
+            $resultSttmt = mysqli_prepare(self::$conn, $query);
+            //bind param
+            mysqli_stmt_bind_param($resultSttmt,'i', $codigoProduto);
+
+            mysqli_stmt_execute($resultSttmt);
+
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            
+            return 1;
+        }
+        else{
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
+
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            // Close connection
+            return 0;
+        }
+        
+    }
+
+    // cadastro
+    public function insertImg_produto($caminho_foto, $produto_fk)
+    {
+        //query insert
+        $query = 'INSERT INTO img_produto (caminho_foto , produto_fk) VALUES (?, ?)';
+        // Prepare a query for execution
+        if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+            /*
+                Character	Description
+                i	corresponding variable has type integer
+                d	corresponding variable has type double
+                s	corresponding variable has type string
+                b	corresponding variable is a binary (such as image, PDF file, etc.)
+            */
+            //bind param
+            mysqli_stmt_bind_param($resultSttmt,'si', $caminho_foto, $produto_fk);
+
+            mysqli_stmt_execute($resultSttmt);
+
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            //verificar se foi cadastrado
+            return 1;
+        }
+        else{
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
+            // Close statement
+            mysqli_stmt_execute($resultSttmt);
+            //verificar se foi cadastrado
+            return 0;
+        }
+        
+    }
+
+    // alterar produto
+    public function updateProduto($name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+    $tipo_venda_prod, $qntd_min_prod, $descricao, $produtor, $codigo)
+    {
+        //query insert
+        $query = 'UPDATE produto SET nome = ?, preco = ?, qntd_disponivel = ?, 
+        categoria = ?, tipo_venda = ?, qntd_min_vendida = ?, descricao = ? 
+        WHERE (produtor_fk  = ? AND codigo = ?)';
+        // Prepare a query for execution
+        if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+            /*
+                Character	Description
+                i	corresponding variable has type integer
+                d	corresponding variable has type double
+                s	corresponding variable has type string
+                b	corresponding variable is a binary (such as image, PDF file, etc.)
+            */
+            //bind param
+            mysqli_stmt_bind_param($resultSttmt,'sddiidssi', $name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+            $tipo_venda_prod, $qntd_min_prod, $descricao, $produtor, $codigo);
+
+            mysqli_stmt_execute($resultSttmt);
+
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            //verificar se foi cadastrado
+            return 1;
+        }
+        else{
+            echo "<script>console.log('Não foi possível realizar a operação (".$query.").\n Erro: ".mysqli_connect_error()."' );</script>";
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            return 0;
         }
     }
 
-    /********* PRODUTO ********* */ 
+    // function requestDadosProduto($produto_id){
 
+    //     //query insert
+    //     $query = 'SELECT cpf, nome, data_nasc, telefone, endereco, 
+    //     cep, cidade, estado, caminho_foto_perfil, avaliacao  
+    //     FROM cliente WHERE email = ?';
+    //     // Prepare a query for execution
+    //     if($resultSttmt = mysqli_prepare(self::$conn, $query)){
+    //         /*
+    //             Character	Description
+    //             i	corresponding variable has type integer
+    //             d	corresponding variable has type double
+    //             s	corresponding variable has type string
+    //             b	corresponding variable is a binary (such as image, PDF file, etc.)
+    //         */
+    //         //bind param
+    //         mysqli_stmt_bind_param($resultSttmt,'s', $email);
+    
+    //         mysqli_stmt_execute($resultSttmt);
+    
+    //         $result = mysqli_stmt_get_result($resultSttmt);
+    
+    //         $rows = mysqli_fetch_assoc($result);
+    
+    //         // Close statement
+    //         mysqli_stmt_close($resultSttmt);
+    //         // Close connection
+    //         mysqli_close(self::$conn);
+    //         //verificar se foi cadastrado
+    //         return $rows;
+    //     }
+    //     else{
+    //         echo "<script>console.log('Não foi possível realizar a requsição de dados' );</script>";
+    
+    //         // Close statement
+    //         mysqli_stmt_close($resultSttmt);
+    //         // Close connection
+    //         mysqli_close(self::$conn);
+    //         return -1;
+    //     }
+    // }
 
     // public function delete()
     // {

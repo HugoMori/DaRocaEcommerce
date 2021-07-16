@@ -1,28 +1,31 @@
-
-  /* 
+/* 
   
   */
 
-  .form-group{
-      text-align: start;
-  }
+#qntdImagens {
+    margin-top: 10px;
+}
 
-  .form-group label{
-      font-weight: bolder;
-      display: flex;
-  }
+.form-group {
+    text-align: start;
+}
 
-  /* 
+.form-group label {
+    font-weight: bolder;
+    display: flex;
+}
+
+/* 
    */
 
-   #btnSubmit{
+#btnSubmit {
     float: right;
     margin-top: 30px;
-   }
+    margin-bottom: 20px;
+}
 
-   @media (min-width: 300px) and (max-width: 767.98px) {
-
-    #btnSubmit{
+@media (min-width: 300px) and (max-width: 767.98px) {
+    #btnSubmit {
         margin-top: 30px;
         float: none!important;
     }

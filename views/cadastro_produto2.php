@@ -1,3 +1,38 @@
+<?php
+session_start();
+include '../controller/controlRequest.php';
+$conn = new controlRequest();
+
+//Se já tiver alguma sessão iniciada 
+//e for passado o produto via URL
+if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
+  if(count($_POST) > 0){
+    //fazer atualizacao
+    $name_prod = filter_input(INPUT_POST, 'nome_Produto', FILTER_SANITIZE_STRING);
+    $preco_prod = filter_input(INPUT_POST, 'preco_Produto', FILTER_SANITIZE_NUMBER_FLOAT);
+    $qntd_prod = filter_input(INPUT_POST, 'qntd_Disponivel', FILTER_SANITIZE_NUMBER_FLOAT);
+    $categoria_prod = filter_input(INPUT_POST, 'categorias_produto', FILTER_SANITIZE_NUMBER_INT);
+    $tipo_venda_prod = filter_input(INPUT_POST, 'opcaoVenda_Produto', FILTER_SANITIZE_NUMBER_INT);
+    $qntd_min_prod = filter_input(INPUT_POST, 'qntd_Minima', FILTER_SANITIZE_NUMBER_FLOAT);
+    $descricao = filter_input(INPUT_POST, 'descricao_Produto', FILTER_SANITIZE_STRING);
+
+    //tentar realizar o cadastro
+    if($conn->tratamentoDadosProduto($name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+    $tipo_venda_prod, $qntd_min_prod, $descricao, $_POST['data_prod'], $_POST['data_validade'],  $_FILES['produtos'], 1) == 1){
+      //redirecionar para a paginá do produto
+      header("Location: ../views/minha_conta.php");
+    }
+    //se não der certo, informa
+    else{
+      unset($_POST);
+      header("Location: ../views/minha_conta.php");
+    }
+  }
+}
+else{
+  header("Location: ../views/login.php");
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -44,14 +79,24 @@
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <a class="mySidenav-link" href="../views/cadastro.php">
-              <i class="far fa-user"> Cadastrar-se</i>
-            </a>
+            <?php 
+                if(isset($_SESSION['log_id'])){
+                  echo '<a class="mySidenav-link" href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+                }
+                else{
+                  echo '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+                }
+              ?>
           </div>
           <div class="row">
-            <a class="mySidenav-link" href="#">
-              <i class="fal fa-home"> Entrar</i>
-            </a>
+            <?php 
+              if(isset($_SESSION['log_id'])){
+                echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+              }
+              else{
+                echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+              }
+            ?>
           </div>
         </div>
         <!-- /SideBar menu-->
@@ -81,11 +126,25 @@
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Cadastrar-se</a>
+              <?php 
+                if(isset($_SESSION['log_id'])){
+                  echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+                }
+                else{
+                  echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+                }
+              ?>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="#">Entrar</a>
+                <?php 
+                  if(isset($_SESSION['log_id'])){
+                    echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+                  }
+                  else{
+                    echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+                  }
+                ?>
             </li>
 
           </ul>
@@ -114,6 +173,12 @@
                 <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
             </div>
+            <?php 
+                  if(isset($_SESSION['msg']) && !empty($_SESSION['msg'])){
+                    echo $_SESSION['msg'];
+                    $_SESSION['msg'] = "";
+                  }
+            ?>
           </div>
           <!-- /row -->
         </div>
@@ -127,7 +192,7 @@
           <!-- container -->
           <div class="container cadastro-container">
             <!-- Formulário -->
-            <form method="post" action="../controler/crud_cadastrar_proc.php" enctype="multipart/form-data">
+            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
               <!--Campos de cadastro -->
               <div class="row">
 
@@ -150,12 +215,12 @@
                       <div class="form-group">
                         <label for="categoriaProduto">Categoria</label>
                         <select id="categoriaProduto" class="form-control" name="categorias_produto" required>
-                          <option value="fruta">Frutas</option>
-                          <option value="verdura">Verduras</option>
-                          <option value="legume">Legumes</option>
-                          <option value="bebida">Bebidas</option>
-                          <option value="frios">Frios</option>
-                          <option value="especiaria">Especiarias</option>
+                          <option value="1">Frutas</option>
+                          <option value="2">Verduras</option>
+                          <option value="3">Legumes</option>
+                          <option value="4">Bebidas</option>
+                          <option value="5">Frios</option>
+                          <option value="6">Especiarias</option>
                         </select>
                       </div>
                       <!-- /Produto - Categoria -->
@@ -164,8 +229,10 @@
                       <div class="input-group">
                         <label for="precoProduto" style="font-weight: bolder;">Preço do produto:</label>
                         <div class="row row-precoProduto">
-                          <span>R$&nbsp;</span>
-                          <input id="precoProduto" class="form-control precoFreteProduto" type="number" min="0.01" step=".01" name="preco_Produto" placeholder="0.00" required />
+                          <span class="spanTag">R$&nbsp;</span>
+                          <input id="precoProduto" class="form-control precoFreteProduto" type="number" min="0.1" 
+                          step="0.1" name="preco_Produto" placeholder="0.00" style="width:100px; display: table-cell;" required />
+                          <span style="align-self: center;" id='preco'></span>
                         </div>
                       </div>
                       <br>
@@ -173,8 +240,9 @@
 
                       <!-- Produto - quantidade Min -->
                       <div class="form-group">
-                        <label for="qntdMinima">Mínima quantidade comprada p/usuário:</label>
-                        <input id="qntdMinima" class="form-control" type="number" min="1" step="1" name="qntd_Minima" placeholder="0" required />
+                        <label for="qntdMinima">Quantidade mínima a ser comprada p/usuário:</label>
+                        <input id="qntdMinima" class="form-control" type="number" min="0.01" step="0.1" name="qntd_Minima" 
+                        placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdMin'></span>
                       </div>
                       <!-- /Produto - quantidade Min -->
 
@@ -187,32 +255,38 @@
                       <!-- Produto - Tipo venda -->
                       <div class="form-group">
                         <label for="opcaoProduto">Venda por:</label>
-                        <select id="opcaoProduto" class="form-control" name="opcaoVenda_Produto" required>
-                          <option value="kg">Quilo</option>
-                          <option value="cx">Caixa</option>
-                          <option value="l">Litro</option>
-                          <option value="duzia">Dúzia</option>
-                          <option value="un">Unidade</option>
+                        <select id="opcaoProduto" class="form-control" name="opcaoVenda_Produto" required onChange="tpVendaProd(this)">
+                          <option value="">Selecione uma opção</option>
+                          <option value="1">Quilo</option>
+                          <option value="2">Caixa</option>
+                          <option value="3">Litro</option>
+                          <option value="4">Dúzia</option>
+                          <option value="5">Unidade</option>
                         </select>
                       </div>
                       <!-- /Produto - Tipo venda -->
 
-                      <!-- Produto - quantidade Max -->
+                      <!-- Produto - quantidade disponivel -->
                       <div class="form-group" style="margin-top: 22px;">
-                        <label for="qntdDisponivel">Quantidade disponivel:</label>
-                        <input id="qntdDisponivel" class="form-control" type="number" min="1" step="1" name="qntd_Disponivel" placeholder="0" required />
+                        <label for="qntdDisponivel">Quantidade ofertada:</label>
+                        <input id="qntdDisponivel" class="form-control" type="number" min="1" step="0.1" name="qntd_Disponivel" 
+                        placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdDisp'></span>
                       </div>
-                      <!-- /Produto - quantidade Max -->
-
-                      <!-- Produto - quantidade Max -->
-                      <div class="form-group" style="margin-top: 22px;">
-                        <label for="qntdMaxima">Máxima quantidade comprada p/usuário:</label>
-                        <input id="qntdMaxima" class="form-control" type="number" min="1" step="1" name="qntd_Maxima" placeholder="0" required />
-                      </div>
-                      <!-- /Produto - quantidade Max -->
+                      <!-- /Produto - quantidade disponivel -->
 
                     </div>
                     <!-- /Coluna 2-->
+
+
+                    <div class="form-group">
+                    <label for="dataNasc">Data de produção</label>
+                    <input id="dataProd" class="form-control" type="date" name="data_prod" min="01-01-1900" required>
+                    </div>
+
+                    <div id="dataVenc" class="form-group">
+                    <label for="dataNasc">Data de validade</label>
+                    <input class="form-control" type="date" name="data_validade" min="01-01-1900">
+                    </div>
 
                   </div>
                   <!-- /Row -->
@@ -229,8 +303,10 @@
                   
                   <div class="form-group" style="margin-top: 30px;">
                     <label for="fotosProduto">Fotos do produto:</label>
-                    <p>Máximo: 5 fotos</p>
-                    <input class="form-control-file" id="fotosProduto" type="file" name="produtos[]" multiple>
+                    <p id='qntdImagens'>Máximo: 5 fotos</p>
+                    <input class="form-control-file" id="fotos" type="file" name="produtos[]" oninput="checkQntdFotosProduto(this)" 
+                    onChange="contarArquivos()" max-uploads = "5" 
+                    accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif" multiple>
                   </div>
                   
                   <input class="btn btn-primary" type="submit" value="Cadastrar" />
@@ -245,21 +321,7 @@
 
             </form>
             <!-- /Formulário -->
-
-            <!--Verifica se a senha e o email são iguais aos de suas confirmações-->
-            <script>
-              function check(input) {
-                if (input.value !== document.getElementById('user_email').value && input.value !== document.getElementById('senha_user').value) {
-                  input.setCustomValidity('Os dois e-mail\'s precisam ser iguais.');
-                  if (input.value !== document.getElementById('senha_user').value) {
-                    input.setCustomValidity('As duas senhas precisam ser iguais.');
-                  }
-                } else {
-                  // input is valid -- reset the error message
-                  input.setCustomValidity('');
-                }
-              }
-            </script>
+            
             <!-- /row -->
           </div>
           <!-- /container -->
@@ -288,7 +350,7 @@
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="">Entrar</a>
+              <a href="../views/login.php">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -358,20 +420,10 @@
     </div>
   </footer>
 
-
-  <script>
-    function openNav() {
-      document.getElementById("mySidenav").style.width = "45%";
-    }
-
-    function closeNav() {
-      document.getElementById("mySidenav").style.width = "0";
-    }
-  </script>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-
+  <script src="../js/functions.js"></script>
 </body>
 
 </html>

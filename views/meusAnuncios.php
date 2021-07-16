@@ -3,11 +3,6 @@
  * usuário continua na pagina, se não, se ele  tentar burlar o acesso, 
  * redireciona para o index*/
 session_start();
-
-//inclui o php que contém a conexão com o banco
-include '../controller/controlRequest.php';
-$conn = new controlRequest();
-
 //verifica se há alguma sessão vazia, se sim, apaga ela e vai para o index, 
 //se estiver com algum dado, ou seja, se o usuário estiver logado, puxará os 
 //dados do usuário através do request
@@ -15,10 +10,46 @@ if ((!isset($_SESSION['log_id']) == true)) {
   unset($_SESSION['log_id']);
   header("Location: ../views/login.php");
 } else {
-  $result = $conn->requestDadosUser($_SESSION['log_id']);
-}
-?>
+  //inclui o php que contém a conexão com o banco e o php de request/send dados
+  include '../controller/controlRequest.php';
+  $conn = new controlRequest();
+  if(count($_POST) > 0){
 
+    $result = $conn->removerProduto($_POST['prodCodigo'], $_POST['prodVend']);
+    if($result){
+      unset($_POST);
+      header("Location: ../views/minha_conta.php");
+    }
+  }
+  //numero de itens puxados do bd p/pagina
+  $itensPorPagina = 10;
+  //pegar a pagina atual
+  if (count($_GET) > 0) {
+    $page = intval($_GET['pagina']);
+  } else {
+    $page = 0;
+  }
+  if ($page == 0) {
+    $disable = 'disabled';
+  } else {
+    $disable = '';
+  }
+  //chamar função de request de dados e paginacao ()
+  $result = $conn->requestAllDadosProduto($page, $itensPorPagina);
+  $numRows = mysqli_num_rows($result);
+
+  //query paginas
+  $query = 'SELECT COUNT(codigo) AS qntd_itens FROM produto';
+  //num de produtos no bd
+  $pagesDB = $conn->selectCustom($query);
+  $pagesDB = mysqli_fetch_assoc($pagesDB);
+  $pagesDB = $pagesDB['qntd_itens'];
+  //num de paginas
+  $paginas = ceil($pagesDB / $itensPorPagina);
+}
+
+
+?>
 
 <!DOCTYPE html>
 <html>
@@ -30,8 +61,8 @@ if ((!isset($_SESSION['log_id']) == true)) {
   <!-- FontAwesome-->
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
   <!-- css -->
-  <link rel="stylesheet" type="text/css" href="../css/minha_conta.css">
   <link rel="stylesheet" type="text/css" href="../css/stylesCommons.css">
+  <link rel="stylesheet" type="text/css" href="../css/meus_anuncios.css">
   <!-- SiderBar -->
   <link rel="stylesheet" type="text/css" href="../css/siderBar.css">
   <!-- normalize -->
@@ -151,26 +182,9 @@ if ((!isset($_SESSION['log_id']) == true)) {
           <!-- row -->
           <div class="row">
             <div class="col-md-12">
-              <h3 class="breadcrumb-header">Minha conta</h3>
+              <h3 class="breadcrumb-header">Meus anúncios</h3>
               <ul class="breadcrumb-tree">
-                <li>
-                  <a href="#">
-                    <!-- carrinho -->
-                    <div class="dropdown">
-                      <a href="#" class="deslogar" data-toggle="dropdown">
-                        deslogar
-                      </a>
-                      <div class="dropdown-menu" id="dropDelosg">
-                        Tem certeza disso?<br><br>
-                        <a href="../controller/logout.php" id="deslogButtonYes">
-                          <button type="button" class="btn btn-danger">Sim</button>
-                        </a>
-                        <button id="deslogButtonNo" type="button" class="btn btn-secondary">Não</button>
-                      </div>
-                    </div>
-                    <!-- /carrinho -->
-                  </a>
-                </li>
+                <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
             </div>
           </div>
@@ -188,95 +202,169 @@ if ((!isset($_SESSION['log_id']) == true)) {
             <!-- row -->
             <div class="d-flex flex-row">
 
-              <div class="col-md-8" id="DadosConta-col">
+              <?php if ($numRows > 0) { ?>
 
-                <!-- foto -->
-                <?php
-                if ($result != -1 && ($result['caminho_foto_perfil'] != null || $result['caminho_foto_perfil'] != '')) {
-                  echo '<img class="img-fluid" src=' . $result['caminho_foto_perfil'] . ' id="Foto_perfil" alt="Foto_perfil">';
-                } else {
-                  echo '<img class="img-fluid" src="../img/perfil/standart/perfil.jpeg" id="Foto_perfil" alt="Foto_perfil">';
-                }
-                ?>
-                <!-- dados -->
-                <div id="dadosUser">
-                  <?php
-                  if ($result != -1) {
-                    echo "<p>" . $result['nome'] . "</p>";
-                    //echo "<p>".$_SESSION['log_id']."</p>";
-                    echo "<p>" . $result['telefone'] . "</p>";
-                    $map = $result['endereco'] . ", " . $result['cep'] . ", " . $result['estado'];
-                    echo "<p><a id='endUserMap' href = 'https://www.google.com.br/maps/place/".$map."' target='_blank'>" . $map . "</a></p>";
+                <table class="table table-bordered table-hover">
+                  <!-- corpo da tabela -->
+                  <tbody>
+                    <?php while ($rows = mysqli_fetch_assoc($result)) {
 
-                    if ($result['avaliacao'] < 1) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval0.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 1 && $result['avaliacao'] < 1.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval1.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 1.5 && $result['avaliacao'] < 2) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval15.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 2 && $result['avaliacao'] < 2.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval2.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 2.5 && $result['avaliacao'] < 3) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval25.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 3 && $result['avaliacao'] < 3.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval3.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 3.5 && $result['avaliacao'] < 4) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval35.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 4 && $result['avaliacao'] < 4.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval4.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 4.5 && $result['avaliacao'] < 5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval45.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] == 5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval5.png" id="img_aval" alt="Avaliação">';
-                    }
+                      //Data convert
+                      switch ($rows['categoria']) {
+                        case 1:
+                          $categoria = 'Frutas';
+                          break;
+                        case 2:
+                          $categoria = 'Verduras';
+                          break;
+                        case 3:
+                          $categoria = 'Legumes';
+                          break;
+                        case 4:
+                          $categoria = 'Bebidas';
+                          break;
+                        case 5:
+                          $categoria = 'Frios';
+                          break;
+                        case 6:
+                          $categoria = 'Especiarias';
+                          break;
+                      }
 
-                    echo "<p>Avaliação: " . $imgAval . " (" . $result['avaliacao'] . ")</p>";
-                  } else {
-                    echo "<p>Nome</p>";
-                    echo "<p>E-mail</p>";
-                    echo "<p>Telefone</p>";
-                    echo "<p>Endereço</p>";
-                  }
-                  ?>
+                      switch ($rows['tipo_venda']) {
+                        case 1:
+                          $tipo_venda = 'Kg';
+                          break;
+                        case 2:
+                          $tipo_venda = 'Caixa';
+                          break;
+                        case 3:
+                          $tipo_venda = 'Litro';
+                          break;
+                        case 4:
+                          $tipo_venda = 'Dúzia';
+                          break;
+                        case 5:
+                          $tipo_venda = 'Unidade';
+                          break;
+                      }
 
-                  <!-- alterar cadastro -->
-                  <a href="cadastro.php">
-                    <button type="button" class="btn btn-secondary btn-sm">Alterar cadastro</button>
-                  </a>
-                </div>
+                      $dataAnuncio = new DateTime($rows['data_anuncio']);
 
-              </div>
+                    ?>
+                      <!-- table row -->
+                      <tr>
+                        <!-- table division -->
+                        <!-- divisão foto -->
+                        <td class="tb_foto">
+                          <img id="foto_anuncio" class="img-fluid" src="<?php if ($rows['foto'] == "" || $rows['foto'] == null) {
+                                                                          echo '../img/veg_fruits/brocolis.jpg';
+                                                                        } else {
+                                                                          echo $rows['foto'];
+                                                                        } ?>" alt="Foto do produto anúnciado">
+                        </td>
+                        <!-- divisão infos prod -->
+                        <td class="infosAnuncio">
+                          <p><?php echo "<strong>Produto:</strong> " . $rows['produto']; ?></p>
+                          <p><?php echo "<strong>Preço:</strong> R$ " . $rows['preco'] . "/" . $tipo_venda; ?></p>
+                          <p><?php echo "<strong>Quantidade à venda:</strong> " . $rows['qntd_disponivel'] . " " . $tipo_venda; ?></p>
+                          <p><?php echo "<strong>Categoria:</strong> " . $categoria; ?></p>
+                        </td>
+                        <!-- divisão infos vendedor/data anuncio/visualizacao/vendas/avalizacao -->
+                        <td class="infosAnuncio">
+                          <p><?php echo "<strong>Data de anúncio:</strong> " . $dataAnuncio->format('d/m/Y'); ?></p>
+                          <p><?php echo "<strong>Número de vendas:</strong> " . $rows['num_vendas_produto']; ?></p>
+                          <p><?php echo "<strong>Visualizações do produto:</strong> " . $rows['visualizacoes']; ?></p>
+                          <p><?php echo "<strong>Avaliação do produto:</strong> " . $rows['avaliacao_produto']; ?></p>
+                        </td>
+                        <!-- botão de alterar anuncio/remover/visualizar anuncio -->
+                        <td>
+                          <ul class="navbar-nav">
+                            <li class="nav-item">
+                              <a class="nav-link" href="">
+                                <button type="button" class="btn btn-secondary btn-anuncio">Visualizar anúncio</button>
+                              </a>
+                            </li>
+                            <li class="nav-item">
+                              <a class="nav-link" href="">
+                                <button type="button" class="btn btn-warning btn-anuncio">&nbsp;&nbsp;&nbsp;Alterar anúncio&nbsp;&nbsp;</button>
+                              </a>
+                            <li class="nav-item">
+                              <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
+                                <a class="nav-link" href="">
+                                  <input type="hidden" name="prodCodigo" value="<?php echo $rows['codigo']; ?>" />
+                                  <input type="hidden" name="prodVend" value="<?php echo $rows['vendedor_fk']; ?>" />
+                                  <button type="submit" value="Remover" class="btn btn-danger btn-anuncio">Remover anúncio</button>
+                                </a>
+                              </form>
+                            </li>
+                          </ul>
+                        </td>
+                      </tr>
+                    <?php } ?>
+                  </tbody>
+                </table>
 
-              <div class="col-md-3" id="historicoCompraVenda-col">
-
-                <!-- histórico de compras -->
-                <ul class="navbar-nav">
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">
-                      <button type="button" class="btn btn-outline-light histBtn">Minhas compras</button>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">
-                      <button type="button" class="btn btn-outline-light histBtn">Minhas vendas&nbsp;&nbsp;</button>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="../views/meusAnuncios.php">
-                      <button type="button" class="btn btn-outline-light histBtn">Meus anúncios&nbsp;&nbsp;</button>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="nav-link link-img" href="cadastro_produto2.php">
-                      <img src="../img/perfil/my_personal_menu_anuncie.jpg" class="img-fluid" alt="">
-                    </a>
-                  </li>
-                </ul>
-
-              </div>
-              <!-- /historicoCompraVenda-col -->
             </div>
             <!-- /row -->
+
+            <div class="d-flex flex-row">
+
+              <!-- paginação -->
+              <nav aria-label="...">
+                <ul class="pagination">
+                  <li class="page-item <?php echo $disable; ?>">
+                    <a href="../views/meusAnuncios.php?pagina=0">
+                      <span class="page-link">Primeira</span>
+                    </a>
+                  </li>
+                  <?php for ($i = 0; $i < $paginas; $i++) {
+                    $activePage = "";
+                    if ($paginas == $i) {
+                      $activePage = 'active';
+                    }
+
+                    if ($paginas > $i + 1) {
+                      $disable = '';
+                      echo '<li class="page-item ' . $activePage . '">
+                            <a class="page-link" href="../views/meusAnuncios.php?pagina=' . $i . '">' . ($i + 1) . '</a>
+                            </li>';
+                    } else {
+                      $disable = 'disabled';
+                    }
+                  ?>
+                  <?php } ?>
+                  <li class="page-item <?php echo $disable; ?>">
+                    <a class="page-link" href="../views/meusAnuncios.php?pagina=<?php echo $paginas - 1; ?>">Última</a>
+                  </li>
+                </ul>
+              </nav>
+              <!-- /paginação -->
+
+            <?php } ?>
+            <!-- /if ($numRows > 0) -->
+            <?php if ($numRows <= 0) { ?>
+              <!-- todo espaço da tela -->
+              <div class="col-md-12 capa">
+
+                <h1 style="font-size: xxx-large;">Ops!!</h1>
+                <h3>
+                  Você ainda não realizou nenhum anúncio.<br>
+                </h3>
+                <img class="img-fluid" src="../img/logo/brocolisCartoonSurprised.svg" style="width: 20%;" alt="Logo Da Roça">
+                <h4>
+                  Clique no botão para realizar seu anúncio.<br>
+                </h4>
+                <a href="../views/cadastro_produto2.php">
+                  <button type="button" class="btn btn-success btn-lg" style="margin-bottom: 60px; margin-top: 20px;">Anunciar produto</button>
+                </a>
+
+              </div>
+            <?php } ?>
+
+            </div>
+            <!-- /row -->
+
           </div>
           <!-- /container -->
         </div>
@@ -373,7 +461,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
       </div>
     </div>
   </footer>
-
+  
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>

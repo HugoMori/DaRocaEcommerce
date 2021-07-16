@@ -1,0 +1,45 @@
+CREATE PROCEDURE cadastro_cliente(IN _cpf VARCHAR(20), IN _nome TEXT, IN _data_nasc DATE,
+				IN _telefone VARCHAR(20), IN _email VARCHAR(100), IN _senha VARCHAR(12),
+				IN _endereco TEXT, IN _cep VARCHAR(20), IN _cidade VARCHAR(50), IN _estado CHAR(2), IN _caminho_foto_perfil TEXT)
+BEGIN    
+    SET @query = CONCAT("INSERT INTO cliente (cpf, nome, data_nasc,telefone, email, senha, endereco, cep, cidade, estado, caminho_foto_perfil) VALUES (", QUOTE(_cpf),",", QUOTE(_nome),",", QUOTE(_data_nasc),",", QUOTE(_telefone),",", QUOTE(_email),",", QUOTE(_senha),",", QUOTE(_endereco),",", QUOTE(_cep),",", QUOTE(_cidade),",", QUOTE(_estado),",", QUOTE(_esta_caminho_foto_perfildo),");");
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+    SET @query = NULL;
+END;
+
+
+SELECT produto.nome AS produto, produto.preco, qntd_disponivel, categoria, cliente.nome, produto.data_cadastro AS data_anuncio, produto.avaliacao AS avaliacao_produto, produto.num_vendas AS num_vendas_produto, produto.num_visualizacao AS visualizacoes, caminho_foto AS foto FROM produto INNER JOIN cliente ON cliente.email = produto.produtor_fk INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo WHERE produtor_fk = 'hugomori@live.com' AND caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = produto.codigo LIMIT 1) ORDER BY data_anuncio ASC LIMIT
+
+DROP PROCEDURE IF EXISTS requestAllDadosProduto;
+DELIMITER $$
+CREATE PROCEDURE requestAllDadosProduto(pagina INT , itens_por_pagina INT, produtor_fk VARCHAR(100))
+BEGIN
+  SELECT 
+    produto.codigo AS codigo,
+    produto.nome AS produto, 
+    produto.preco, 
+    qntd_disponivel, 
+    categoria,
+    tipo_venda,
+    cliente.cpf AS vendedor_fk, 
+    cliente.nome AS vendedor, 
+    produto.data_cadastro AS data_anuncio, 
+    produto.avaliacao AS avaliacao_produto, 
+    produto.num_vendas AS num_vendas_produto, 
+    produto.num_visualizacao AS visualizacoes, 
+    caminho_foto AS foto 
+  FROM produto 
+  INNER JOIN cliente ON cliente.email = produto.produtor_fk 
+  INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo 
+  WHERE 
+  	produtor_fk = produtor_fk 
+  AND 
+  	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = produto.codigo LIMIT 1) 
+    ORDER BY data_anuncio ASC LIMIT pagina, itens_por_pagina;
+END $$
+
+DELIMITER ;
+
+CALL requestAllDadosProduto(0, 10, 'hugomori@live.com');

@@ -116,14 +116,22 @@ else {
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <a class="mySidenav-link" href="#">
-              <i class="far fa-user"> Cadastrar-se</i>
-            </a>
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+            }
+            ?>
           </div>
           <div class="row">
-            <a class="mySidenav-link" href="../views/login.php">
-              <i class="fal fa-home"> Entrar</i>
-            </a>
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+            }
+            ?>
           </div>
         </div>
         <!-- /SideBar menu-->
@@ -153,11 +161,23 @@ else {
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <a class="nav-link" href="../views/cadastro.php">Cadastrar-se</a>
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+              } else {
+                echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+              }
+              ?>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="../views/login.php">Entrar</a>
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+              } else {
+                echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+              }
+              ?>
             </li>
 
           </ul>
@@ -339,8 +359,11 @@ else {
 
                   <label for="foto_user" style="font-weight: bolder; float: left;">Foto do perfil</label>
                   <div class="custom-file">
-                    <input class="custom-file-input" type="file" id="foto_user" name="foto_user">
+                    <input class="custom-file-input" type="file" id="fotos" name="foto_user" 
+                    oninput="checkQntdFotosUser(this)" onChange="contarArquivos()" max-uploads = "1" 
+                    accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif">
                     <label for="foto_user" class="custom-file-label">Selecione arquivo</label>
+                    <p id="qntdImagens">Máximo envio: 1 foto.</p>
                   </div>
 
                   <input id="btnSubmit" class="btn btn-primary" type="submit" value="Cadastrar" />
@@ -354,20 +377,6 @@ else {
               <!-- /Row -->
 
             </form>
-            <!--Verifica se a senha e o email são iguais aos de suas confirmações-->
-            <script>
-              function check(input) {
-                if (input.value !== document.getElementById('user_email').value && input.value !== document.getElementById('senha_user').value) {
-                  input.setCustomValidity('Os dois e-mail\'s precisam ser iguais.');
-                  if (input.value !== document.getElementById('senha_user').value) {
-                    input.setCustomValidity('As duas senhas precisam ser iguais.');
-                  }
-                } else {
-                  // input is valid -- reset the error message
-                  input.setCustomValidity('');
-                }
-              }
-            </script>
             <!-- /row -->
           </div>
           <!-- /container -->
@@ -396,10 +405,10 @@ else {
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="login.php">Entrar</a>
+              <a href="../views/login.php">Entrar</a>
             </li>
             <li>
-              <a href="#">Cadastre-se</a>
+              <a href="../views/cadastro.php">Cadastre-se</a>
             </li>
             <li>
               <a href="">Sobre</a>
@@ -466,20 +475,10 @@ else {
     </div>
   </footer>
 
-
-  <script>
-    function openNav() {
-      document.getElementById("mySidenav").style.width = "45%";
-    }
-
-    function closeNav() {
-      document.getElementById("mySidenav").style.width = "0";
-    }
-  </script>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-
+  <script src="../js/functions.js"></script>
 </body>
 
 </html>

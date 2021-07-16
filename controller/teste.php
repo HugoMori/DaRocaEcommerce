@@ -1,64 +1,44 @@
 <?php 
+session_start();
+// include 'db_conect.php';
+//     $name_prod = filter_input(INPUT_POST, 'nome_Produto', FILTER_SANITIZE_STRING);
+//     $preco_prod = filter_input(INPUT_POST, 'preco_Produto', FILTER_SANITIZE_NUMBER_FLOAT);
+//     $qntd_prod = filter_input(INPUT_POST, 'qntd_Disponivel', FILTER_SANITIZE_NUMBER_FLOAT);
+//     $categoria_prod = filter_input(INPUT_POST, 'categorias_produto', FILTER_SANITIZE_NUMBER_INT);
+//     $tipo_venda_prod = filter_input(INPUT_POST, 'opcaoVenda_Produto', FILTER_SANITIZE_NUMBER_INT);
+//     $qntd_min_prod = filter_input(INPUT_POST, 'qntd_Minima', FILTER_SANITIZE_NUMBER_FLOAT);
+//     $descricao = filter_input(INPUT_POST, 'descricao_Produto', FILTER_SANITIZE_STRING);
 
-    $nome_user = filter_input(INPUT_POST, 'name_user', FILTER_SANITIZE_STRING);
-    $endereco_user = filter_input(INPUT_POST, 'endereco_user', FILTER_SANITIZE_STRING);
-    $cidade_User = filter_input(INPUT_POST, 'cidade_User', FILTER_SANITIZE_STRING);
-    $estadoUser = filter_input(INPUT_POST, 'estadoUser', FILTER_SANITIZE_STRING);
-    $cep_User = filter_input(INPUT_POST, 'cep_User', FILTER_SANITIZE_STRING);
-    $tel_user = filter_input(INPUT_POST, 'tel_user', FILTER_SANITIZE_STRING);
-    $email_user = filter_input(INPUT_POST, 'email_user', FILTER_SANITIZE_EMAIL);
-    $senha_user = filter_input(INPUT_POST, 'senha_user', FILTER_SANITIZE_STRING);
-    $cpf_user = filter_input(INPUT_POST, 'cpf_User', FILTER_SANITIZE_STRING);
-    $file = $_FILES['foto_user'];
+//     // limpar o nome do produto para não correr risco de SQLI ou partes html
+//     $name_prod = filter_var($name_prod, FILTER_SANITIZE_STRING);
+//     // limpar o valor do produto p/conter apenas números
+//     $preco_prod = filter_var($preco_prod, FILTER_SANITIZE_NUMBER_FLOAT);
+//     $preco_prod = $preco_prod/100.0;
+//     // limpar a qntd disponivel do produto p/conter apenas números
+//     $qntd_prod = filter_var($qntd_prod, FILTER_SANITIZE_NUMBER_FLOAT);
+//     // limpar a categoria do produto p/conter apenas números
+//     $categoria_prod = filter_var($categoria_prod, FILTER_SANITIZE_NUMBER_INT);
+//     // limpar o tipo de venda do produto p/conter apenas números
+//     $tipo_venda_prod = filter_var($tipo_venda_prod, FILTER_SANITIZE_NUMBER_INT);
+//     // limpar a qntd minima de venda do produto p/conter apenas números
+//     $qntd_min_prod = filter_var($qntd_min_prod, FILTER_SANITIZE_NUMBER_FLOAT);
+//     // limpar a descrição do produto para não correr risco de SQLI ou partes html
+//     $descricao = filter_var($descricao, FILTER_SANITIZE_STRING);
 
- // limpar e verificar se o nome não tem números ou elementos de query ou html
- $nome_user = filter_var($nome_user, FILTER_SANITIZE_STRING);
- $nome_user = preg_replace("/[^a-zA-Z]+/", " ", $nome_user);
- // limpar e verificar se a data contém apenas números
- $data_nasc = preg_replace("([^0-9/-])", "", $_POST['data_nasc']);
- // limpar e verificar cidade
- $cidade_User = filter_var($cidade_User, FILTER_SANITIZE_STRING);
- $cidade_User = preg_replace("/[^a-zA-Z]+/", " ", $cidade_User);
- // limpar e verificar estado
- $estadoUser = filter_var($estadoUser, FILTER_SANITIZE_STRING);
- $estadoUser = preg_replace("/[^a-zA-Z]+/", " ", $estadoUser);
- // limpar e verificar endereco
- $endereco_user = filter_var($endereco_user, FILTER_SANITIZE_STRING);
- $endereco_user = preg_replace("/[^a-zA-Z0-9,.]+/", " ", $endereco_user);
- // limpar e verificar CEP
- $cep_User = filter_var($cep_User, FILTER_SANITIZE_STRING);
- $cep_User = preg_replace("/[^0-9]+/", "", $cep_User);
- $cep_User = substr($cep_User, 0, 5)."-".substr($cep_User, 5);
- // limpar e verificar telefone
- $tel_user = filter_var($tel_user, FILTER_SANITIZE_STRING);
- $tel_user = preg_replace("/[^0-9]+/", "", $tel_user);
- $tel_user = "(".substr($tel_user, 0, 2).")".substr($tel_user, 2, 5)."-".substr($tel_user, 6);
- // limpar e verificar email
- $email_user = filter_var($email_user, FILTER_SANITIZE_EMAIL);
- if (filter_var($email_user, FILTER_VALIDATE_EMAIL) === false) {
-     $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível cadastrar, erro na imagem!</div>";
-     //header("Location: ../views/cadastro.php");
- }
- // limpar e verificar a senha
- $senha_user = filter_var($senha_user, FILTER_SANITIZE_STRING);
- // limpar e verificar CPF
- echo "cpf:".$cpf_user."<br>";
- $cpf_user = filter_var($cpf_user, FILTER_SANITIZE_STRING);
- $cpf_user = preg_replace("/[^0-9]+/", "", $cpf_user);
- $cpf_user = substr($cpf_user, 0, 3).".".substr($cpf_user, 3, 3).".".substr($cpf_user, 6, 3)."-".substr($cpf_user, 9);
-
-
-echo $cpf_user."/". $data_nasc."/".$nome_user."/".$tel_user."/".$email_user."/".$senha_user."/".$endereco_user."/".
-    $cep_User."/".$cidade_User."/".$estadoUser."/".$file;
-
-    include 'db_conect.php';
-    $conn = new db_conect();
-
-        $result = $conn->updateCliente($nome_user, $tel_user, $email_user, $senha_user,
-        $endereco_user, $cep_User, $cidade_User, $estadoUser, null, 0);
-
-    if (!$result) {
-        echo "<br>Erro";
-    }
+//     $preco_prod = $preco_prod/100.0;
+// echo $name_prod."<br>".$preco_prod."<br>".$qntd_prod."<br>".$categoria_prod."<br>".$tipo_venda_prod."<br>".$qntd_min_prod."<br>".$descricao;
     
+// $conn = new db_conect();
+// $produtor = $_SESSION['log_id'];
+// $query = "SELECT codigo FROM produto 
+//             WHERE produto.produtor_fk = '".$produtor."' AND produto.nome = '".$name_prod."';";
+
+//             //CPF check
+//             $result = $conn->selectCustom($query);
+//             $row = mysqli_fetch_assoc($result);
+//             echo "<br>".$row['codigo'];
+
+//             $conn->insertImg_produto('teste', $row['codigo']);
+
+echo "ERRO!";
 ?>

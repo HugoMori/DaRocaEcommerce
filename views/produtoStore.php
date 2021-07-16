@@ -1,3 +1,22 @@
+<?php
+/* esse bloco de código em php verifica se existe a sessão aberta, se sim, o
+ * usuário continua na pagina, se não, se ele  tentar burlar o acesso, 
+ * redireciona para o index*/
+session_start();
+
+//verifica se há alguma sessão vazia, se sim, apaga ela e vai para o index, 
+//se estiver com algum dado, ou seja, se o usuário estiver logado, puxará os 
+//dados do usuário através do request
+if ((!isset($_SESSION['log_id']) == true)) {
+  unset($_SESSION['log_id']);
+  header("Location: ../views/login.php");
+}
+
+//inclui o php que contém a conexão com o banco
+include '../controller/controlRequest.php';
+$conn = new controlRequest();
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -8,8 +27,8 @@
   <!-- FontAwesome-->
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
   <!-- css -->
-  <!-- <link rel="stylesheet" type="text/css" href="../css/"> -->
   <link rel="stylesheet" type="text/css" href="../css/stylesCommons.css">
+  <link rel="stylesheet" type="text/css" href="../css/produtoStore.css">
   <!-- SiderBar -->
   <link rel="stylesheet" type="text/css" href="../css/siderBar.css">
   <!-- normalize -->
@@ -46,9 +65,9 @@
           <div class="row">
             <?php
             if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+              echo '<a class="mySidenav-link" href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
             } else {
-              echo '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+              echo '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
             }
             ?>
           </div>
@@ -122,17 +141,178 @@
   <div class="corpo d-flex">
     <div class="container-fluid main">
 
-      <section>
-        <!-- com o container ai consigo usar row e col -->
+      <!-- BREADCRUMB -->
+      <div id="breadcrumb" class="section">
+        <!-- container -->
         <div class="container">
+          <!-- row -->
           <div class="row">
+            <div class="col-md-12">
+              <ul id="backTree" class="breadcrumb-tree">
+                <li><a href="javascript:history.back()">Voltar</a></li>
+              </ul>
+              <ul id="backTree" class="breadcrumb-tree">
+                <li>&nbsp;|&nbsp;</li>
+              </ul>
+              <ul class="breadcrumb-tree">
+                <li><a href="#">Categoria</a></li>
+              </ul>
+              <ul class="breadcrumb-tree">
+                <li>></li>
+              </ul>
+              <ul class="breadcrumb-tree">
+                <li><a href="#">Nome chave do produto</a></li>
+              </ul>
+            </div>
+          </div>
+          <!-- /row -->
+        </div>
+        <!-- /container -->
+      </div>
+      <!-- /BREADCRUMB -->
+
+      <section>
+        <!-- SECTION -->
+        <div class="basic-section">
+          <!-- container -->
+          <div class="container basic-container" style="max-width: none;">
+            <!-- row -->
+            <div class="d-flex flex-row">
+              <div class="col-md-7">
+
+                <!-- ROW imagens -->
+                <div class="content">
+
+                  <div class="cover">
+                    <img id="imgCover" class="img-fluid" src="../img/veg_fruits/brocolis.jpg" alt="">
+                  </div>
+                  <!-- /cover -->
+
+                  <ul class="thumbs">
+                    <li><img class="img-fluid" src="../img/veg_fruits/brocolis.jpg" alt="" onclick="changePhoto(this)"></li>
+                    <li><img class="img-fluid" src="../img/veg_fruits/maca.jpg" alt="" onclick="changePhoto(this)"></li>
+                    <li><img class="img-fluid" src="../img/veg_fruits/cenoura.jpg" alt="" onclick="changePhoto(this)"></li>
+                    <li><img class="img-fluid" src="../img/veg_fruits/alface.jpg" alt="" onclick="changePhoto(this)"></li>
+                  </ul>
+                  <!-- /thumbs -->
+
+                </div>
+                <!-- /ROW imagens -->
+
+                <table class="table table-light">
+                  <tbody>
+                    <th>Mais anúncios do vendedor</th>
+                    <tr>
+                      <td>produto1</td>
+                      <td>produto2</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-light">
+                  <tbody>
+                    <th>Características do produto</th>
+                    <tr>
+                      <td>Categoria</td>
+                    </tr>
+                    <tr>
+                      <td>Compra mínima</td>
+                    </tr>
+                    <tr>
+                      <td>Compra por ?</td>
+                    </tr>
+                    <tr>
+                      <td>data validade</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-light">
+                  <tbody>
+                    <th>Descrição</th>
+                    <tr>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-light">
+                  <tbody>
+                    <th>Dúvidas e perguntas</th>
+                    <tr>
+                      <td>Botão entrar em contato com o vendedor</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+              </div>
+
+              <div class="col-md-5">
+
+                <table class="table table-light" style="border: 1px solid rgba(0,0,0,.2);">
+
+                  <tbody>
+                    <tr>
+                      <td class="smallInfos">Visualizações</td>
+                    </tr>
+                    <tr>
+                      <td>Nome do produto</td>
+                    </tr>
+                    <tr>
+                      <td>Avaliação</td>
+                    </tr>
+                    <tr>
+                      <td class="smallInfos">Num compras</td>
+                    </tr>
+                    <tr>
+                      <td>Preço</td>
+                    </tr>
+                    <tr>
+                      <td>input qntd</td>
+                      <td class="smallInfos">disponivel</td>
+                    </tr>
+                    <tr>
+                      <td>Adicionar ao carrinho</td>
+                    </tr>
+                    <tr>
+                      <td>Comprar</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table class="table table-light">
+                  <tbody>
+                    <th>Informações do vendedor</th>
+                    <tr>
+                      <td>Nome do vendedor</td>
+                    </tr>
+                    <tr>
+                      <td class="smallInfos">número de vendas totais</td>
+                    </tr>
+                    <tr>
+                      <td>Avaliação</td>
+                    </tr>
+                    <tr>
+                      <td class="smallInfos">Cidade, estado</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+            <!-- /row -->
 
           </div>
+          <!-- /container -->
         </div>
+        <!-- /SECTION -->
       </section>
 
+
     </div>
+    <!-- /main -->
   </div>
+  <!-- /corpo -->
 
   <!-- /CORPO DO SITE -->
 
@@ -218,7 +398,7 @@
       </div>
     </div>
   </footer>
-
+  
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>

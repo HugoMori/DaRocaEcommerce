@@ -1,16 +1,9 @@
 <?php
 session_start();
-// if(isset($_SESSION['mensagem'])){
-//   echo $_SESSION['mensagem'];
-//   unset($_SESSION['mensagem']);
-// }
-// if(isset($_SESSION['mensagem']) && !empty($_SESSION['mensagem'])){
-//   print "<script>alert(\"{$_SESSION['mensagem']}\")</script>";
-//   header("location: views/login.php");
-// }
-
+if (!isset($_SESSION['log_id'])) {
+  unset($_SESSION['log_id']);
+}
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -58,14 +51,24 @@ session_start();
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <a class="mySidenav-link" <?php if($user_con){ echo 'href="views/compras.php"';} else{ echo 'href="views/cadastro.php"';} ?>>
-              <i class="far fa-user"> <?php if($user_con){ echo 'Compras';} else{ echo 'Cadastrar-se';} ?> </i>
-            </a>
+            <?php 
+                if(isset($_SESSION['log_id'])){
+                  echo '<a class="mySidenav-link" href="href="views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+                }
+                else{
+                  echo '<a class="mySidenav-link" href="href="views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+                }
+              ?>
           </div>
           <div class="row">
-            <a class="mySidenav-link" href="views/login.php">
-              <i class="fal fa-home"> Entrar</i>
-            </a>
+            <?php 
+              if(isset($_SESSION['log_id'])){
+                echo '<a class="mySidenav-link" href="views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+              }
+              else{
+                echo '<a class="mySidenav-link" href="views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+              }
+            ?>
           </div>
         </div>
         <!-- /SideBar menu-->
@@ -95,11 +98,25 @@ session_start();
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <a class="nav-link" href="views/cadastro.php">Cadastrar-se</a>
+              <?php 
+                if(isset($_SESSION['log_id'])){
+                  echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+                }
+                else{
+                  echo '<a class="nav-link" href="views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+                }
+              ?>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="views/login.php">Entrar</a>
+                <?php 
+                  if(isset($_SESSION['log_id'])){
+                    echo '<a class="nav-link" href="views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+                  }
+                  else{
+                    echo '<a class="nav-link" href="views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+                  }
+                ?>
             </li>
 
           </ul>

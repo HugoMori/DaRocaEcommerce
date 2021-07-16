@@ -71,14 +71,24 @@ else {
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <a class="mySidenav-link" href="../views/cadastro.php">
-              <i class="far fa-user"> Cadastrar-se</i>
-            </a>
+            <?php 
+                if(isset($_SESSION['log_id'])){
+                  echo '<a class="mySidenav-link" href = "../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+                }
+                else{
+                  echo '<a class="mySidenav-link" href = "../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+                }
+              ?>
           </div>
           <div class="row">
-            <a class="mySidenav-link" href="#">
-              <i class="fal fa-home"> Entrar</i>
-            </a>
+            <?php 
+              if(isset($_SESSION['log_id'])){
+                echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+              }
+              else{
+                echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+              }
+            ?>
           </div>
         </div>
         <!-- /SideBar menu-->
@@ -108,11 +118,25 @@ else {
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <a class="nav-link" href="../views/cadastro.php">Cadastrar-se</a>
+              <?php 
+                if(isset($_SESSION['log_id'])){
+                  echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+                }
+                else{
+                  echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+                }
+              ?>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="../views/login.php">Entrar</a>
+                <?php 
+                  if(isset($_SESSION['log_id'])){
+                    echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+                  }
+                  else{
+                    echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+                  }
+                ?>
             </li>
 
           </ul>
@@ -219,7 +243,7 @@ else {
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="">Entrar</a>
+              <a href="../views/login.php">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -288,21 +312,11 @@ else {
       </div>
     </div>
   </footer>
-
-
-  <script>
-    function openNav() {
-      document.getElementById("mySidenav").style.width = "45%";
-    }
-
-    function closeNav() {
-      document.getElementById("mySidenav").style.width = "0";
-    }
-  </script>
+  
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
-
+  <script src="../js/functions.js"></script>
 </body>
 
 </html>
