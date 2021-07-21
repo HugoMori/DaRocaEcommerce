@@ -1,0 +1,68 @@
+/* table th{
+    visibility: hidden!important;
+    display: none!important;
+} */
+
+#form_carrinho{
+    width: -webkit-fill-available;
+}
+
+#subTotal{
+    color: red;
+}
+
+.checkBox-td{
+    text-align: center!important; 
+    vertical-align: middle!important;
+}
+
+.qntdDesejada{
+    width:120px; 
+    display: table-cell;
+}
+
+.buttonsTd{
+    text-align: center; 
+    vertical-align: middle;
+}
+
+#pagamento{
+    float: right; 
+    background-color: unset; 
+    margin-top:20px
+}
+
+#pagamento h2 h3{
+    display: inline;
+}
+
+#pagamento h2{
+    float: left;
+}
+
+#pagamento h3{
+    float: right;
+    margin-right: 10px;
+}
+
+#pagamento button{
+    width: -webkit-fill-available; 
+    margin-top:10px;
+}
+
+.capa h1{
+    font-size: xxx-large;
+}
+
+.capa img{
+    width: 20%;
+}
+
+.capa button{
+    margin-bottom: 60px; 
+    margin-top: 20px;
+}
+
+.capa{
+    text-align: center;
+}

@@ -1,26 +1,25 @@
-.d-flex{
+.d-flex {
     justify-content: center;
 }
 
-.tb_foto{
+.tb_foto {
     text-align: center;
     vertical-align: middle!important;
 }
 
 .table-bordered td, .table-bordered th {
-     border-bottom: 0px!important; 
-     border-left: 0px!important;
-     border-right: 0px!important;
-     border-top: 1px solid #dee2e6!important;
+    border-bottom: 0px!important;
+    border-left: 0px!important;
+    border-right: 0px!important;
+    border-top: 1px solid #dee2e6!important;
 }
 
-.infosAnuncio{
+.infosAnuncio {
     vertical-align: middle!important;
 }
 
-#foto_anuncio{
+#foto_anuncio {
     width: 120px;
     height: 120px;
     border-radius: 1rem;
 }
-

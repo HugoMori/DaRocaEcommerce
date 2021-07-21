@@ -10,6 +10,11 @@ ul{
     list-style: none;
 }
 
+.form-group button{
+    min-width: 177px;
+    min-height: 38px;
+}
+
 /* product */
 .content{
     margin: 0 auto;
@@ -20,6 +25,13 @@ ul{
     float: left;
     width: 100%;
     border: 2px solid #eee;
+}
+
+.cover img{
+    inline-size: -webkit-fill-available;
+    max-height: 400px;
+    min-width: 648px;
+    min-height: 400px;
 }
 
 /* product-small-img */
@@ -45,7 +57,66 @@ ul{
     border: 2px solid orange;
 }
 
+
+.thumbs li img{
+    width: 120px;
+    height: 96px;
+}
+
 .smallInfos{
     color: #8c8c8c;
     font-size: small;
 }
+
+table{
+    border-radius: 1rem;
+}
+
+.caracteristica-span img{
+    width: 5%;
+}
+
+#tr-datas img{
+    width: 10%;
+}
+
+.td-left{
+    width: 50%; 
+    float:left;
+}
+
+.td-right{
+    width: 50%; 
+    float: right;
+}
+
+.img_aval{
+    width: 20%;
+}
+
+#frete{
+    width: 10%;
+}
+
+.form-group{
+    display: inline-flex!important;
+}
+
+.form-group label{
+    margin-top: auto;
+}
+
+#qntd-td{
+    margin-top: 14px;
+    inline-size: auto;
+}
+
+.form-group input{
+    font-weight: 900;
+    width: auto;
+}
+
+.form-group span{
+    font-weight: 900;
+}
+

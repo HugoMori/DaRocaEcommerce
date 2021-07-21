@@ -12,39 +12,11 @@ if ((!isset($_SESSION['log_id']) == true)) {
   //inclui o php que contém a conexão com o banco e o php de request/send dados
   include '../controller/controlRequest.php';
   $conn = new controlRequest();
+
+  $carrinho = $conn->requestDadosCarrinho($_SESSION['log_id']);
+
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
-  if (count($_POST) > 0) {
-
-    $result = $conn->removerProduto($_POST['prodCodigo'], $_POST['prodVend']);
-    if ($result) {
-      unset($_POST);
-      header("Location: ../views/minha_conta.php");
-    }
-  }
-  //numero de itens puxados do bd p/pagina
-  $itensPorPagina = 10;
-  //pegar a pagina atual
-  if (count($_GET) > 0) {
-    $page = intval($_GET['pagina']);
-  } else {
-    $page = 0;
-  }
-  if ($page == 0) {
-    $disable = 'disabled';
-  } else {
-    $disable = '';
-  }
-  //chamar função de request de dados e paginacao ()
-  $result = $conn->requestAllDadosProduto($page, $itensPorPagina);
-  $numRows = mysqli_num_rows($result);
-
-  //num de produtos no bd
-  $pagesDB = $conn->qntdProdutosAnunciados();
-  //num de paginas
-  $paginas = ceil($pagesDB / $itensPorPagina);
 }
-
-
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +31,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
   <!-- css -->
   <link rel="stylesheet" type="text/css" href="../css/stylesCommons.css">
   <link rel="stylesheet" type="text/css" href="../css/meus_anuncios.css">
+  <link rel="stylesheet" type="text/css" href="../css/carrinho.css">
   <!-- SiderBar -->
   <link rel="stylesheet" type="text/css" href="../css/siderBar.css">
   <!-- normalize -->
@@ -123,11 +96,11 @@ if ((!isset($_SESSION['log_id']) == true)) {
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> 
-            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos'];?></span><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
+            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total'];?></a>
+            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?></a>
             <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
           </div>
         </div>
@@ -179,7 +152,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
           <!-- row -->
           <div class="row">
             <div class="col-md-12">
-              <h3 class="breadcrumb-header">Meus anúncios</h3>
+              <h3 class="breadcrumb-header">Carrinho</h3>
               <ul class="breadcrumb-tree">
                 <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
@@ -196,127 +169,163 @@ if ((!isset($_SESSION['log_id']) == true)) {
         <div class="basic-section">
           <!-- container -->
           <div class="container basic-container">
-            <!-- row -->
-            <div class="d-flex flex-row">
 
-              <?php if ($numRows > 0) { ?>
+            <?php if ($carrinho_QntdProdutos_Valor['qntd_produtos'] > 0) { ?>
+              <!-- row -->
+              <div class="d-flex flex-row">
 
-                <table class="table table-bordered table-hover">
-                  <!-- corpo da tabela -->
-                  <tbody>
-                    <?php while ($rows = mysqli_fetch_assoc($result)) {?>
-                      <!-- table row -->
-                      <tr>
-                        <!-- table division -->
-                        <!-- divisão foto -->
-                        <td class="tb_foto">
-                          <img id="foto_anuncio" class="img-fluid" src="<?php if ($rows['foto'] == "" || $rows['foto'] == null) {
-                                                                          echo '../img/veg_fruits/brocolisCartoonSurprised.svg';
-                                                                        } else {
-                                                                          echo $rows['foto'];
-                                                                        } ?>" alt="Foto do produto anúnciado">
-                        </td>
-                        <!-- divisão infos prod -->
-                        <td class="infosAnuncio">
-                          <p><?php echo "<strong>Produto:</strong> " . $rows['produto']; ?></p>
-                          <p><?php echo "<strong>Preço:</strong> R$ " . $rows['preco'] . "/" . $conn->tipoVendaProduto($rows['tipo_venda']); ?></p>
-                          <p><?php echo "<strong>Quantidade à venda:</strong> " . $rows['qntd_disponivel'] . " " . $conn->tipoVendaProduto($rows['tipo_venda']); ?></p>
-                          <p><?php echo "<strong>Categoria:</strong> " . $conn->categoriaProduto($rows['categoria']); ?></p>
-                        </td>
-                        <!-- divisão infos vendedor/data anuncio/visualizacao/vendas/avalizacao -->
-                        <td class="infosAnuncio">
-                          <p><?php echo "<strong>Data de anúncio:</strong> " . $conn->convertDate($rows['data_anuncio']); ?></p>
-                          <p><?php echo "<strong>Número de vendas:</strong> " . $rows['num_vendas_produto']; ?></p>
-                          <p><?php echo "<strong>Visualizações do produto:</strong> " . $rows['visualizacoes']; ?></p>
-                          <p><?php echo "<strong>Avaliação do produto:</strong> " . $rows['avaliacao_produto']; ?></p>
-                        </td>
-                        <!-- botão de alterar anuncio/remover/visualizar anuncio -->
-                        <td>
-                          <ul class="navbar-nav">
-                            <li class="nav-item">
-                              <a class="nav-link" href="../views/produtoStore.php?produto=<?php echo $rows['codigo']; ?>">
-                                <button type="button" class="btn btn-secondary btn-anuncio">Visualizar anúncio</button>
-                              </a>
-                            </li>
-                            <li class="nav-item">
+                <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data" id="form_carrinho">
+
+                  <table class="table table-bordered table-hover">
+                    <!-- corpo da tabela -->
+                    <tbody>
+                      <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinho)) { ?>
+
+                        <!-- table row -->
+                        <tr>
+
+                          <!-- checkbox produto -->
+                          <td class="checkBox-td">
+                            <div class="form-check">
+                              <!-- input checkBOX com o codigo do carrinho -->
+                              <input class="form-check-input" id="carrinho<?php echo $carrinhoDados['carrinho'];?>" 
+                              type="checkbox" name="carrinho_codigo[]" value="<?php echo $carrinhoDados['carrinho']; ?>"
+                              onchange="onCheckCarrinho(this)">
+
+                            </div>
+                          </td>
+                          <!-- /checkbox produto -->
+
+                          <!-- divisão foto -->
+                          <td class="tb_foto">
+                            <!-- foto do anuncio -->
+                            <img id="foto_anuncio" class="img-fluid" 
+                            src="<?php if ($carrinhoDados['foto'] == "" || $carrinhoDados['foto'] == null) {
+                              echo '../img/veg_fruits/brocolisCartoonSurprised.svg';
+                            } else {
+                              echo $carrinhoDados['foto'];
+                            } ?>" alt="Foto do produto anúnciado">
+
+                          </td>
+                          <!-- /divisão foto -->
+
+                          <!-- divisão infos prod -->
+                          <td class="infosAnuncio">
+                             <!-- Nome do produto -->
+                            <p><strong>Produto:</strong> <?php echo $carrinhoDados['produto']; ?></p>
+                             <!-- categoria do produto -->
+                            <p><strong>Categoria:</strong> <?php echo $conn->categoriaProduto($carrinhoDados['categoria']); ?></p>
+                             <!-- Subtotal do valor desse produto (qntd * preco) -->
+                            <p><strong>Sub-total: </strong><span id="subTotal">R$  
+                            <span id="precoTotalProd<?php echo $carrinhoDados['carrinho'];?>">
+                              <?php echo round(($carrinhoDados['preco'] * $carrinhoDados['qntd']), 2); ?>
+                            </span></span></p>
+                             <!-- input hidden com o valor do produto -->
+                            <input type="hidden" id="precoProd<?php echo $carrinhoDados['carrinho'];?>" name="precoProd" value="<?php echo $carrinhoDados['preco']; ?>" />
+                             <!-- Frete do produto -->
+                            <p><strong>Frete:</strong> A combinar</p>
+                          </td>
+                          <!-- /divisão infos prod -->
+
+                          <!-- informações do vendedor -->
+                          <td>
+
+                            <!-- Nome do vendedor -->
+                            <p><strong>Vendedor:</strong></p>
+                            <p><?php echo $carrinhoDados['vendedor']; ?></p>
+                            <!-- Cidade do vendedor -->
+                            <p><?php echo $carrinhoDados['cidade'].", ".$carrinhoDados['estado']; ?></p>
+                          
+                          </td>
+                          <!-- /informações do vendedor -->
+
+                          <!-- Quantidade solicitada do produto -->
+                          <td>
+                            <div class="form-group">
+
+                              <p><strong>Quantidade solicidata:</strong></p>
+                              <!-- Input c/ a quantidade solicitada do produto -->
+                              <input id="qntdDesejada<?php echo $carrinhoDados['carrinho'];?>" class="form-control qntdDesejada" type="number" min="0" 
+                              step="<?php echo $conn->stepVendaProduto($carrinhoDados['tipo_venda']); ?>" 
+                              name="qntd_desejada" placeholder="0.0" value="<?php echo $carrinhoDados['qntd']; ?>" 
+                              required onchange="corrigeValor(this)" />
+                              <!-- informação do tipo de venda (KG/Un/Dúzia/...) -->
+                              <span><?php echo " ".$conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?></span>
+                            
+                            </div>
+                          </td>
+                          <!-- /Quantidade solicitada do produto -->
+
+                          <!-- botão de alterar remover produto do carrinho -->
+                          <td class="buttonsTd">
+
+                            <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" 
+                            enctype="multipart/form-data">
                               <a class="nav-link" href="">
-                                <button type="button" class="btn btn-warning btn-anuncio">&nbsp;&nbsp;&nbsp;Alterar anúncio&nbsp;&nbsp;</button>
+                                <input type="hidden" name="carrinhoCod" value="<?php echo $carrinhoDados['carrinho']; ?>" />
+                                <button type="submit" value="Remover" class="btn btn-danger btn-anuncio">Remover produto<br>do carrinho</button>
+                                <!-- dropdown menu pedindo senha -->
                               </a>
-                            <li class="nav-item">
-                              <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
-                                <a class="nav-link" href="">
-                                  <input type="hidden" name="prodCodigo" value="<?php echo $rows['codigo']; ?>" />
-                                  <input type="hidden" name="prodVend" value="<?php echo $rows['vendedor_fk']; ?>" />
-                                  <button type="submit" value="Remover" class="btn btn-danger btn-anuncio">Remover anúncio</button>
-                                </a>
-                              </form>
-                            </li>
-                          </ul>
+                            </form>
+
+                          </td>
+                          <!-- /botão de alterar remover produto do carrinho -->
+
+                        </tr>
+
+                      <?php } ?>
+                      <!-- /While de dados do carrinho -->
+                    </tbody>
+                  </table>
+                  <!-- /Table do carrinho -->
+
+                  <!-- Table pagamento -->
+                  <table class="col-md-4" id="pagamento">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <!-- Valor total dos produtos selecionados -->
+                          <h2>Total:</h2><h3>R$ <span id="valorTotal">0</span></h3>
                         </td>
                       </tr>
-                    <?php } ?>
-                  </tbody>
-                </table>
+                      <tr>
+                        <td>
+                          <!-- Botão de submeter a compra -->
+                          <button type="submit" value="finalizarCompra" class="btn btn-success btn-anuncio">Finalizar compra</button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <!-- /Table pagamento -->
 
-            </div>
-            <!-- /row -->
-
-            <div class="d-flex flex-row">
-
-              <!-- paginação -->
-              <nav aria-label="...">
-                <ul class="pagination">
-                  <li class="page-item <?php echo $disable; ?>">
-                    <a href="../views/meusAnuncios.php?pagina=0">
-                      <span class="page-link">Primeira</span>
-                    </a>
-                  </li>
-                  <?php for ($i = 0; $i < $paginas; $i++) {
-                    $activePage = "";
-                    if ($paginas == $i) {
-                      $activePage = 'active';
-                    }
-
-                    if ($paginas > $i + 1) {
-                      $disable = '';
-                      echo '<li class="page-item ' . $activePage . '">
-                            <a class="page-link" href="../views/meusAnuncios.php?pagina=' . $i . '">' . ($i + 1) . '</a>
-                            </li>';
-                    } else {
-                      $disable = 'disabled';
-                    }
-                  ?>
-                  <?php } ?>
-                  <li class="page-item <?php echo $disable; ?>">
-                    <a class="page-link" href="../views/meusAnuncios.php?pagina=<?php echo $paginas - 1; ?>">Última</a>
-                  </li>
-                </ul>
-              </nav>
-              <!-- /paginação -->
-
+                </form>
+                <!-- /form -->
+              </div>
+              <!-- /row -->
             <?php } ?>
             <!-- /if ($numRows > 0) -->
-            <?php if ($numRows <= 0) { ?>
-              <!-- todo espaço da tela -->
-              <div class="col-md-12 capa">
 
-                <h1 style="font-size: xxx-large;">Ops!!</h1>
+            <!-- Pagina se não houver produtos no carrinho -->
+            <?php if ($carrinho_QntdProdutos_Valor['qntd_produtos'] <= 0) { ?>
+
+              <div class="col-md-12 capa">
+                <!-- todo espaço da tela -->
+                <h1>Ops!!</h1>
                 <h3>
                   Você ainda não realizou nenhum anúncio.<br>
                 </h3>
-                <img class="img-fluid" src="../img/logo/brocolisCartoonSurprised.svg" style="width: 20%;" alt="Logo Da Roça">
+                <img class="img-fluid" src="../img/logo/brocolisCartoonSurprised.svg" alt="Logo Da Roça">
                 <h4>
                   Clique no botão para realizar seu anúncio.<br>
                 </h4>
                 <a href="../views/cadastro_produto2.php">
-                  <button type="button" class="btn btn-success btn-lg" style="margin-bottom: 60px; margin-top: 20px;">Anunciar produto</button>
+                  <button type="button" class="btn btn-success btn-lg">Anunciar produto</button>
                 </a>
-
+                <!--capa -->
               </div>
+              <!-- /row -->
             <?php } ?>
-
-            </div>
-            <!-- /row -->
+            <!-- if ($numRows <= 0) -->
 
           </div>
           <!-- /container -->
@@ -363,7 +372,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
         </div>
         <div class="col-md-2">
           <h4>Mais buscados</h4>
-          <div class="col-md-2 colBuscados" style="float: left;">
+          <div class="col-md-2 colBuscados1">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frutas</a>
@@ -379,7 +388,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
               </li>
             </ul>
           </div>
-          <div class="col-md-2 colBuscados" style="float: right;">
+          <div class="col-md-2 colBuscados2">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frios</a>

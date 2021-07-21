@@ -6,31 +6,42 @@ $conn = new controlRequest();
 //Se já tiver alguma sessão iniciada 
 //e for passado o produto via URL
 if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
-  if(count($_POST) > 0){
+  $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
+  if (count($_POST) > 0) {
     //fazer atualizacao
     $name_prod = filter_input(INPUT_POST, 'nome_Produto', FILTER_SANITIZE_STRING);
-    $preco_prod = filter_input(INPUT_POST, 'preco_Produto', FILTER_SANITIZE_NUMBER_FLOAT);
-    $qntd_prod = filter_input(INPUT_POST, 'qntd_Disponivel', FILTER_SANITIZE_NUMBER_FLOAT);
+    $preco_prod = filter_input(INPUT_POST, 'preco_Produto', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    $qntd_prod = filter_input(INPUT_POST, 'qntd_Disponivel', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $categoria_prod = filter_input(INPUT_POST, 'categorias_produto', FILTER_SANITIZE_NUMBER_INT);
     $tipo_venda_prod = filter_input(INPUT_POST, 'opcaoVenda_Produto', FILTER_SANITIZE_NUMBER_INT);
-    $qntd_min_prod = filter_input(INPUT_POST, 'qntd_Minima', FILTER_SANITIZE_NUMBER_FLOAT);
+    $qntd_min_prod = filter_input(INPUT_POST, 'qntd_Minima', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
     $descricao = filter_input(INPUT_POST, 'descricao_Produto', FILTER_SANITIZE_STRING);
 
     //tentar realizar o cadastro
-    if($conn->tratamentoDadosProduto($name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
-    $tipo_venda_prod, $qntd_min_prod, $descricao, $_POST['data_prod'], $_POST['data_validade'],  $_FILES['produtos'], 1) == 1){
+    if ($conn->tratamentoDadosProduto(
+      $name_prod,
+      $preco_prod,
+      $qntd_prod,
+      $categoria_prod,
+      $tipo_venda_prod,
+      $qntd_min_prod,
+      $descricao,
+      $_POST['data_prod'],
+      $_POST['data_validade'],
+      $_FILES['produtos'],
+      1
+    ) == 1) {
       //redirecionar para a paginá do produto
       header("Location: ../views/minha_conta.php");
     }
     //se não der certo, informa
-    else{
+    else {
       unset($_POST);
       header("Location: ../views/minha_conta.php");
     }
   }
-}
-else{
-  header("Location: ../views/login.php");
+} else {
+  header("Location: ../controller/logout.php");
 }
 ?>
 <!DOCTYPE html>
@@ -79,23 +90,21 @@ else{
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo '<a class="mySidenav-link" href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
-                }
-                else{
-                  echo '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-                }
-              ?>
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+            }
+            ?>
           </div>
           <div class="row">
-            <?php 
-              if(isset($_SESSION['log_id'])){
-                echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
-              }
-              else{
-                echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
-              }
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+            }
             ?>
           </div>
         </div>
@@ -111,11 +120,12 @@ else{
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> 
+            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos'];?></span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ 0</a>
-            <a id="checkout" class="dropdown-item" href="#">Checkout</a>
+            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total'];?></a>
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
           </div>
         </div>
         <!-- /carrinho -->
@@ -126,25 +136,23 @@ else{
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
-                }
-                else{
-                  echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
-                }
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+              } else {
+                echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+              }
               ?>
             </li>
 
             <li class="nav-item">
-                <?php 
-                  if(isset($_SESSION['log_id'])){
-                    echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
-                  }
-                  else{
-                    echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-                  }
-                ?>
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+              } else {
+                echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+              }
+              ?>
             </li>
 
           </ul>
@@ -173,11 +181,11 @@ else{
                 <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
             </div>
-            <?php 
-                  if(isset($_SESSION['msg']) && !empty($_SESSION['msg'])){
-                    echo $_SESSION['msg'];
-                    $_SESSION['msg'] = "";
-                  }
+            <?php
+            if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
+              echo $_SESSION['msg'];
+              $_SESSION['msg'] = "";
+            }
             ?>
           </div>
           <!-- /row -->
@@ -230,8 +238,7 @@ else{
                         <label for="precoProduto" style="font-weight: bolder;">Preço do produto:</label>
                         <div class="row row-precoProduto">
                           <span class="spanTag">R$&nbsp;</span>
-                          <input id="precoProduto" class="form-control precoFreteProduto" type="number" min="0.1" 
-                          step="0.1" name="preco_Produto" placeholder="0.00" style="width:100px; display: table-cell;" required />
+                          <input id="precoProduto" class="form-control precoFreteProduto" type="number" min="0" step="0.05" name="preco_Produto" placeholder="0.0" style="width:100px; display: table-cell;" required />
                           <span style="align-self: center;" id='preco'></span>
                         </div>
                       </div>
@@ -241,8 +248,7 @@ else{
                       <!-- Produto - quantidade Min -->
                       <div class="form-group">
                         <label for="qntdMinima">Quantidade mínima a ser comprada p/usuário:</label>
-                        <input id="qntdMinima" class="form-control" type="number" min="0.01" step="0.1" name="qntd_Minima" 
-                        placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdMin'></span>
+                        <input id="qntdMinima" class="form-control" type="number" min="0" step="0.05" name="qntd_Minima" placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdMin'></span>
                       </div>
                       <!-- /Produto - quantidade Min -->
 
@@ -269,8 +275,7 @@ else{
                       <!-- Produto - quantidade disponivel -->
                       <div class="form-group" style="margin-top: 22px;">
                         <label for="qntdDisponivel">Quantidade ofertada:</label>
-                        <input id="qntdDisponivel" class="form-control" type="number" min="1" step="0.1" name="qntd_Disponivel" 
-                        placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdDisp'></span>
+                        <input id="qntdDisponivel" class="form-control" type="number" min="0" step="0.05" name="qntd_Disponivel" placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdDisp'></span>
                       </div>
                       <!-- /Produto - quantidade disponivel -->
 
@@ -279,13 +284,13 @@ else{
 
 
                     <div class="form-group">
-                    <label for="dataNasc">Data de produção</label>
-                    <input id="dataProd" class="form-control" type="date" name="data_prod" min="01-01-1900" required>
+                      <label for="dataNasc">Data de produção</label>
+                      <input id="dataProd" class="form-control" type="date" name="data_prod" min="01-01-1900" required>
                     </div>
 
                     <div id="dataVenc" class="form-group">
-                    <label for="dataNasc">Data de validade</label>
-                    <input class="form-control" type="date" name="data_validade" min="01-01-1900">
+                      <label for="dataNasc">Data de validade</label>
+                      <input class="form-control" type="date" name="data_validade" min="01-01-1900">
                     </div>
 
                   </div>
@@ -300,15 +305,13 @@ else{
                     <label for="descricaoProduto">Descrição do produto:</label>
                     <textarea class="form-control" name="descricao_Produto" id="descricaoProduto" cols="15" rows="8" placeholder="Faça uma descrição do seu produto"></textarea>
                   </div>
-                  
+
                   <div class="form-group" style="margin-top: 30px;">
                     <label for="fotosProduto">Fotos do produto:</label>
                     <p id='qntdImagens'>Máximo: 5 fotos</p>
-                    <input class="form-control-file" id="fotos" type="file" name="produtos[]" oninput="checkQntdFotosProduto(this)" 
-                    onChange="contarArquivos()" max-uploads = "5" 
-                    accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif" multiple>
+                    <input class="form-control-file" id="fotos" type="file" name="produtos[]" oninput="checkQntdFotosProduto(this)" onChange="contarArquivos()" max-uploads="5" accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif" multiple>
                   </div>
-                  
+
                   <input class="btn btn-primary" type="submit" value="Cadastrar" />
 
                   </button>
@@ -321,7 +324,7 @@ else{
 
             </form>
             <!-- /Formulário -->
-            
+
             <!-- /row -->
           </div>
           <!-- /container -->

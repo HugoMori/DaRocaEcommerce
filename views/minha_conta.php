@@ -12,10 +12,10 @@ $conn = new controlRequest();
 //se estiver com algum dado, ou seja, se o usuário estiver logado, puxará os 
 //dados do usuário através do request
 if ((!isset($_SESSION['log_id']) == true)) {
-  unset($_SESSION['log_id']);
-  header("Location: ../views/login.php");
+  header("Location: ../controller/logout.php");
 } else {
   $result = $conn->requestDadosUser($_SESSION['log_id']);
+  $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
 }
 ?>
 
@@ -96,11 +96,12 @@ if ((!isset($_SESSION['log_id']) == true)) {
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> 
+            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos'];?></span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ 0</a>
-            <a id="checkout" class="dropdown-item" href="#">Checkout</a>
+            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total'];?></a>
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
           </div>
         </div>
         <!-- /carrinho -->
@@ -155,7 +156,8 @@ if ((!isset($_SESSION['log_id']) == true)) {
               <ul class="breadcrumb-tree">
                 <li>
                   <a href="#">
-                    <!-- carrinho -->
+
+                    <!-- delogar -->
                     <div class="dropdown">
                       <a href="#" class="deslogar" data-toggle="dropdown">
                         deslogar
@@ -168,7 +170,8 @@ if ((!isset($_SESSION['log_id']) == true)) {
                         <button id="deslogButtonNo" type="button" class="btn btn-secondary">Não</button>
                       </div>
                     </div>
-                    <!-- /carrinho -->
+                    <!-- /deslogar -->
+
                   </a>
                 </li>
               </ul>
@@ -206,32 +209,10 @@ if ((!isset($_SESSION['log_id']) == true)) {
                     //echo "<p>".$_SESSION['log_id']."</p>";
                     echo "<p>" . $result['telefone'] . "</p>";
                     $map = $result['endereco'] . ", " . $result['cep'] . ", " . $result['estado'];
-                    echo "<p><a id='endUserMap' href = 'https://www.google.com.br/maps/place/".$map."' target='_blank'>" . $map . "</a></p>";
-
-                    if ($result['avaliacao'] < 1) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval0.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 1 && $result['avaliacao'] < 1.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval1.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 1.5 && $result['avaliacao'] < 2) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval15.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 2 && $result['avaliacao'] < 2.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval2.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 2.5 && $result['avaliacao'] < 3) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval25.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 3 && $result['avaliacao'] < 3.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval3.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 3.5 && $result['avaliacao'] < 4) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval35.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 4 && $result['avaliacao'] < 4.5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval4.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] >= 4.5 && $result['avaliacao'] < 5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval45.png" id="img_aval" alt="Avaliação">';
-                    } elseif ($result['avaliacao'] == 5) {
-                      $imgAval = '<img class="img-fluid" src="../img/perfil/standart/avaliacao/aval5.png" id="img_aval" alt="Avaliação">';
-                    }
-
-                    echo "<p>Avaliação: " . $imgAval . " (" . $result['avaliacao'] . ")</p>";
-                  } else {
+                    echo "<p><a id='endUserMap' href = 'https://www.google.com.br/maps/place/" . $map . "' target='_blank'>" . $map . "</a></p>";
+                    echo "<p>Avaliação: " . $conn->avaliacaoImg($result['avaliacao']) . " (" . $result['avaliacao'] . ")</p>";
+                  } 
+                  else {
                     echo "<p>Nome</p>";
                     echo "<p>E-mail</p>";
                     echo "<p>Telefone</p>";

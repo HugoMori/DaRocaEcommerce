@@ -7,8 +7,9 @@ $conn = new controlRequest();
 if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
   // fazer requisição de dados
   $result = $conn->requestDadosUser($_SESSION['log_id']);
+  $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
   // se post > 0
-  if(count($_POST) > 0){
+  if (count($_POST) > 0) {
     //fazer atualizacao
     $name_user = filter_input(INPUT_POST, 'name_user', FILTER_SANITIZE_STRING);
     $endereco_user = filter_input(INPUT_POST, 'endereco_user', FILTER_SANITIZE_STRING);
@@ -21,26 +22,36 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
     $cpf_user = filter_input(INPUT_POST, 'cpf_User', FILTER_SANITIZE_STRING);
 
     //verificar telefone(custom query)
-    if($conn->verificarTelefone($tel_user, $result['telefone'])){
+    if ($conn->verificarTelefone($tel_user, $result['telefone'])) {
       //tentar realizar o update
-      if($conn->tratamentoDadosUsuario($name_user, $_POST['data_nasc'], $cidade_User, $estadoUser, 
-      $endereco_user, $cep_User, $tel_user, $email_user, $senha_user , $cpf_user, 
-      $_FILES['foto_user'], 2) == 1){
+      if ($conn->tratamentoDadosUsuario(
+        $name_user,
+        $_POST['data_nasc'],
+        $cidade_User,
+        $estadoUser,
+        $endereco_user,
+        $cep_User,
+        $tel_user,
+        $email_user,
+        $senha_user,
+        $cpf_user,
+        $_FILES['foto_user'],
+        2
+      ) == 1) {
         //redirecionar
         header("Location: ../views/minha_conta.php");
       }
       //se não der certo, informa
-      else{
+      else {
         unset($_POST);
       }
     }
     //nao foi possivel atualizar (telefone já utilizado)
-    else{
+    else {
       unset($_POST);
     }
   }
-} 
-else {
+} else {
   if (count($_POST) > 0) {
 
     $name_user = filter_input(INPUT_POST, 'name_user', FILTER_SANITIZE_STRING);
@@ -53,17 +64,26 @@ else {
     $senha_user = filter_input(INPUT_POST, 'senha_user', FILTER_SANITIZE_STRING);
     $cpf_user = filter_input(INPUT_POST, 'cpf_User', FILTER_SANITIZE_STRING);
 
-    if($conn->verificarCadastro($tel_user, $cpf_user, $email_user)){
-      if($conn->tratamentoDadosUsuario($name_user, $_POST['data_nasc'], $cidade_User, $estadoUser, 
-          $endereco_user, $cep_User, $tel_user, $email_user, 
-          $senha_user , $cpf_user, $_FILES['foto_user'], 1) == 1){
-            header("Location: ../views/minha_conta.php");
-          }
-          else{
-            session_destroy();
-          }
-    }
-    else{
+    if ($conn->verificarCadastro($tel_user, $cpf_user, $email_user)) {
+      if ($conn->tratamentoDadosUsuario(
+        $name_user,
+        $_POST['data_nasc'],
+        $cidade_User,
+        $estadoUser,
+        $endereco_user,
+        $cep_User,
+        $tel_user,
+        $email_user,
+        $senha_user,
+        $cpf_user,
+        $_FILES['foto_user'],
+        1
+      ) == 1) {
+        header("Location: ../views/minha_conta.php");
+      } else {
+        session_destroy();
+      }
+    } else {
       session_destroy();
     }
     unset($_POST);
@@ -146,11 +166,16 @@ else {
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> 
+            <span class="badge badge-success">
+              <?php if (isset($_SESSION['log_id'])){ echo $carrinho_QntdProdutos_Valor['qntd_produtos'];}else{ echo 0;}?>
+            </span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ 0</a>
-            <a id="checkout" class="dropdown-item" href="#">Checkout</a>
+            <a id="total" class="dropdown-item" href="#">
+              R$ <?php if (isset($_SESSION['log_id'])){ echo $carrinho_QntdProdutos_Valor['total'];}else{ echo 0;}?>
+            </a>
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
           </div>
         </div>
         <!-- /carrinho -->
@@ -201,23 +226,22 @@ else {
           <!-- row -->
           <div class="row">
             <div class="col-md-12">
-              <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo "<h3 class='breadcrumb-header'>Alterar Cadastro</h3>";
-                }
-                else{
-                  echo "<h3 class='breadcrumb-header'>Cadastro</h3>"; 
-                } 
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo "<h3 class='breadcrumb-header'>Alterar Cadastro</h3>";
+              } else {
+                echo "<h3 class='breadcrumb-header'>Cadastro</h3>";
+              }
               ?>
               <ul class="breadcrumb-tree">
                 <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
             </div>
-            <?php 
-                  if(isset($_SESSION['msg']) && !empty($_SESSION['msg'])){
-                    echo $_SESSION['msg'];
-                    $_SESSION['msg'] = "";
-                  }
+            <?php
+            if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
+              echo $_SESSION['msg'];
+              $_SESSION['msg'] = "";
+            }
             ?>
           </div>
           <!-- /row -->
@@ -240,16 +264,16 @@ else {
 
                   <div class="form-group">
                     <label for="nomeUser">Nome</label>
-                    <input id="nomeUser" class="form-control" type="text" 
-                    <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['nome']."'";} ?> name="name_user" 
-                    placeholder="Digite seu nome completo" required>
+                    <input id="nomeUser" class="form-control" type="text" <?php if (isset($_SESSION['log_id'])) {
+                                                                            echo "value = '" . $result['nome'] . "'";
+                                                                          } ?> name="name_user" placeholder="Digite seu nome completo" required>
                   </div>
 
                   <div class="form-group">
                     <label for="dataNasc">Data de nascimento</label>
-                    <input id="dataNasc" class="form-control" type="date" 
-                    <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['data_nasc']."' readonly";} ?> name="data_nasc" 
-                    min="01-01-1900" required>
+                    <input id="dataNasc" class="form-control" type="date" <?php if (isset($_SESSION['log_id'])) {
+                                                                            echo "value = '" . $result['data_nasc'] . "' readonly";
+                                                                          } ?> name="data_nasc" min="01-01-1900" required>
                   </div>
 
                   <div class="row">
@@ -257,15 +281,14 @@ else {
 
                       <div class="form-group">
                         <label for="cidadeUser">Cidade</label>
-                        <input id="cidadeUser" class="form-control" type="text" 
-                        <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['cidade']."'";} ?> name="cidade_User" 
-                        placeholder="Nome da sua cidade" required>
+                        <input id="cidadeUser" class="form-control" type="text" <?php if (isset($_SESSION['log_id'])) {
+                                                                                  echo "value = '" . $result['cidade'] . "'";
+                                                                                } ?> name="cidade_User" placeholder="Nome da sua cidade" required>
                       </div>
 
                       <div class="form-group">
                         <label for="estados">Estado</label>
-                        <select id="estados" class="form-control" 
-                        name="estadoUser" required>
+                        <select id="estados" class="form-control" name="estadoUser" required>
                           <option value="AC">Acre</option>
                           <option value="AL">Alagoas</option>
                           <option value="AP">Amapá</option>
@@ -302,14 +325,16 @@ else {
 
                       <div class="form-group">
                         <label for="endUser">Endereço</label>
-                        <input id="endUser" class="form-control" type="text" <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['endereco']."'";} ?>
-                        name="endereco_user" placeholder="Nome da rua, bairro" required>
+                        <input id="endUser" class="form-control" type="text" <?php if (isset($_SESSION['log_id'])) {
+                                                                                echo "value = '" . $result['endereco'] . "'";
+                                                                              } ?> name="endereco_user" placeholder="Nome da rua, bairro" required>
                       </div>
 
                       <div class="form-group">
                         <label for="cepUser">CEP</label>
-                        <input id="cepUser" class="form-control" type="text" <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['cep']."'";} ?>
-                        name="cep_User" placeholder="Digite seu CEP" required>
+                        <input id="cepUser" class="form-control" type="text" <?php if (isset($_SESSION['log_id'])) {
+                                                                                echo "value = '" . $result['cep'] . "'";
+                                                                              } ?> name="cep_User" placeholder="Digite seu CEP" required>
                       </div>
 
                     </div>
@@ -318,8 +343,9 @@ else {
 
                   <div class="form-group">
                     <label for="telUser">Telefone</label>
-                    <input id="telUser" class="form-control" type="text" <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['telefone']."'";} ?>
-                    name="tel_user" placeholder="Seu telefone, ex: (DD)XXXXX-XXXX" maxlength="15" required>
+                    <input id="telUser" class="form-control" type="tel" <?php if (isset($_SESSION['log_id'])) {
+                                                                            echo "value = '" . $result['telefone'] . "'";
+                                                                          } ?> name="tel_user" placeholder="Seu telefone, ex: (DD)XXXXX-XXXX" maxlength="15" required>
                   </div>
 
                 </div>
@@ -329,39 +355,38 @@ else {
 
                   <div class="form-group">
                     <label for="emailUser">E-mail</label>
-                    <input id="emailUser" class="form-control" type="email" <?php if(isset($_SESSION['log_id'])){echo "value = '".$_SESSION['log_id']."' readonly";} ?>
-                    name="email_user" placeholder="Digite seu e-mail" maxlength="100" minlength="4" required>
+                    <input id="emailUser" class="form-control" type="email" <?php if (isset($_SESSION['log_id'])) {
+                                                                              echo "value = '" . $_SESSION['log_id'] . "' readonly";
+                                                                            } ?> name="email_user" placeholder="Digite seu e-mail" maxlength="100" minlength="4" required>
                   </div>
 
                   <div class="form-group">
                     <label for="confirmEmailUser">Confirme seu e-mail</label>
-                    <input id="confirmEmailUser" class="form-control" type="email" <?php if(isset($_SESSION['log_id'])){echo "value = '".$_SESSION['log_id']."' readonly";} ?>
-                    name="confirm_email_user" placeholder="Digite seu e-mail novamente" required oninput="check(this)">
+                    <input id="confirmEmailUser" class="form-control" type="email" <?php if (isset($_SESSION['log_id'])) {
+                                                                                      echo "value = '" . $_SESSION['log_id'] . "' readonly";
+                                                                                    } ?> name="confirm_email_user" placeholder="Digite seu e-mail novamente" required oninput="check(this)">
                   </div>
 
                   <div class="form-group">
                     <label for="senhaUser">Senha</label>
-                    <input id="senhaUser" class="form-control" type="password"
-                    name="senha_user" placeholder="Digite sua senha" required>
+                    <input id="senhaUser" class="form-control" type="password" name="senha_user" placeholder="Digite sua senha" required>
                   </div>
 
                   <div class="form-group">
                     <label for="confirmSenhaUser">Confirme sua senha</label>
-                    <input id="confirmSenhaUser" class="form-control" type="password" 
-                    name="confirm_senha_user" placeholder="Digite sua senha novamente" required oninput="check(this)">
+                    <input id="confirmSenhaUser" class="form-control" type="password" name="confirm_senha_user" placeholder="Digite sua senha novamente" required oninput="check(this)">
                   </div>
 
                   <div class="form-group">
                     <label for="cpfUser">Digite o seu CPF</label>
-                    <input id="cpfUser" class="form-control" type="text" <?php if(isset($_SESSION['log_id'])){echo "value = '".$result['cpf']."' readonly";} ?>
-                    name="cpf_User" placeholder="Digite o seu CPF, ex: 999.999.999-99" required>
+                    <input id="cpfUser" class="form-control" type="text" <?php if (isset($_SESSION['log_id'])) {
+                                                                            echo "value = '" . $result['cpf'] . "' readonly";
+                                                                          } ?> name="cpf_User" placeholder="Digite o seu CPF, ex: 999.999.999-99" required>
                   </div>
 
                   <label for="foto_user" style="font-weight: bolder; float: left;">Foto do perfil</label>
                   <div class="custom-file">
-                    <input class="custom-file-input" type="file" id="fotos" name="foto_user" 
-                    oninput="checkQntdFotosUser(this)" onChange="contarArquivos()" max-uploads = "1" 
-                    accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif">
+                    <input class="custom-file-input" type="file" id="fotos" name="foto_user" oninput="checkQntdFotosUser(this)" onChange="contarArquivos()" max-uploads="1" accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif">
                     <label for="foto_user" class="custom-file-label">Selecione arquivo</label>
                     <p id="qntdImagens">Máximo envio: 1 foto.</p>
                   </div>

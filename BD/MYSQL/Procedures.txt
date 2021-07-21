@@ -14,15 +14,18 @@ SELECT produto.nome AS produto, produto.preco, qntd_disponivel, categoria, clien
 
 DROP PROCEDURE IF EXISTS requestAllDadosProduto;
 DELIMITER $$
-CREATE PROCEDURE requestAllDadosProduto(pagina INT , itens_por_pagina INT, produtor_fk VARCHAR(100))
+CREATE PROCEDURE requestAllDadosProduto(pagina INT , itens_por_pagina INT, vendedor VARCHAR(100))
 BEGIN
   SELECT 
     produto.codigo AS codigo,
     produto.nome AS produto, 
     produto.preco, 
-    qntd_disponivel, 
+    qntd_disponivel,
+    qntd_min_vendida,
     categoria,
     tipo_venda,
+    data_producao,
+    data_validade,
     cliente.cpf AS vendedor_fk, 
     cliente.nome AS vendedor, 
     produto.data_cadastro AS data_anuncio, 
@@ -34,7 +37,7 @@ BEGIN
   INNER JOIN cliente ON cliente.email = produto.produtor_fk 
   INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo 
   WHERE 
-  	produtor_fk = produtor_fk 
+  	produtor_fk = vendedor 
   AND 
   	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = produto.codigo LIMIT 1) 
     ORDER BY data_anuncio ASC LIMIT pagina, itens_por_pagina;
@@ -43,3 +46,80 @@ END $$
 DELIMITER ;
 
 CALL requestAllDadosProduto(0, 10, 'hugomori@live.com');
+
+DROP PROCEDURE IF EXISTS requestDadosProduto;
+DELIMITER $$
+CREATE PROCEDURE requestDadosProduto(codigo INT)
+BEGIN
+  SELECT 
+    produto.nome AS produto, 
+    produto.preco, 
+    qntd_disponivel,
+    qntd_min_vendida, 
+    categoria,
+    tipo_venda,
+    data_producao,
+    data_validade,
+    descricao,
+    cliente.nome AS vendedor,
+    cliente.num_vendas AS vendas_vendedor,
+    cliente.avaliacao AS vendedor_avaliacao,
+    cliente.cidade,
+    cliente.estado,
+    produto.data_cadastro AS data_anuncio, 
+    produto.avaliacao AS avaliacao_produto, 
+    produto.num_vendas AS num_vendas_produto, 
+    produto.num_visualizacao AS visualizacoes,
+    caminho_foto AS foto 
+  FROM produto 
+  INNER JOIN cliente ON cliente.email = produto.produtor_fk
+  INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+  WHERE 
+  	produto.codigo = codigo
+  AND 
+  	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1);
+END $$
+
+DELIMITER ;
+
+CALL requestDadosProduto(2);
+
+
+DROP PROCEDURE IF EXISTS requestDadosCarrinho;
+DELIMITER $$
+CREATE PROCEDURE requestDadosCarrinho(cliente_email VARCHAR(100))
+BEGIN
+  SELECT 
+    carrinho.id_carrinho AS carrinho,
+    produto.nome AS produto, 
+    produto.preco,
+    carrinho.qntd_produto AS qntd,
+    categoria,
+    tipo_venda,
+    produto.codigo AS produto_id,
+    cliente.nome AS vendedor,
+    cliente.cidade,
+    cliente.estado,
+    caminho_foto AS foto 
+  FROM carrinho
+  INNER JOIN produto ON produto.codigo = carrinho.produto_fk
+  INNER JOIN cliente ON cliente.email = produto.produtor_fk 
+  INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+  WHERE 
+  	carrinho.cliente_fk = cliente_email 
+  AND 
+  	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1);
+END $$
+
+DELIMITER ;
+
+CALL requestDadosCarrinho('natyborges@hotmail.com');
+
+
+SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos FROM carrinho INNER JOIN produto ON produto.codigo = carrinho.produto_fk WHERE carrinho.cliente_fk = 'hugomori@live.com'
+
+CREATE VIEW valorTotalCarrinho
+AS 
+    SELECT SUM(produto.preco * carrinho.qntd_produto) AS total 
+    FROM carrinho 
+    INNER JOIN produto ON produto.codigo = carrinho.produto_fk;

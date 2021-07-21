@@ -1,3 +1,16 @@
+<?php
+session_start();
+if (!isset($_SESSION['log_id'])) {
+  unset($_SESSION['log_id']);
+}
+else{
+  //inclui o php que contém a conexão com o banco e o php de request/send dados
+  include '../controller/controlRequest.php';
+  $conn = new controlRequest();
+  $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
+}
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -74,11 +87,12 @@
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> 
+            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos'];?></span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ 0</a>
-            <a id="checkout" class="dropdown-item" href="#">Checkout</a>
+            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total'];?></a>
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
           </div>
         </div>
         <!-- /carrinho -->

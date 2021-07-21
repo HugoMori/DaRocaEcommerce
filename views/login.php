@@ -3,8 +3,7 @@ session_start();
 //Se já tiver alguma sessão iniciada e algum cookie, sinal que o usuário já está cadastrado
 if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
   header("Location: ../views/minha_conta.php");
-} 
-else {
+} else {
   if (count($_POST) > 0) {
     //echo "enviado";
     include '../controller/controlRequest.php';
@@ -13,14 +12,11 @@ else {
     $email_user = filter_input(INPUT_POST, 'email_user', FILTER_SANITIZE_EMAIL);
     $senha_user = filter_input(INPUT_POST, 'senha_user', FILTER_SANITIZE_STRING);
 
-    if($conn->login($email_user, $senha_user)){
+    if ($conn->login($email_user, $senha_user)) {
       $_SESSION['log_id'] = $email_user;
       header("Location: ../views/minha_conta.php");
-    }
-    else{
-      unset($_SESSION['log_id']);
-      session_destroy();
-      unset($_POST);
+    } else {
+      header("Location: ../controller/logout.php");
     }
   }
 }
@@ -71,23 +67,21 @@ else {
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo '<a class="mySidenav-link" href = "../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
-                }
-                else{
-                  echo '<a class="mySidenav-link" href = "../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-                }
-              ?>
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href = "../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href = "../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+            }
+            ?>
           </div>
           <div class="row">
-            <?php 
-              if(isset($_SESSION['log_id'])){
-                echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
-              }
-              else{
-                echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
-              }
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+            }
             ?>
           </div>
         </div>
@@ -103,11 +97,11 @@ else {
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> <span class="badge badge-success">0</span><br>
           </a>
           <div class="dropdown-menu">
             <a id="total" class="dropdown-item" href="#">R$ 0</a>
-            <a id="checkout" class="dropdown-item" href="#">Checkout</a>
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
           </div>
         </div>
         <!-- /carrinho -->
@@ -118,25 +112,23 @@ else {
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
-                }
-                else{
-                  echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
-                }
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+              } else {
+                echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+              }
               ?>
             </li>
 
             <li class="nav-item">
-                <?php 
-                  if(isset($_SESSION['log_id'])){
-                    echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
-                  }
-                  else{
-                    echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-                  }
-                ?>
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+              } else {
+                echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+              }
+              ?>
             </li>
 
           </ul>
@@ -165,11 +157,11 @@ else {
                 <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
             </div>
-            <?php 
-                  if(isset($_SESSION['msg']) && !empty($_SESSION['msg'])){
-                    echo $_SESSION['msg'];
-                    $_SESSION['msg'] = "";
-                  }
+            <?php
+            if (isset($_SESSION['msg']) && !empty($_SESSION['msg'])) {
+              echo $_SESSION['msg'];
+              $_SESSION['msg'] = "";
+            }
             ?>
           </div>
           <!-- /row -->
@@ -312,7 +304,7 @@ else {
       </div>
     </div>
   </footer>
-  
+
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
