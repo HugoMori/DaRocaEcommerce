@@ -7,7 +7,9 @@ else{
   //inclui o php que contém a conexão com o banco e o php de request/send dados
   include 'controller/controlRequest.php';
   $conn = new controlRequest();
+  //carrinho dropdow
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
+  $carrinhoDropDow = $conn->requestDadosCarrinho($_SESSION['log_id']);
 }
 ?>
 
@@ -89,12 +91,49 @@ else{
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> 
-            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos'];?></span><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
+            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total'];?></a>
-            <a id="checkout" class="dropdown-item" href="views/carrinho.php">Checkout</a>
+            
+            <table class="table table-light" style="border-bottom: 1px dashed black;">
+                <tbody>
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Custo</th>
+                  <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinhoDropDow)) { ?>
+                  <tr>
+                    <td>
+                      <?php if(strstr($carrinhoDados['produto'], ' ', true)){
+                      echo strstr($carrinhoDados['produto'], ' ', true)." ";
+                      }else{ echo $carrinhoDados['produto'];}?>
+                    </td>
+                    <td>
+                      <?php echo $carrinhoDados['qntd']." ".$conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
+                    </td>
+                    <td style="padding-left: 2px; padding-right: 2px;">
+                      <?php echo "R$ ".round(($carrinhoDados['qntd']*$carrinhoDados['preco']),2); ?>
+                    </td>
+                  </tr>
+                  <?php } ?> 
+                </tbody>
+              </table>
+            
+            <table class="table table-light">
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Total:</strong>
+                  </td>
+                  <td style="text-align-last: right;">
+                    R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <a id="checkout" class="dropdown-item" href="views/carrinho.php">Pagar</a>
+
           </div>
         </div>
         <!-- /carrinho -->

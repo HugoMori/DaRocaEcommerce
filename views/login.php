@@ -97,11 +97,36 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
         <!-- carrinho -->
         <div class="dropdown">
           <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i> <span class="badge badge-success">0</span><br>
+            <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
+            <span class="badge badge-success">0</span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ 0</a>
-            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
+            
+            <table class="table table-light" style="border-bottom: 1px dashed black;">
+                <tbody>
+
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Custo</th>
+                   
+                </tbody>
+              </table>
+            
+            <table class="table table-light">
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Total:</strong>
+                  </td>
+                  <td style="text-align-last: right;">
+                    R$ 0
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Pagar</a>
+
           </div>
         </div>
         <!-- /carrinho -->
