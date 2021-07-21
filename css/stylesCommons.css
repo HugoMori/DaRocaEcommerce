@@ -130,6 +130,11 @@ nav.navbar-style {
 #checkout {
     font-weight: bolder;
     color: red;
+    text-align: center;
+    background-color: lightgray;
+    width: fit-content;
+    border-radius: 0.5rem;
+    margin-inline: auto;
 }
 
 /*================ SideNav */

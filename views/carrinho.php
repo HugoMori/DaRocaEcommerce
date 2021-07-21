@@ -13,7 +13,28 @@ if ((!isset($_SESSION['log_id']) == true)) {
   include '../controller/controlRequest.php';
   $conn = new controlRequest();
 
+  if(count($_POST) > 0){
+    $i = 0;
+    if(isset($_POST['finalizarCompra'])){
+      while($i < count($_POST['carrinho_codigo'])){
+        $success = $conn->realizarCompra($_POST['produto_codigo'][$i], $_POST['qntd_desejada'][$i], $_POST['carrinho_codigo'][$i]);
+        $i++; 
+      }
+      header("Location: ../views/carrinho.php");
+    }
+    else{
+      if(isset($_POST['remover'])){
+        while($i < count($_POST['carrinhoCod'])){
+          $success = $conn->removerCarrinho($_POST['carrinhoCod'][$i]);
+          $i++; 
+        }
+        header("Location: ../views/carrinho.php");
+      }
+    }
+  }
+
   $carrinho = $conn->requestDadosCarrinho($_SESSION['log_id']);
+  $carrinhoDropDow = $conn->requestDadosCarrinho($_SESSION['log_id']);
 
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
 }
@@ -100,8 +121,45 @@ if ((!isset($_SESSION['log_id']) == true)) {
             <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
           </a>
           <div class="dropdown-menu">
-            <a id="total" class="dropdown-item" href="#">R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?></a>
-            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Checkout</a>
+            
+            <table class="table table-light" style="border-bottom: 1px dashed black;">
+                <tbody>
+                  <th>Produto</th>
+                  <th>Quantidade</th>
+                  <th>Custo</th>
+                  <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinhoDropDow)) { ?>
+                  <tr>
+                    <td>
+                      <?php if(strstr($carrinhoDados['produto'], ' ', true)){
+                      echo strstr($carrinhoDados['produto'], ' ', true)." ";
+                      }else{ echo $carrinhoDados['produto'];}?>
+                    </td>
+                    <td>
+                      <?php echo $carrinhoDados['qntd']." ".$conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
+                    </td>
+                    <td style="padding-left: 2px; padding-right: 2px;">
+                      <?php echo "R$ ".round(($carrinhoDados['qntd']*$carrinhoDados['preco']),2); ?>
+                    </td>
+                  </tr>
+                  <?php } ?> 
+                </tbody>
+              </table>
+            
+            <table class="table table-light">
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Total:</strong>
+                  </td>
+                  <td style="text-align-last: right;">
+                    R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Pagar</a>
+
           </div>
         </div>
         <!-- /carrinho -->
@@ -188,6 +246,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
                           <td class="checkBox-td">
                             <div class="form-check">
                               <!-- input checkBOX com o codigo do carrinho -->
+                              <!-- codigo do carrinho em value -->
                               <input class="form-check-input" id="carrinho<?php echo $carrinhoDados['carrinho'];?>" 
                               type="checkbox" name="carrinho_codigo[]" value="<?php echo $carrinhoDados['carrinho']; ?>"
                               onchange="onCheckCarrinho(this)">
@@ -213,6 +272,8 @@ if ((!isset($_SESSION['log_id']) == true)) {
                           <td class="infosAnuncio">
                              <!-- Nome do produto -->
                             <p><strong>Produto:</strong> <?php echo $carrinhoDados['produto']; ?></p>
+                            <!-- input hidden com o valor do produto -->
+                            <input type="hidden" name="produto_codigo[]" value="<?php echo $carrinhoDados['produto_id']; ?>" />
                              <!-- categoria do produto -->
                             <p><strong>Categoria:</strong> <?php echo $conn->categoriaProduto($carrinhoDados['categoria']); ?></p>
                              <!-- Subtotal do valor desse produto (qntd * preco) -->
@@ -247,7 +308,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
                               <!-- Input c/ a quantidade solicitada do produto -->
                               <input id="qntdDesejada<?php echo $carrinhoDados['carrinho'];?>" class="form-control qntdDesejada" type="number" min="0" 
                               step="<?php echo $conn->stepVendaProduto($carrinhoDados['tipo_venda']); ?>" 
-                              name="qntd_desejada" placeholder="0.0" value="<?php echo $carrinhoDados['qntd']; ?>" 
+                              name="qntd_desejada[]" placeholder="0.0" value="<?php echo $carrinhoDados['qntd']; ?>" 
                               required onchange="corrigeValor(this)" />
                               <!-- informação do tipo de venda (KG/Un/Dúzia/...) -->
                               <span><?php echo " ".$conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?></span>
@@ -256,14 +317,14 @@ if ((!isset($_SESSION['log_id']) == true)) {
                           </td>
                           <!-- /Quantidade solicitada do produto -->
 
-                          <!-- botão de alterar remover produto do carrinho -->
+                          <!-- botão de remover produto do carrinho -->
                           <td class="buttonsTd">
 
                             <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" 
                             enctype="multipart/form-data">
                               <a class="nav-link" href="">
                                 <input type="hidden" name="carrinhoCod" value="<?php echo $carrinhoDados['carrinho']; ?>" />
-                                <button type="submit" value="Remover" class="btn btn-danger btn-anuncio">Remover produto<br>do carrinho</button>
+                                <button type="submit" name="remover[]" class="btn btn-danger btn-anuncio">Remover produto<br>do carrinho</button>
                                 <!-- dropdown menu pedindo senha -->
                               </a>
                             </form>
@@ -291,7 +352,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
                       <tr>
                         <td>
                           <!-- Botão de submeter a compra -->
-                          <button type="submit" value="finalizarCompra" class="btn btn-success btn-anuncio">Finalizar compra</button>
+                          <button type="submit" name="finalizarCompra" class="btn btn-success btn-anuncio">Finalizar compra</button>
                         </td>
                       </tr>
                     </tbody>

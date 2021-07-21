@@ -498,6 +498,24 @@ class controlRequest
         return $valorTotal;
     }
 
+    function realizarCompra($codProd, $qntd_comprada, $id_carrinho){
+        //realizo a compra e deleto o carrinho
+        $qntd_comprada = filter_var($qntd_comprada, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $conn = new db_conect();
+        $result = $conn->realizarCompra($codProd, $qntd_comprada, $_SESSION['log_id']);
+        //se a compra for direta da pagina do produto o id do carrinho é -1 
+        if($result && ($id_carrinho != -1)){
+            $result = $conn->removerCarrinho($id_carrinho);
+        }
+        return $result;
+    }
+
+    function removerCarrinho($id_carrinho){
+        $conn = new db_conect();
+        $result = $conn->removerCarrinho($id_carrinho);
+        return $result;
+    }
+
     // ************************************** PRODUTO ****************************************************************************
 
     // ----------- TRATAMENTO DE DADOS

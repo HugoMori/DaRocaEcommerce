@@ -388,7 +388,7 @@ class db_conect
         }
     }
 
-    //remover
+    //remover anuncio
     public function deleteProduto($codigoProduto, $produtorFk)
     {
         //query insert
@@ -616,7 +616,35 @@ class db_conect
     }
 
 
+    function removerCarrinho($id_carrinho){
+        //query insert
+        $query = 'DELETE FROM carrinho WHERE id_carrinho = ?';
+        // Prepare a query for execution
+        if ($resultSttmt = mysqli_prepare(self::$conn, $query)) {
+            /*
+                Character	Description
+                i	corresponding variable has type integer
+                d	corresponding variable has type double
+                s	corresponding variable has type string
+                b	corresponding variable is a binary (such as image, PDF file, etc.)
+            */
+            //bind param
+            mysqli_stmt_bind_param($resultSttmt,'i',$id_carrinho);
 
+            mysqli_stmt_execute($resultSttmt);
+
+            $success = mysqli_affected_rows(self::$conn);
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            //verificar se foi cadastrado
+            return $success;
+        } else {
+            echo "<script>console.log('Não foi possível realizar a operação (" . $query . ").\n Erro: " . mysqli_connect_error() . "' );</script>";
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            return 0;
+        }
+    }
 
 
 
@@ -626,4 +654,46 @@ class db_conect
 
 
     // ************************************** COMPRA ****************************************************************************
+
+    function realizarCompra($codProd, $qntd_comprada, $email_cliente){
+        //query insert
+        $query = 'INSERT INTO compras (cliente_fk, produto_fk, qntd_comprada)
+        VALUES (?, ?, ?)';
+        // Prepare a query for execution
+        if ($resultSttmt = mysqli_prepare(self::$conn, $query)) {
+            /*
+                Character	Description
+                i	corresponding variable has type integer
+                d	corresponding variable has type double
+                s	corresponding variable has type string
+                b	corresponding variable is a binary (such as image, PDF file, etc.)
+            */
+            //bind param
+            mysqli_stmt_bind_param($resultSttmt,'sid',$email_cliente, $codProd, $qntd_comprada);
+
+            mysqli_stmt_execute($resultSttmt);
+
+            $success = mysqli_affected_rows(self::$conn);
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            //verificar se foi cadastrado
+            return $success;
+        } else {
+            echo "<script>console.log('Não foi possível realizar a operação (" . $query . ").\n Erro: " . mysqli_connect_error() . "' );</script>";
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            return 0;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

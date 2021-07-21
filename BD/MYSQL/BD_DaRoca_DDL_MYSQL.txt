@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS compras;
 DROP TABLE IF EXISTS carrinho;
 DROP TABLE IF EXISTS img_produto;
 DROP TABLE IF EXISTS produto;
@@ -108,4 +109,15 @@ FOREIGN KEY (cliente_fk) REFERENCES cliente(email) ON UPDATE CASCADE ON DELETE C
 PRIMARY KEY(produto_fk, cliente_fk));
 
 -- **************** COMPRAS *************
+
+CREATE TABLE compras(
+id_compra SERIAL NOT NULL,
+cliente_fk VARCHAR(100) NOT NULL,
+produto_fk INTEGER NOT NULL,
+qntd_comprada NUMERIC(6,2) NOT NULL, 
+data_compra DATETIME DEFAULT CURRENT_TIMESTAMP,
+chat TEXT,
+FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(email) ON UPDATE CASCADE ON DELETE CASCADE,
+PRIMARY KEY(id_compra));
 

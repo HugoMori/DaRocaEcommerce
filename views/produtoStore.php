@@ -16,35 +16,63 @@ if (count($_GET) > 0) {
   $codigo = $_GET['produto'];
   //Requisição dos dados do produto 
   $resultDadosProduto = $conn->requestDadosProduto($codigo);
+  //Puxar os dados do carrinho DropDown
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
+
   if ($resultDadosProduto != 0) {
+
     //Puxo os dados requisitados do produto p/uma row
     $DadosProduto = mysqli_fetch_assoc($resultDadosProduto);
     // requisição das fotos do produto
     $resultFotosProduto = $conn->requestFotosProduto($codigo);
+
+    //passo a img padrão para a variavel imagem
     if ($resultFotosProduto == 0) {
       header("Location: ../views/meusAnuncios.php");
-    }
-
-    if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
-      if ($_POST['action'] == 'carrinho') {
-        $result = $conn->insertUpdateFromPage($codigo, $_POST['qntd_compra']);
-        if($result == 0){
-          header("Location: ../views/meusAnuncios.php");
-        }
-      } 
-      if($_POST['action'] == 'compra') {
-        //action for delete
-      }
-    }
-    else{
-      header("Location: ../controller/logout.php");
     }  
 
-  } else {
+    //verificar se foi realizar algum $_POST
+    if(count($_POST) > 0){
+
+      //Só é possível realizar compra logado
+      //verifica se está logado
+      if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
+
+        //verifica se o submit foi do carrinho
+        if (isset($_POST['carrinho'])) {
+          $result = $conn->insertUpdateFromPage($codigo, $_POST['qntd_compra']);
+          if($result != 0){
+            header("Location: ../views/carrinho.php");
+          }
+        }
+        //se não, verifica se foi da compra
+        else{
+          if(isset($_POST['compra'])){
+            $result = $conn->realizarCompra($codigo, $_POST['qntd_compra'], -1);
+            if($result != 0){
+              header("Location: ../views/minha_conta.php");
+            }
+          }
+        }
+
+      }
+      //fazer login
+      else{
+        header("Location: ../controller/logout.php");
+      }
+    }
+    // /count($_POST) > 0
+
+  }
+  //Se não tiver puxado nenhum dado do produto 
+  else {
+    //esse produto não existe mais, pagina de erro
     header("Location: ../views/meusAnuncios.php");
   }
-} else {
+}
+//pagina de erro 
+else {
+  //redireciona para a página de erro
   header("Location: ../views/meusAnuncios.php");
 }
 ?>
@@ -214,17 +242,23 @@ if (count($_GET) > 0) {
           <div class="container basic-container" style="max-width: none;">
             <!-- row -->
             <div class="d-flex flex-row">
+
+              <!-- coluna com as fotos/informações do produto/descrição -->
               <div class="col-md-7">
 
                 <!-- ROW imagens -->
                 <div class="content">
 
+                  <!-- cover -->
                   <div class="cover">
+                    <!-- Foto principal (grande)-->
                     <img id="imgCover" class="img-fluid" src="<?php echo $DadosProduto['foto']; ?>" alt="">
                   </div>
                   <!-- /cover -->
 
+                  <!-- thumbs -->
                   <ul class="thumbs">
+                    <!-- While com as fotos dos produtos em miniatura -->
                     <?php while ($fotosProduto = mysqli_fetch_assoc($resultFotosProduto)) { ?>
                       <li><img class="img-fluid" src="<?php echo $fotosProduto['caminho_foto']; ?>" alt="" onclick="changePhoto(this)"></li>
                     <?php } ?>
@@ -234,11 +268,15 @@ if (count($_GET) > 0) {
                 </div>
                 <!-- /ROW imagens -->
 
+                <!-- Tabela com as informações do produto -->
                 <table class="table table-light">
                   <tbody>
                     <th>Características do produto</th>
+                    
+                    <!-- Categoria do produto (1:Frutas 2:Verduras 3:Legumes 4:Bebidas 5:Frios 6:Especiarias) -->
                     <tr>
                       <td>
+                        <!-- Foto categoria -->
                         <span class="caracteristica-span">
                           <img class="img-fluid" src="../img/logo/categoria.svg" alt="categoria imagem">
                         </span>
@@ -247,8 +285,11 @@ if (count($_GET) > 0) {
                         </span>
                       </td>
                     </tr>
+
+                    <!-- Quantidade mínima que o produtor optou por vender por cliente -->
                     <tr>
                       <td>
+                        <!-- Foto qntd minima -->
                         <span class="caracteristica-span">
                           <img class="img-fluid" src="../img/logo/qntd_min.svg" alt="categoria imagem">
                         </span>
@@ -260,6 +301,8 @@ if (count($_GET) > 0) {
                         </span>
                       </td>
                     </tr>
+
+                    <!-- Datas de fabricação e validade -->
                     <tr id="tr-datas">
                       <td class="td-left">
                         <span class="caracteristica-span">
@@ -277,9 +320,12 @@ if (count($_GET) > 0) {
                         </span>
                       </td>
                     </tr>
+
                   </tbody>
                 </table>
+                <!-- /Tabela com as informações do produto -->
 
+                <!-- Tabela com descriçaõ -->
                 <table class="table table-light">
                   <tbody>
                     <th>Descrição</th>
@@ -288,7 +334,9 @@ if (count($_GET) > 0) {
                     </tr>
                   </tbody>
                 </table>
+                <!-- /Tabela com descriçaõ -->
 
+                <!-- Tabela de perguntas -->
                 <table class="table table-light">
                   <tbody>
                     <th>Dúvidas e perguntas</th>
@@ -297,24 +345,34 @@ if (count($_GET) > 0) {
                     </tr>
                   </tbody>
                 </table>
+                <!-- /Tabela de perguntas -->
 
               </div>
+              <!-- col md 7 -->
 
+              <!-- Coluna com formulário p/compra ou add carrinho e quantidade do produto-->
               <div class="col-md-5">
 
                 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])."?produto=".$codigo; ?>" enctype="multipart/form-data">
 
+                  <!-- Tabela com os dados do produto (Preço, visualizações, compras, qntd disponivel, opções de compra)-->
                   <table class="table table-light infos-compra" style="border: 1px solid rgba(0,0,0,.2);">
 
                     <tbody>
+
+                      <!-- Visualizações -->
                       <tr>
                         <td class="smallInfos"><?php echo $DadosProduto['visualizacoes']; ?> visualizações</td>
                       </tr>
+
+                      <!-- Nome do produto -->
                       <tr>
                         <td>
                           <h2><strong><?php echo $DadosProduto['produto']; ?></strong></h2>
                         </td>
                       </tr>
+
+                      <!-- Avaliação do produto e numero de opiniões (número de vendas) -->
                       <tr>
                         <td>
                           <span class="aval-span">
@@ -325,11 +383,15 @@ if (count($_GET) > 0) {
                           </span>
                         </td>
                       </tr>
+
+                      <!-- número de vendas do produto -->
                       <tr>
                         <td class="smallInfos">
                           <?php echo $DadosProduto['num_vendas_produto'] . " compras"; ?>
                         </td>
                       </tr>
+
+                      <!-- Preço do produto -->
                       <tr>
                         <td>
                           <h3>R$
@@ -339,6 +401,8 @@ if (count($_GET) > 0) {
                           </h3>
                         </td>
                       </tr>
+
+                      <!-- Frete do produto -->
                       <tr>
                         <td>
                           <span>
@@ -349,6 +413,8 @@ if (count($_GET) > 0) {
                           </span>
                         </td>
                       </tr>
+
+                      <!-- Seleção de quantidade desejada do produto -->
                       <tr>
                         <td class="td-left">
                           <div class="form-group">
@@ -364,6 +430,8 @@ if (count($_GET) > 0) {
                           <?php echo $DadosProduto['qntd_disponivel'] . " " . $conn->tipoVendaProduto($DadosProduto['tipo_venda']); ?> disponivel
                         </td>
                       </tr>
+
+                      <!-- Valor total do produto (Atualizado por JS) -->
                       <tr>
                         <td>
                           <h4 id="ValorTotal">Total: R$
@@ -371,36 +439,50 @@ if (count($_GET) > 0) {
                           </h4>
                         </td>
                       </tr>
+
+                      <!-- Botão de add carrinho -->
                       <tr>
                         <td>
                           <div class="form-group">
-                            <button type="submit" name="action" value="carrinho" class="btn btn-secondary">Adicionar ao carrinho</button>
+                            <button type="submit" name="carrinho" class="btn btn-secondary">Adicionar ao carrinho</button>
                           </div>
                         </td>
                       </tr>
+
+                      <!-- Botão de realizar compra -->
                       <tr>
                         <td>
                           <div class="form-group">
-                            <button type="submit" name="action" value="compra" class="btn btn-success">Realizar compra</button>
+                            <button type="submit" name="compra" class="btn btn-success">Realizar compra</button>
                           </div>
                         </td>
                       </tr>
+
                     </tbody>
                   </table>
+                  <!-- /Tabela com os dados do produto (Preço, visualizações, compras, qntd disponivel, opções de compra)-->
 
                 </form>
-
+                
+                <!-- Tabela de informações do vendedor (Nome/avaliação/cidade) -->
                 <table class="table table-light">
                   <tbody>
+                    
                     <th>Informações do vendedor</th>
+
+                    <!-- Nome do vendedor -->
                     <tr>
                       <td><?php echo $DadosProduto['vendedor']; ?></td>
                     </tr>
+
+                    <!-- Vendas realizadas -->
                     <tr>
                       <td class="smallInfos">
                         <?php echo $DadosProduto['vendas_vendedor']; ?> vendas realizadas
                       </td>
                     </tr>
+
+                    <!-- Avaliação do vendedor -->
                     <tr>
                       <td>
                         <p>Avaliação do vendedor:</p>
@@ -409,14 +491,20 @@ if (count($_GET) > 0) {
                         </span>
                       </td>
                     </tr>
+
+                    <!-- Cidade/Estado -->
                     <tr>
                       <td class="smallInfos">
                         <?php echo ($DadosProduto['cidade'].", ".$DadosProduto['estado']); ?>
                       </td>
                     </tr>
+
                   </tbody>
                 </table>
+                <!-- /Tabela de informações do vendedor (Nome/avaliação/cidade) -->
+
               </div>
+              <!-- /col-md-5 -->
 
             </div>
             <!-- /row -->

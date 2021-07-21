@@ -118,8 +118,3 @@ CALL requestDadosCarrinho('natyborges@hotmail.com');
 
 SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos FROM carrinho INNER JOIN produto ON produto.codigo = carrinho.produto_fk WHERE carrinho.cliente_fk = 'hugomori@live.com'
 
-CREATE VIEW valorTotalCarrinho
-AS 
-    SELECT SUM(produto.preco * carrinho.qntd_produto) AS total 
-    FROM carrinho 
-    INNER JOIN produto ON produto.codigo = carrinho.produto_fk;
