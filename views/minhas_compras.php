@@ -12,36 +12,39 @@ if ((!isset($_SESSION['log_id']) == true)) {
   //inclui o php que contém a conexão com o banco e o php de request/send dados
   include '../controller/controlRequest.php';
   $conn = new controlRequest();
+
   //carrinho dropdow
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
   $carrinhoDropDow = $conn->requestDadosCarrinho($_SESSION['log_id']);
-  if (count($_POST) > 0) {
-
-    $result = $conn->removerProduto($_POST['prodCodigo'], $_POST['prodVend']);
-    if ($result) {
-      unset($_POST);
-      header("Location: ../views/minha_conta.php");
-    }
-  }
+  
   //numero de itens puxados do bd p/pagina
   $itensPorPagina = 10;
-  //pegar a pagina atual
+
+  //pegar a pagina passada via GET
   if (count($_GET) > 0) {
     $page = intval($_GET['pagina']);
-  } else {
+  } 
+  //Se não houver pagina passada via GET
+  else {
     $page = 0;
   }
+  //Se a página for 0, disable ativo, para o link
+  //p/pagina anterior estar desativado
   if ($page == 0) {
     $disable = 'disabled';
-  } else {
+  } 
+  //se a pagina não for 0
+  else {
     $disable = '';
   }
-  //chamar função de request de dados e paginacao ()
-  $result = $conn->requestAllDadosProduto($page, $itensPorPagina);
+
+  //chamar função de request de dados
+  $result = $conn->requestAllCompras($page, $itensPorPagina);
+  //Verificar quantidade de itens retornados
   $numRows = mysqli_num_rows($result);
 
   //num de produtos no bd
-  $pagesDB = $conn->qntdProdutosAnunciados();
+  $pagesDB = $conn->qntdComprasRealizadas();
   //num de paginas
   $paginas = ceil($pagesDB / $itensPorPagina);
 }
@@ -60,7 +63,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
   <!-- css -->
   <link rel="stylesheet" type="text/css" href="../css/stylesCommons.css">
-  <link rel="stylesheet" type="text/css" href="../css/meus_anuncios.css">
+  <link rel="stylesheet" type="text/css" href="../css/minhas_transacoes.css">
   <!-- SiderBar -->
   <link rel="stylesheet" type="text/css" href="../css/siderBar.css">
   <!-- normalize -->
@@ -218,7 +221,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
           <!-- row -->
           <div class="row">
             <div class="col-md-12">
-              <h3 class="breadcrumb-header">Meus anúncios</h3>
+              <h3 class="breadcrumb-header">Minhas compras</h3>
               <ul class="breadcrumb-tree">
                 <li><a href="javascript:history.back()">Voltar</a></li>
               </ul>
@@ -243,56 +246,55 @@ if ((!isset($_SESSION['log_id']) == true)) {
                 <table class="table table-bordered table-hover">
                   <!-- corpo da tabela -->
                   <tbody>
+
                     <?php while ($rows = mysqli_fetch_assoc($result)) {?>
+                      
                       <!-- table row -->
-                      <tr>
-                        <!-- table division -->
+                      <tr style="display: table-row;">
+                        
                         <!-- divisão foto -->
                         <td class="tb_foto">
-                          <img id="foto_anuncio" class="img-fluid" src="<?php if ($rows['foto'] == "" || $rows['foto'] == null) {
-                                                                          echo '../img/veg_fruits/brocolisCartoonSurprised.svg';
-                                                                        } else {
-                                                                          echo $rows['foto'];
-                                                                        } ?>" alt="Foto do produto anúnciado">
+                          <a class="nav-link" href="../views/produtoStore.php?produto=<?php echo $rows['produto_id']; ?>">
+                            <img id="foto_produto" class="img-fluid" 
+                            src="<?php 
+                            if ($rows['foto_produto'] == "" || $rows['foto_produto'] == null) {
+                              echo '../img/veg_fruits/brocolisCartoonSurprised.svg';} 
+                            else {
+                                    echo $rows['foto_produto'];
+                            } ?>" alt="Foto do produto anúnciado">
+                          </a>
                         </td>
                         <!-- divisão infos prod -->
-                        <td class="infosAnuncio">
-                          <p><?php echo "<strong>Produto:</strong> " . $rows['produto']; ?></p>
-                          <p><?php echo "<strong>Preço:</strong> R$ " . $rows['preco'] . "/" . $conn->tipoVendaProduto($rows['tipo_venda']); ?></p>
-                          <p><?php echo "<strong>Quantidade à venda:</strong> " . $rows['qntd_disponivel'] . " " . $conn->tipoVendaProduto($rows['tipo_venda']); ?></p>
-                          <p><?php echo "<strong>Categoria:</strong> " . $conn->categoriaProduto($rows['categoria']); ?></p>
+
+                        <td class="infosCompra">
+                          <p><strong>Produto:</strong> <?php echo $rows['produto']; ?></p>
+                          <p><strong>Categoria:</strong> <?php echo $conn->categoriaProduto($rows['categoria']); ?></p>
+                          <p><strong>Quantidade comprada:</strong> <?php echo $rows['qntd_comprada'] . " " . $conn->tipoVendaProduto($rows['tipo_venda']); ?></p>
+                          <p><strong>Valor total:</strong> R$ <?php echo round(($rows['preco'] * $rows['qntd_comprada']),2); ?></p>
                         </td>
+
                         <!-- divisão infos vendedor/data anuncio/visualizacao/vendas/avalizacao -->
-                        <td class="infosAnuncio">
-                          <p><?php echo "<strong>Data de anúncio:</strong> " . $conn->convertDate($rows['data_anuncio']); ?></p>
-                          <p><?php echo "<strong>Número de vendas:</strong> " . $rows['num_vendas_produto']; ?></p>
-                          <p><?php echo "<strong>Visualizações do produto:</strong> " . $rows['visualizacoes']; ?></p>
-                          <p><?php echo "<strong>Avaliação do produto:</strong> " . $rows['avaliacao_produto']; ?></p>
+                        <td class="infosCompra">
+                          <p><strong>Comprador:</strong> <?php echo $rows['vendedor']; ?></p>
+                          <p><strong>Cidade:</strong> <?php echo $rows['cidade'].", ".$rows['estado']; ?></p>
+                          <p><strong>Data da compra:</strong> <?php echo $conn->convertDate($rows['data_compra']); ?></p>
                         </td>
+
                         <!-- botão de alterar anuncio/remover/visualizar anuncio -->
-                        <td>
+                        <td class="infosCompra">
+
                           <ul class="navbar-nav">
+
                             <li class="nav-item">
-                              <a class="nav-link" href="../views/produtoStore.php?produto=<?php echo $rows['codigo']; ?>">
-                                <button type="button" class="btn btn-secondary btn-anuncio">Visualizar anúncio</button>
+                              <a class="nav-link" href="../views/produtoStore.php?produto=<?php echo $rows['produto_id']; ?>">
+                                <button type="button" class="btn btn-secondary btn-anuncio">Mais informações<br>sobre a compra</button>
                               </a>
                             </li>
-                            <li class="nav-item">
-                              <a class="nav-link" href="">
-                                <button type="button" class="btn btn-warning btn-anuncio">&nbsp;&nbsp;&nbsp;Alterar anúncio&nbsp;&nbsp;</button>
-                              </a>
-                            </li>  
-                            <li class="nav-item">
-                              <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
-                                <a class="nav-link" href="">
-                                  <input type="hidden" name="prodCodigo" value="<?php echo $rows['codigo']; ?>" />
-                                  <input type="hidden" name="prodVend" value="<?php echo $rows['vendedor_fk']; ?>" />
-                                  <button type="submit" value="Remover" class="btn btn-danger btn-anuncio">Remover anúncio</button>
-                                </a>
-                              </form>
-                            </li>
+
                           </ul>
+
                         </td>
+                        
                       </tr>
                     <?php } ?>
                   </tbody>

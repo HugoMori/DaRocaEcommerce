@@ -118,3 +118,62 @@ CALL requestDadosCarrinho('natyborges@hotmail.com');
 
 SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos FROM carrinho INNER JOIN produto ON produto.codigo = carrinho.produto_fk WHERE carrinho.cliente_fk = 'hugomori@live.com'
 
+
+
+DROP PROCEDURE IF EXISTS requestAllVendas;
+DELIMITER $$
+CREATE PROCEDURE requestAllVendas(cliente_email VARCHAR(100), pagina INT, itens_por_pagina INT)
+BEGIN
+  SELECT 
+    compras.id_compra AS compra,
+    compras.qntd_comprada,
+    compras.data_compra,
+    produto.codigo AS produto_id,
+    produto.nome AS produto, 
+    produto.preco,
+    produto.tipo_venda, 
+    produto.categoria,
+    cliente.nome AS comprador,
+    cliente.cidade,
+    cliente.estado,
+    caminho_foto AS foto_produto 
+  FROM compras
+  INNER JOIN produto ON produto.codigo = compras.produto_fk
+  INNER JOIN cliente ON cliente.email = compras.cliente_fk 
+  INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+  WHERE 
+  	produto.produtor_fk = cliente_email 
+  AND 
+  	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
+  ORDER BY compras.data_compra ASC LIMIT pagina, itens_por_pagina;
+END $$
+
+SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras INNER JOIN produto ON compras.produto_fk = produto.codigo WHERE produto.produtor_fk = 'hugomori@live.com'
+
+DROP PROCEDURE IF EXISTS requestAllCompras;
+DELIMITER $$
+CREATE PROCEDURE requestAllCompras(cliente_email VARCHAR(100), pagina INT, itens_por_pagina INT)
+BEGIN
+  SELECT 
+    compras.id_compra AS compra,
+    compras.qntd_comprada,
+    compras.data_compra,
+    produto.codigo AS produto_id,
+    produto.nome AS produto, 
+    produto.preco,
+    produto.tipo_venda, 
+    produto.categoria,
+    cliente.nome AS vendedor,
+    cliente.cidade,
+    cliente.estado,
+    caminho_foto AS foto_produto 
+  FROM compras
+  INNER JOIN produto ON produto.codigo = compras.produto_fk
+  INNER JOIN cliente ON cliente.email = produto.produtor_fk 
+  INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+  WHERE 
+  	compras.cliente_fk = cliente_email 
+  AND 
+  	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
+  ORDER BY compras.data_compra ASC LIMIT pagina, itens_por_pagina;
+END $$

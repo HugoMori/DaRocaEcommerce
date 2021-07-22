@@ -271,26 +271,37 @@ if ((!isset($_SESSION['log_id']) == true)) {
 
                 <!-- histórico de compras -->
                 <ul class="navbar-nav">
+
                   <li class="nav-item">
-                    <a class="nav-link" href="#">
-                      <button type="button" class="btn btn-outline-light histBtn">Minhas compras</button>
+                    <a class="nav-link" href="../views/carrinho.php">
+                      <button type="button" style="width: 127px; height: 62px" class="btn btn-outline-light histBtn">Carrinho</button>
                     </a>
                   </li>
+
                   <li class="nav-item">
-                    <a class="nav-link" href="#">
-                      <button type="button" class="btn btn-outline-light histBtn">Minhas vendas&nbsp;&nbsp;</button>
+                    <a class="nav-link" href="../views/minhas_compras.php">
+                      <button type="button" style="width: 127px;" class="btn btn-outline-light histBtn">Minhas compras</button>
                     </a>
                   </li>
+
+                  <li class="nav-item">
+                    <a class="nav-link" href="../views/minhas_vendas.php">
+                      <button type="button" style="width: 127px;" class="btn btn-outline-light histBtn">Minhas vendas</button>
+                    </a>
+                  </li>
+
                   <li class="nav-item">
                     <a class="nav-link" href="../views/meusAnuncios.php">
-                      <button type="button" class="btn btn-outline-light histBtn">Meus anúncios&nbsp;&nbsp;</button>
+                      <button type="button" style="width: 127px;" class="btn btn-outline-light histBtn">Meus anúncios</button>
                     </a>
                   </li>
+
                   <li class="nav-item">
                     <a class="nav-link link-img" href="cadastro_produto2.php">
                       <img src="../img/perfil/my_personal_menu_anuncie.jpg" class="img-fluid" alt="">
                     </a>
                   </li>
+
                 </ul>
 
               </div>

@@ -440,82 +440,6 @@ class controlRequest
         return $result;
     }
 
-    function requestDadosCarrinho($email){
-        //query
-        $query = "CALL requestDadosCarrinho('".$_SESSION['log_id']."');";
-        //num de produtos no bd
-        return $this->selectCustom($query);
-    }
-
-    function insertUpdateFromPage($produto_codigo, $qntd){
-        //query paginas
-        $query = 'SELECT COUNT(id_carrinho) AS existe FROM carrinho WHERE cliente_fk = "'.$_SESSION['log_id'].'" AND produto_fk = '.$produto_codigo.'';
-        //num de produtos no bd
-        $verifica = $this->selectCustom($query);
-        $verifica = mysqli_fetch_assoc($verifica);
-        
-        if($verifica['existe']){
-            return $this->updateCarrinho($produto_codigo, $qntd, 1);
-        }
-        else{
-            return $this->insertCarrinho($produto_codigo, $qntd);
-        }
-    }
-
-    function insertCarrinho($produto_codigo, $qntd){
-        $conn = new db_conect();
-        $qntd_prod = filter_var($qntd, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $result = $conn->insertDadosCarrinho($_SESSION['log_id'], $produto_codigo, $qntd_prod);
-        return $result;
-    }
-
-    function updateCarrinho($produto_codigo, $qntd, $from){
-        $conn = new db_conect();
-        $qntd_prod = filter_var($qntd, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $result = $conn->updateDadosCarrinho($_SESSION['log_id'], $produto_codigo, $qntd_prod, $from);
-        return $result;
-    }
-
-    function qntdProdutosAnunciados(){
-        //query paginas
-        $query = 'SELECT COUNT(codigo) AS qntd_itens FROM produto WHERE produtor_fk = "'.$_SESSION['log_id'].'"';
-        //num de produtos no bd
-        $pagesDB = $this->selectCustom($query);
-        $pagesDB = mysqli_fetch_assoc($pagesDB);
-        
-        return $pagesDB['qntd_itens'];
-    }
-
-    function valorTotalEQntdProdutosCarrinho(){
-        //query 
-        $query = "SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos
-        FROM carrinho 
-        INNER JOIN produto ON produto.codigo = carrinho.produto_fk 
-        WHERE carrinho.cliente_fk = '".$_SESSION['log_id']."'";
-        $valorTotal = $this->selectCustom($query);
-        $valorTotal = mysqli_fetch_assoc($valorTotal);
-        
-        return $valorTotal;
-    }
-
-    function realizarCompra($codProd, $qntd_comprada, $id_carrinho){
-        //realizo a compra e deleto o carrinho
-        $qntd_comprada = filter_var($qntd_comprada, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $conn = new db_conect();
-        $result = $conn->realizarCompra($codProd, $qntd_comprada, $_SESSION['log_id']);
-        //se a compra for direta da pagina do produto o id do carrinho é -1 
-        if($result && ($id_carrinho != -1)){
-            $result = $conn->removerCarrinho($id_carrinho);
-        }
-        return $result;
-    }
-
-    function removerCarrinho($id_carrinho){
-        $conn = new db_conect();
-        $result = $conn->removerCarrinho($id_carrinho);
-        return $result;
-    }
-
     // ************************************** PRODUTO ****************************************************************************
 
     // ----------- TRATAMENTO DE DADOS
@@ -909,8 +833,18 @@ class controlRequest
 
     // ----------- QNTD
 
+    function qntdProdutosAnunciados(){
+        //query paginas
+        $query = 'SELECT COUNT(codigo) AS qntd_itens FROM produto WHERE produtor_fk = "'.$_SESSION['log_id'].'"';
+        //num de produtos no bd
+        $pagesDB = $this->selectCustom($query);
+        $pagesDB = mysqli_fetch_assoc($pagesDB);
+        
+        return $pagesDB['qntd_itens'];
+    }
 
-    // ************************************** ALL ****************************************************************************
+
+// ************************************** ALL ****************************************************************************
 
     private function selectCustom($query)
     {
@@ -950,4 +884,114 @@ class controlRequest
         $dataConvert = new DateTime($data);
         return $dataConvert->format('d/m/Y');
     }
+
+// ************************************** CARRINHO ****************************************************************************
+
+function requestDadosCarrinho($email){
+    //query
+    $query = "CALL requestDadosCarrinho('".$_SESSION['log_id']."');";
+    //num de produtos no bd
+    return $this->selectCustom($query);
+}
+
+function insertUpdateFromPage($produto_codigo, $qntd){
+    //query paginas
+    $query = 'SELECT COUNT(id_carrinho) AS existe FROM carrinho WHERE cliente_fk = "'.$_SESSION['log_id'].'" AND produto_fk = '.$produto_codigo.'';
+    //num de produtos no bd
+    $verifica = $this->selectCustom($query);
+    $verifica = mysqli_fetch_assoc($verifica);
+    
+    if($verifica['existe']){
+        return $this->updateCarrinho($produto_codigo, $qntd, 1);
+    }
+    else{
+        return $this->insertCarrinho($produto_codigo, $qntd);
+    }
+}
+
+function insertCarrinho($produto_codigo, $qntd){
+    $conn = new db_conect();
+    $qntd_prod = filter_var($qntd, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    $result = $conn->insertDadosCarrinho($_SESSION['log_id'], $produto_codigo, $qntd_prod);
+    return $result;
+}
+
+function updateCarrinho($produto_codigo, $qntd, $from){
+    $conn = new db_conect();
+    $qntd_prod = filter_var($qntd, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    $result = $conn->updateDadosCarrinho($_SESSION['log_id'], $produto_codigo, $qntd_prod, $from);
+    return $result;
+}
+
+function valorTotalEQntdProdutosCarrinho(){
+        //query 
+        $query = "SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos
+        FROM carrinho 
+        INNER JOIN produto ON produto.codigo = carrinho.produto_fk 
+        WHERE carrinho.cliente_fk = '".$_SESSION['log_id']."'";
+        $valorTotal = $this->selectCustom($query);
+        $valorTotal = mysqli_fetch_assoc($valorTotal);
+        
+        return $valorTotal;
+    }
+
+    function removerCarrinho($id_carrinho){
+        $conn = new db_conect();
+        $result = $conn->removerCarrinho($id_carrinho);
+        return $result;
+    }
+
+// ************************************** COMPRAS ****************************************************************************
+
+function realizarCompra($codProd, $qntd_comprada, $id_carrinho){
+    //realizo a compra e deleto o carrinho
+    $qntd_comprada = filter_var($qntd_comprada, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+    $conn = new db_conect();
+    $result = $conn->realizarCompra($codProd, $qntd_comprada, $_SESSION['log_id']);
+    //se a compra for direta da pagina do produto o id do carrinho é -1 
+    if($result && ($id_carrinho != -1)){
+        $result = $conn->removerCarrinho($id_carrinho);
+    }
+    return $result;
+}
+
+function requestAllVendas($pagina, $itens_por_pagina){
+    //query
+    $query = "CALL requestAllVendas('".$_SESSION['log_id']."', ".$pagina.", ".$itens_por_pagina.");";
+    //num de produtos no bd
+    return $this->selectCustom($query);
+}
+
+function requestAllCompras($pagina, $itens_por_pagina){
+    //query
+    $query = "CALL requestAllCompras('".$_SESSION['log_id']."', ".$pagina.", ".$itens_por_pagina.");";
+    //num de produtos no bd
+    return $this->selectCustom($query);
+}
+
+function qntdVendasRealizadas(){
+    //query paginas
+    $query = 'SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras 
+    INNER JOIN produto ON compras.produto_fk = produto.codigo 
+    WHERE produto.produtor_fk = "'.$_SESSION['log_id'].'";';
+    //num de produtos no bd
+    $pagesDB = $this->selectCustom($query);
+    $pagesDB = mysqli_fetch_assoc($pagesDB);
+    
+    return $pagesDB['qntd_vendas'];
+}
+
+function qntdComprasRealizadas(){
+    //query paginas
+    $query = 'SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras 
+    WHERE compras.cliente_fk = "'.$_SESSION['log_id'].'";';
+    //num de produtos no bd
+    $pagesDB = $this->selectCustom($query);
+    $pagesDB = mysqli_fetch_assoc($pagesDB);
+    
+    return $pagesDB['qntd_vendas'];
+}
+
+
+
 }
