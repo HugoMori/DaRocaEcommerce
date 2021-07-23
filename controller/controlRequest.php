@@ -860,7 +860,7 @@ class controlRequest
       </a>
       <div class="dropdown-menu">
         
-        <table class="table table-light" style="border-bottom: 1px dashed black;">
+        <table class="table table-light tableCarrinho">
             <tbody>
 
               <th>Produto</th>
@@ -876,7 +876,7 @@ class controlRequest
               <td>
                 <strong>Total:</strong>
               </td>
-              <td style="text-align-last: right;">
+              <td class="tdCarrinhoPrecoProd">
                 R$ 0
               </td>
             </tr>

@@ -1,7 +1,5 @@
 <?php
 session_start();
-include '../controller/controlRequest.php';
-$conn = new controlRequest();
 
 if (isset($_POST['alterarCadastro']) || isset($_POST['cadastrar'])) {
   //fazer atualizacao
@@ -17,6 +15,8 @@ if (isset($_POST['alterarCadastro']) || isset($_POST['cadastrar'])) {
 }
 //Se estiver logado
 if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
+  include '../controller/controlRequest.php';
+  $conn = new controlRequest();
   // fazer requisição de dados
   $result = $conn->requestDadosUser($_SESSION['log_id']);
   //carrinho dropdow
@@ -49,6 +49,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 }
 //Cadastrar
 if (isset($_POST['cadastrar'])) {
+
   if ($conn->verificarCadastro($tel_user, $cpf_user, $email_user)) {
     if ($conn->tratamentoDadosUsuario($name_user, $_POST['data_nasc'], $cidade_User,
         $estadoUser, $endereco_user, $cep_User, $tel_user, $email_user, $senha_user,
@@ -62,6 +63,7 @@ if (isset($_POST['cadastrar'])) {
   }
 }
 unset($_POST);
+
 ?>
 <?php
 
@@ -105,7 +107,7 @@ if (isset($_SESSION['log_id'])) {
   $cpfCliente = "value = '" . $result['cpf'] . "' readonly";
 
   //Botão submit
-  $botaoSubmit = 'name="alterarCadastro" value="Alterar Cadastro"';
+  $botaoSubmit = 'name="alterarCadastro" value="alterarCadastro"';
 }
 //Se não estiver logado
 else {
@@ -146,7 +148,7 @@ else {
   $cpfCliente = "value = ''";
 
   //Botão submit
-  $botaoSubmit = 'name="cadastrar" value="Cadastrar"';
+  $botaoSubmit = 'name="cadastrar" value="cadastrar"';
 }
 
 ?>

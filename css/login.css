@@ -42,12 +42,18 @@
 
 @media (min-width: 300px) and (max-width: 767.98px) {
 
+    .corpo .main{
+        margin-top: 20%!important;
+    }
+
     #loginBox .btn{
         float: none;
+        margin-top: 5%;
     }
 
     .loginCol{
         width: auto!important;
+        display: grid!important;
     }
 
     #cadastreBox button{
@@ -55,9 +61,59 @@
         margin-inline: auto;
     }
 
-    #cadastreBox{
-        margin-top: 4%;
-        margin-bottom: 4%;
+    #cadastreBox {
+        margin-top: 20%;
+        display: inline-grid;
     }
     
+    #colImg{
+        position: fixed!important;
+    }
+
+    #cadastreBox h5 {
+        margin-right: 2%;
+        margin-block: unset;
+    }
 }
+
+ /* Extra small devices (portrait phones, less than 576px) */
+ @media (max-width: 575.98px) { 
+     .logoTop{
+         margin: 0px;
+     }
+  }
+
+  @media (max-width: 767.98px) { 
+    #toggleButton {
+        padding-left: 15px!important;
+    }
+ }
+
+ /* Small devices (landscape phones, 576px and up) */
+@media (min-width: 539px) and (max-width: 767.98px) { 
+    .corpo .main{
+        margin-top: 13%!important;
+    }
+ }
+
+/*  Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) { 
+    .corpo .main{
+        margin-top: 12%!important;
+    }
+ }
+
+ /* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) { 
+    .corpo .main{
+        margin-top: 14%!important;
+    }
+
+ }
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+    .corpo .main{
+        margin-top: 9%!important;
+    }
+ }

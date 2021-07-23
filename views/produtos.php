@@ -60,12 +60,50 @@ else {
 }
 
 ?>
+<?php
+
+//operações
+//Se estiver logado
+if (isset($_SESSION['log_id'])) {
+
+  //menu option (SIDE BAR MENU)
+  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+
+  // NavBar Itens
+  $NavBarOption1 = '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+  $NavBarOption2 = '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+
+  //NamePage
+  $NamePage = "<h3 class='breadcrumb-header'>Alterar Cadastro</h3>";
+}
+//Se não estiver logado
+else {
+
+  //menu option (SIDE BAR MENU)
+  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+
+  // NavBar Itens
+  $NavBarOption1 = '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+  $NavBarOption2 = '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+
+}
+
+if(isset($_GET['prod']) && $_GET['prod'] != ''){
+  $nomeProduto = ucfirst(mb_strtolower($_GET['prod'], 'UTF-8'));
+}
+else{
+  $nomeProduto = "Todos os produtos";
+}
+
+?>
 
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
@@ -74,6 +112,7 @@ else {
   <!-- css -->
   <!-- <link rel="stylesheet" type="text/css" href="../css/"> -->
   <link rel="stylesheet" type="text/css" href="../css/stylesCommons.css">
+  <link rel="stylesheet" type="text/css" href="../css/produtos.css">
   <!-- SiderBar -->
   <link rel="stylesheet" type="text/css" href="../css/siderBar.css">
   <!-- normalize -->
@@ -99,7 +138,7 @@ else {
         <!-- /Logo -->
 
         <!-- Menu Toogle -->
-        <button class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
+        <button id="toggleButton" class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
           <i class="fas fa-bars text-white"></i>
         </button>
         <!-- /Menu Toogle -->
@@ -107,29 +146,19 @@ else {
         <!-- SideBar menu-->
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <!-- Menu option -->
           <div class="row">
-            <?php
-            if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
-            } else {
-              echo '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-            }
-            ?>
+            <?php echo $sideBarOption1; ?>
           </div>
+          <!-- Menu option -->
           <div class="row">
-            <?php
-            if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
-            } else {
-              echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
-            }
-            ?>
+            <?php echo $sideBarOption2; ?>
           </div>
         </div>
         <!-- /SideBar menu-->
 
         <!-- SearchBar -->
-        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+        <form id="searchBarTop" method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
           <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça" value="<?php echo $_GET['prod']; ?>">
           <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
@@ -151,7 +180,7 @@ else {
             </a>
             <div class="dropdown-menu">
 
-              <table class="table table-light" style="border-bottom: 1px dashed black;">
+              <table class="table table-light tableCarrinho">
                 <tbody>
                   <th>Produto</th>
                   <th>Quantidade</th>
@@ -168,7 +197,7 @@ else {
                       <td>
                         <?php echo $carrinhoDados['qntd'] . " " . $conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
                       </td>
-                      <td style="padding-left: 2px; padding-right: 2px;">
+                      <td class="tdCarrinhoPrecoProd">
                         <?php echo "R$ " . round(($carrinhoDados['qntd'] * $carrinhoDados['preco']), 2); ?>
                       </td>
                     </tr>
@@ -182,7 +211,7 @@ else {
                     <td>
                       <strong>Total:</strong>
                     </td>
-                    <td style="text-align-last: right;">
+                    <td  class="tdCarrinhoPrecoTotal">
                       R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
                     </td>
                   </tr>
@@ -203,23 +232,13 @@ else {
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <?php
-              if (isset($_SESSION['log_id'])) {
-                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
-              } else {
-                echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
-              }
-              ?>
+              <!-- NavBar Itens -->
+              <?php echo $NavBarOption1;?>
             </li>
 
+            <!-- NavBar Itens -->
             <li class="nav-item">
-              <?php
-              if (isset($_SESSION['log_id'])) {
-                echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
-              } else {
-                echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-              }
-              ?>
+              <?php echo $NavBarOption2;?>
             </li>
 
           </ul>
@@ -245,18 +264,16 @@ else {
             <aside class="col-md-3">
 
               <!-- Nome do que está sendo pesquisado -->
-              <h1 style="float: left; margin-bottom: 0px; inline-size: max-content;">
-                <?php 
-                  if(isset($_GET['prod']) && $_GET['prod'] != ''){echo ucfirst(mb_strtolower($_GET['prod'], 'UTF-8'));}
-                  else{echo "Todos os produtos";}
-                ?>
+              <h1 id="h1NomeProd">
+                <?php echo $nomeProduto;?>
               </h1>
               <!-- Qntd de produtos -->
-              <span style="clear: both; float: left; margin-bottom: 20px; font-size: smaller;">
+              <span id="spanQntdResultados">
                 <?php echo $qntdResultados['qntd_resultados']; ?> resultados
               </span>
 
-              <table class="table table-light" style="border-radius: 1rem;">
+              <!-- Tabela de filtros (Preço/localização/categoria) -->
+              <table class="table table-light">
                 <tbody>
 
                   <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])."?prod=".$_GET['prod']; ?>" enctype="multipart/form-data">
@@ -294,7 +311,7 @@ else {
                             ?>
 
                               <div class="form-check">
-                                <input style="margin-top: auto;" class="form-check-input" type="checkbox" 
+                                <input class="form-check-input" type="checkbox" 
                                 name="checkCategoria[]" value="<?php echo $rows['categoria']; ?>" id="checkCategoria"
                                 <?php echo $check; ?>>
                                 <label class="form-check-label" for="checkCategoria">
@@ -346,7 +363,7 @@ else {
                             ?>
 
                               <div class="form-check">
-                                <input style="margin-top: auto;" class="form-check-input" type="checkbox" 
+                                <input class="form-check-input" type="checkbox" 
                                 name="checkCidade[]" value="<?php echo $rows['cidade']; ?>" id="checkCidade"
                                 <?php echo $check; ?>>
                                 <label class="form-check-label" for="checkCidade">
@@ -385,25 +402,25 @@ else {
                               <tbody>
                                 <tr>
 
-                                  <td style="padding-left: 0px; padding-top: 0px;">
+                                  <td class="tbPrecos" id="tbPrecoMenor">
                                     <label for="precoMin">
                                       Mínimo:
                                     </label>
-                                    <span style="display: table;">
-                                      R$ <input style="margin-top: auto; width: 70px;" type="number" 
-                                      name="precoMin" value="<?php echo $rows['menor_preco']; ?>" id="precoMin"
+                                    <span class="spanPreco">
+                                      R$ <input class="inputPreco" type="number" name="precoMin" 
+                                      value="<?php echo $rows['menor_preco']; ?>" id="precoMin"
                                       step="0.1">
                                     </span>
 
                                   </td>
 
-                                  <td style="padding-top: 0px;">
+                                  <td class="tbPrecos">
                                     <label for="precoMax">
                                       Máximo:
                                     </label>
-                                    <span style="display: table;">
-                                      R$ <input style="margin-top: auto; width: 70px;" type="number" 
-                                      name="precoMax" value="<?php echo $rows['maior_preco']; ?>" id="precoMax"
+                                    <span class="spanPreco">
+                                      R$ <input class="inputPreco" type="number" name="precoMax" 
+                                      value="<?php echo $rows['maior_preco']; ?>" id="precoMax"
                                       step="0.1">
                                     </span>
                                   </td>
@@ -424,7 +441,7 @@ else {
 
                     <tr>
 
-                      <td style="text-align-last: center;">
+                      <td id="tdInput">
                         <button type="submit" name="filtros" 
                         class="btn btn-secondary btn-sm">Pesquisar</button>
                       </td>
@@ -444,10 +461,10 @@ else {
               <!-- Se tiver produtos -->
               <?php ?>
 
-              <table class="table table-light" style="border-radius: 1rem;">
+              <table class="table table-light">
                 <tbody>
 
-                  <tr>
+                  <!-- <tr>
 
                     <form action="" class="form-inline">
                       <div class="form-group mb-2" style="float: right;">
@@ -460,7 +477,7 @@ else {
                       </div>
                     </form>
 
-                  </tr>
+                  </tr> -->
 
                   <!-- if se tiver produtos -->
                   <?php if ($numRowsProd) { ?>
@@ -474,27 +491,27 @@ else {
                       }
                     ?>
 
-                      <tr style="border-bottom: 1.5px solid #EDEDED;">
+                      <tr class="trProdutos">
 
                         <!-- col-md -->
                         <!-- id_produto -->
                         <!-- Foto do produto -->
-                        <td class="tb_foto" style="    vertical-align: middle; width: 200px;">
+                        <td class="tb_foto">
                           <a href="../views/produtoStore.php?produto=<?php echo $rows['produto_id']; ?>">
-                            <img style="width: 200px; height: 210px; border-radius: 1rem;" id="foto_produto" class="img-fluid" src="<?php echo $img; ?>" alt="Foto do produto anúnciado">
+                            <img id="foto_produto" class="img-fluid" src="<?php echo $img; ?>" alt="Foto do produto anúnciado">
                           </a>
                         </td>
 
                         <!-- Informações -->
                         <td>
 
-                          <ul style="list-style: none;">
+                          <ul>
 
                             <!-- id_produto -->
                             <!-- Nome do produto -->
                             <li>
-                              <a href="../views/produtoStore.php?produto=<?php echo $rows['produto_id']; ?>" style="text-decoration: none;">
-                                <p style="font-size: x-large; font-family: system-ui; font-weight: lighter; color: black;">
+                              <a class="linkProd" href="../views/produtoStore.php?produto=<?php echo $rows['produto_id']; ?>">
+                                <p>
                                   <?php echo $rows['produto']; ?>
                                 </p>
                               </a>
@@ -502,15 +519,15 @@ else {
 
                             <!-- categoria -->
                             <li>
-                              <span><img src="../img/logo/categoria.svg" alt="" style="width: 30px;"></span>
+                              <span class="spanImgCategoria"><img src="../img/logo/categoria.svg" alt=""></span>
                               <?php echo $conn->categoriaProduto($rows['categoria']); ?>
                             </li>
 
                             <!-- tipo venda -->
                             <!-- Preço -->
                             <li>
-                              <p style="font-size: larger; margin-bottom: 0.5rem!important;">
-                                <strong style="font-size: xx-large;">R$ <?php echo $rows['preco']; ?></strong> /<?php echo $conn->tipoVendaProduto($rows['tipo_venda']); ?>
+                              <p class="pPreco">
+                                <strong>R$ <?php echo $rows['preco']; ?></strong> /<?php echo $conn->tipoVendaProduto($rows['tipo_venda']); ?>
                               </p>
                             </li>
 
@@ -520,7 +537,7 @@ else {
                               Disponivel: <?php echo $rows['qntd_disponivel'] . " " . $conn->tipoVendaProduto($rows['tipo_venda']); ?>
                             </li>
 
-                            <li style="margin-top: 20px;margin-bottom: 0px; font-size: small; color: darkgray;">
+                            <li class="localizacaoLi">
                               <?php echo $rows['cidade'] . ", " . $rows['estado']; ?>
                             </li>
 
@@ -568,11 +585,11 @@ else {
           <img class="img-fluid" src="../img/logo/DaRoca.svg" alt="">
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 rodapeCol">
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="../views/login.php">Entrar</a>
+              <a href="">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -588,9 +605,10 @@ else {
             </li>
           </ul>
         </div>
-        <div class="col-md-2">
+
+        <div class="col-md-2 rodapeCol">
           <h4>Mais buscados</h4>
-          <div class="col-md-2 colBuscados" style="float: left;">
+          <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frutas</a>
@@ -606,7 +624,7 @@ else {
               </li>
             </ul>
           </div>
-          <div class="col-md-2 colBuscados" style="float: right;">
+          <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frios</a>
@@ -618,7 +636,7 @@ else {
           </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
               <a href="" class="m-2">

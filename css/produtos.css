@@ -1,0 +1,110 @@
+
+#h1NomeProd{
+    float: left;
+    margin-bottom: 0px; 
+    inline-size: max-content;
+}
+
+#spanQntdResultados{
+    clear: both; 
+    float: left; 
+    margin-bottom: 20px; 
+    font-size: smaller;
+}
+
+.table{
+    border-radius: 1rem;
+}
+
+.form-check-input{
+    margin-top: auto;
+}
+
+.tbPrecos{
+    padding-top: 0px;
+}
+
+#tbPrecoMenor{
+    padding-left: 0px; 
+}
+
+.spanPreco{
+    display: table;
+}
+
+.inputPreco{
+    margin-top: auto; width: 70px;
+}
+
+#tdInput{
+    text-align-last: center;
+}
+
+.trProdutos{
+    border-bottom: 1.5px solid #EDEDED;
+}
+
+.trProdutos ul{
+    list-style: none;
+}
+
+.linkProd{
+    text-decoration: none;
+}
+
+.linkProd p{
+    font-size: x-large; 
+    font-family: system-ui; 
+    font-weight: lighter; 
+    color: black;
+}
+
+.tb_foto{
+    vertical-align: middle; 
+    width: 200px;
+}
+
+#foto_produto{
+    width: 200px; 
+    height: 210px; 
+    border-radius: 1rem;
+}
+
+.spanImgCategoria img{
+    width: 30px;
+}
+
+.pPreco{
+    font-size: larger; 
+    margin-bottom: 0.5rem!important;
+}
+
+.pPreco strong{
+    font-size: xx-large;
+}
+
+.localizacaoLi{
+    margin-top: 20px;
+    margin-bottom: 0px; 
+    font-size: small; 
+    color: darkgray;
+}
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 500px) { 
+ }
+
+ @media (max-width: 767.98px) { 
+
+ }
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px) {  }
+
+/*  Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px) {  }
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px) {  }
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {  }

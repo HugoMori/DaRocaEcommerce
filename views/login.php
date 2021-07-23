@@ -15,15 +15,45 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
     if ($conn->login($email_user, $senha_user)) {
       $_SESSION['log_id'] = $email_user;
       header("Location: ../views/minha_conta.php");
-    } 
+    }
   }
 }
 ?>
+<?php
+
+//operações
+//Se estiver logado
+if (isset($_SESSION['log_id'])) {
+
+  //menu option (SIDE BAR MENU)
+  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+
+  // NavBar Itens
+  $NavBarOption1 = '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+  $NavBarOption2 = '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+
+}
+//Se não estiver logado
+else {
+
+  //menu option (SIDE BAR MENU)
+  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+
+  // NavBar Itens
+  $NavBarOption1 = '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+  $NavBarOption2 = '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
@@ -51,13 +81,13 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
       <div class="container">
 
         <!-- Logo -->
-        <a href="../index.php" class="navbar-brand">
+        <a href="../index.php" class="navbar-brand logoTop">
           <img src="../img/logo/DaRoca.svg" alt="logo Da Roça" class="img-fluid d-none d-md-block">
         </a>
         <!-- /Logo -->
 
         <!-- Menu Toogle -->
-        <button class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
+        <button id="toggleButton" class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
           <i class="fas fa-bars text-white"></i>
         </button>
         <!-- /Menu Toogle -->
@@ -65,29 +95,19 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
         <!-- SideBar menu-->
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <!-- Menu option -->
           <div class="row">
-            <?php
-            if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href = "../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
-            } else {
-              echo '<a class="mySidenav-link" href = "../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-            }
-            ?>
+            <?php echo $sideBarOption1; ?>
           </div>
+          <!-- Menu option -->
           <div class="row">
-            <?php
-            if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
-            } else {
-              echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
-            }
-            ?>
+            <?php echo $sideBarOption2; ?>
           </div>
         </div>
         <!-- /SideBar menu-->
 
         <!-- SearchBar -->
-        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+        <form id="searchBarTop" method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
           <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
           <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
@@ -100,24 +120,24 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
             <span class="badge badge-success">0</span><br>
           </a>
           <div class="dropdown-menu">
-            
-            <table class="table table-light" style="border-bottom: 1px dashed black;">
-                <tbody>
 
-                  <th>Produto</th>
-                  <th>Quantidade</th>
-                  <th>Custo</th>
-                   
-                </tbody>
-              </table>
-            
+            <table class="table table-light tableCarrinho">
+              <tbody>
+
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Custo</th>
+
+              </tbody>
+            </table>
+
             <table class="table table-light">
               <tbody>
                 <tr>
                   <td>
                     <strong>Total:</strong>
                   </td>
-                  <td style="text-align-last: right;">
+                  <td class="tdCarrinhoPrecoProd">
                     R$ 0
                   </td>
                 </tr>
@@ -136,23 +156,13 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <?php
-              if (isset($_SESSION['log_id'])) {
-                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
-              } else {
-                echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
-              }
-              ?>
+              <!-- NavBar Itens -->
+              <?php echo $NavBarOption1;?>
             </li>
 
+            <!-- NavBar Itens -->
             <li class="nav-item">
-              <?php
-              if (isset($_SESSION['log_id'])) {
-                echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
-              } else {
-                echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-              }
-              ?>
+              <?php echo $NavBarOption2;?>
             </li>
 
           </ul>
@@ -226,7 +236,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 
               </div>
 
-              <div class="col-md-4 loginCol">
+              <div id="colImg" class="col-md-4 loginCol">
                 <img src="../img/perfil/standart/produtor_icon.png" alt="produtor_icon" id="img_produtor" class="img-fluid d-none d-md-block">
               </div>
 
@@ -255,11 +265,11 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
           <img class="img-fluid" src="../img/logo/DaRoca.svg" alt="">
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 rodapeCol">
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="../views/login.php">Entrar</a>
+              <a href="">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -275,9 +285,10 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
             </li>
           </ul>
         </div>
-        <div class="col-md-2">
+
+        <div class="col-md-2 rodapeCol">
           <h4>Mais buscados</h4>
-          <div class="col-md-2 colBuscados" style="float: left;">
+          <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frutas</a>
@@ -293,7 +304,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
               </li>
             </ul>
           </div>
-          <div class="col-md-2 colBuscados" style="float: right;">
+          <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frios</a>
@@ -305,7 +316,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
           </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
               <a href="" class="m-2">

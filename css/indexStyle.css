@@ -1,39 +1,39 @@
 /* =============== Section Home ===============*/
 
-#home{
+#home {
     height: 100%;
     overflow-x: hidden;
 }
 
-#cadastreText{
+#cadastreText {
     font-size: xx-large;
     margin-bottom: 0;
 }
 
-.capa{
+.capa {
     text-align: center;
 }
 
-.capa h1{
+.capa h1 {
     font-weight: 900;
     letter-spacing: -0.05em;
     margin-bottom: 50px;
     color: white;
 }
 
-.capa h1 strong:hover{
+.capa h1 strong:hover {
     color: #3bbf1b;
 }
 
-.capa img{
+.capa img {
     width: 20%;
 }
 
-#imgBtnVeg{
+#imgBtnVeg {
     margin-inline: auto;
 }
 
-.btn-custom{
+.btn-custom {
     color: white;
     border-radius: 500px;
     -webkit-border-radius: 500px;
@@ -43,82 +43,145 @@
     margin: 10px 20px;
 }
 
-.btn-veg:hover{
+.btn-veg:hover {
     background: #3bbf1b;
     color: black;
 }
 
-.carousel-item p{
+.carousel-item p {
     font-size: 2em;
     font-weight: 700;
     letter-spacing: -0.04em;
     color: white;
 }
 
-.carousel-item p strong:hover{
+.carousel-item p strong:hover {
     color: #3bbf1b;
 }
+
 /* =============== Section Categories ===============*/
 
-#categories{
+#categories {
     background: white;
     padding-bottom: 40px;
 }
 
-.veg-img{
+.veg-img {
     border-radius: 2rem;
 }
 
-#searchCategories h2{
+#searchCategories h2 {
     margin: auto;
     text-align: center;
 }
 
-#searchCategories h5{
+#searchCategories h5 {
     text-align: center;
     padding: 5%;
 }
 
-.searchBarForm{
+.searchBarForm {
     justify-content: center;
 }
 
-.searchBarForm-input{
+.searchBarForm-input {
     border: 0.1px solid black;
 }
 
-.searchBarForm-btn{
+.searchBarForm-btn {
     background: #3bbf1b;
 }
 
-.searchBarForm-btn i{
+.searchBarForm-btn i {
     color: whitesmoke;
 }
 
-.navCategories-link{
+.navCategories-link {
     margin-left: 30%;
 }
 
-/* =============== responsive ===============*/
-@media (min-width: 300px) and (max-width: 767.98px) {
-    
-    .capa h1{
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 350px) {
+    #searchBarMiddle input{
+        width: 23ch;
+    }
+}
+
+@media (min-width: 351px) and (max-width: 575.98px) {
+
+    #searchBarMiddle input{
+        width: 30ch;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .capa h1 {
         font-weight: 600;
         letter-spacing: -0.05em;
         margin-bottom: 50px;
         color: white;
     }
-
-    .capa img{
+    .capa img {
         width: 35%;
     }
-
-    .navCategories{
+    .navCategories {
         flex-direction: inherit;
     }
-
-    .colCategories{
+    .colCategories {
         padding-left: 0;
         padding-right: 11%;
     }
+
+    #searchBarMiddle {
+        justify-content: center;
+    }
 }
+
+/* Small devices (landscape phones, 576px and up) */
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .capa h1 {
+        font-weight: 600;
+        letter-spacing: -0.05em;
+        margin-bottom: 50px;
+        color: white;
+    }
+    .capa img {
+        width: 35%;
+    }
+    .navCategories {
+        flex-direction: inherit;
+    }
+    .colCategories {
+        padding-left: 0;
+        padding-right: 11%;
+    }
+    #searchBarMiddle {
+        justify-content: center;
+    }
+}
+
+/*  Medium devices (tablets, 768px and up) */
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    #searchBarMiddle input{
+        width: 30ch;
+    }
+    #searchBarMiddle{
+        margin-left: 20px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    
+    #searchBarMiddle{
+        margin-left: 40px;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+
+@media (min-width: 1200px) {}

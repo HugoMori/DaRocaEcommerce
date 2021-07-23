@@ -20,19 +20,9 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
     $descricao = filter_input(INPUT_POST, 'descricao_Produto', FILTER_SANITIZE_STRING);
 
     //tentar realizar o cadastro
-    if ($conn->tratamentoDadosProduto(
-      $name_prod,
-      $preco_prod,
-      $qntd_prod,
-      $categoria_prod,
-      $tipo_venda_prod,
-      $qntd_min_prod,
-      $descricao,
-      $_POST['data_prod'],
-      $_POST['data_validade'],
-      $_FILES['produtos'],
-      1
-    ) == 1) {
+    if ($conn->tratamentoDadosProduto($name_prod, $preco_prod, $qntd_prod, $categoria_prod,
+      $tipo_venda_prod, $qntd_min_prod, $descricao, $_POST['data_prod'], $_POST['data_validade'],
+      $_FILES['produtos'], 1 ) == 1) {
       //redirecionar para a paginá do produto
       header("Location: ../views/minha_conta.php");
     }
@@ -46,11 +36,44 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
   header("Location: ../controller/logout.php");
 }
 ?>
+<?php
+
+//operações
+//Se estiver logado
+if (isset($_SESSION['log_id'])) {
+
+  //menu option (SIDE BAR MENU)
+  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+
+  // NavBar Itens
+  $NavBarOption1 = '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+  $NavBarOption2 = '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+
+  //NamePage
+  //$NamePage = "<h3 class='breadcrumb-header'>Alterar Cadastro</h3>";
+}
+//Se não estiver logado
+else {
+
+  //menu option (SIDE BAR MENU)
+  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+
+  // NavBar Itens
+  $NavBarOption1 = '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+  $NavBarOption2 = '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+
+  //NamePage
+  //$NamePage = "<h3 class='breadcrumb-header'>Cadastro</h3>";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
@@ -84,7 +107,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
         <!-- /Logo -->
 
         <!-- Menu Toogle -->
-        <button class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
+        <button id="toggleButton" class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
           <i class="fas fa-bars text-white"></i>
         </button>
         <!-- /Menu Toogle -->
@@ -92,83 +115,85 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
         <!-- SideBar menu-->
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <!-- Menu option -->
           <div class="row">
-            <?php
-            if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
-            } else {
-              echo '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-            }
-            ?>
+            <?php echo $sideBarOption1; ?>
           </div>
+          <!-- Menu option -->
           <div class="row">
-            <?php
-            if (isset($_SESSION['log_id'])) {
-              echo '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
-            } else {
-              echo '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
-            }
-            ?>
+            <?php echo $sideBarOption2; ?>
           </div>
         </div>
         <!-- /SideBar menu-->
 
         <!-- SearchBar -->
-        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+        <form id="searchBarTop" method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
           <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
           <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
         <!-- /SearchBar -->
 
-        <!-- carrinho -->
-        <div class="dropdown">
-          <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
-            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
-          </a>
-          <div class="dropdown-menu">
-            
-            <table class="table table-light" style="border-bottom: 1px dashed black;">
+        <?php
+        if (!isset($_SESSION['log_id'])) {
+          echo $conn->unsetCarrinho();
+        }
+        ?>
+
+        <?php if (isset($_SESSION['log_id'])) { ?>
+
+          <!-- carrinho -->
+          <div class="dropdown">
+            <a href="#" class="car_button" data-toggle="dropdown">
+              <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
+              <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
+            </a>
+            <div class="dropdown-menu">
+
+              <table class="table table-light tableCarrinho">
                 <tbody>
                   <th>Produto</th>
                   <th>Quantidade</th>
                   <th>Custo</th>
                   <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinhoDropDow)) { ?>
-                  <tr>
-                    <td>
-                      <?php if(strstr($carrinhoDados['produto'], ' ', true)){
-                      echo strstr($carrinhoDados['produto'], ' ', true)." ";
-                      }else{ echo $carrinhoDados['produto'];}?>
-                    </td>
-                    <td>
-                      <?php echo $carrinhoDados['qntd']." ".$conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
-                    </td>
-                    <td style="padding-left: 2px; padding-right: 2px;">
-                      <?php echo "R$ ".round(($carrinhoDados['qntd']*$carrinhoDados['preco']),2); ?>
-                    </td>
-                  </tr>
-                  <?php } ?> 
+                    <tr>
+                      <td>
+                        <?php if (strstr($carrinhoDados['produto'], ' ', true)) {
+                          echo strstr($carrinhoDados['produto'], ' ', true) . " ";
+                        } else {
+                          echo $carrinhoDados['produto'];
+                        } ?>
+                      </td>
+                      <td>
+                        <?php echo $carrinhoDados['qntd'] . " " . $conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
+                      </td>
+                      <td class="tdCarrinhoPrecoProd">
+                        <?php echo "R$ " . round(($carrinhoDados['qntd'] * $carrinhoDados['preco']), 2); ?>
+                      </td>
+                    </tr>
+                  <?php } ?>
                 </tbody>
               </table>
-            
-            <table class="table table-light">
-              <tbody>
-                <tr>
-                  <td>
-                    <strong>Total:</strong>
-                  </td>
-                  <td style="text-align-last: right;">
-                    R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
 
-            <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Pagar</a>
+              <table class="table table-light">
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>Total:</strong>
+                    </td>
+                    <td  class="tdCarrinhoPrecoTotal">
+                      R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
+              <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Pagar</a>
+
+            </div>
           </div>
-        </div>
-        <!-- /carrinho -->
+          <!-- /carrinho -->
+
+        <?php } ?>
 
         <!-- Nav-principal -->
         <div id="nav-principal" class="collapse navbar-collapse">
@@ -176,23 +201,13 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <?php
-              if (isset($_SESSION['log_id'])) {
-                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
-              } else {
-                echo '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
-              }
-              ?>
+              <!-- NavBar Itens -->
+              <?php echo $NavBarOption1;?>
             </li>
 
+            <!-- NavBar Itens -->
             <li class="nav-item">
-              <?php
-              if (isset($_SESSION['log_id'])) {
-                echo '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
-              } else {
-                echo '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-              }
-              ?>
+              <?php echo $NavBarOption2;?>
             </li>
 
           </ul>
@@ -275,11 +290,11 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 
                       <!-- Produto - Preço -->
                       <div class="input-group">
-                        <label for="precoProduto" style="font-weight: bolder;">Preço do produto:</label>
+                        <label for="precoProduto" id="precoProdutoId">Preço do produto:</label>
                         <div class="row row-precoProduto">
                           <span class="spanTag">R$&nbsp;</span>
-                          <input id="precoProduto" class="form-control precoFreteProduto" type="number" min="0" step="0.05" name="preco_Produto" placeholder="0.0" style="width:100px; display: table-cell;" required />
-                          <span style="align-self: center;" id='preco'></span>
+                          <input id="precoProduto" class="form-control precoFreteProduto" type="number" min="0" step="0.05" name="preco_Produto" placeholder="0.0" required />
+                          <span id='preco'></span>
                         </div>
                       </div>
                       <br>
@@ -288,7 +303,8 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
                       <!-- Produto - quantidade Min -->
                       <div class="form-group">
                         <label for="qntdMinima">Quantidade mínima a ser comprada p/usuário:</label>
-                        <input id="qntdMinima" class="form-control" type="number" min="0" step="0.05" name="qntd_Minima" placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdMin'></span>
+                        <input id="qntdMinima" class="form-control" type="number" min="0" step="0.05" name="qntd_Minima" placeholder="0.0" required />
+                        <span id='qntdMin'></span>
                       </div>
                       <!-- /Produto - quantidade Min -->
 
@@ -313,9 +329,10 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
                       <!-- /Produto - Tipo venda -->
 
                       <!-- Produto - quantidade disponivel -->
-                      <div class="form-group" style="margin-top: 22px;">
+                      <div class="form-group" id="qntdDisponivelDiv">
                         <label for="qntdDisponivel">Quantidade ofertada:</label>
-                        <input id="qntdDisponivel" class="form-control" type="number" min="0" step="0.05" name="qntd_Disponivel" placeholder="0.0" style="width:100px; display: table-cell;" required /><span style="align-self: center;" id='qntdDisp'></span>
+                        <input id="qntdDisponivel" class="form-control" type="number" min="0" step="0.05" name="qntd_Disponivel" placeholder="0.0" required />
+                        <span id='qntdDisp'></span>
                       </div>
                       <!-- /Produto - quantidade disponivel -->
 
@@ -346,7 +363,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
                     <textarea class="form-control" name="descricao_Produto" id="descricaoProduto" cols="15" rows="8" placeholder="Faça uma descrição do seu produto"></textarea>
                   </div>
 
-                  <div class="form-group" style="margin-top: 30px;">
+                  <div class="form-group" id="fotosProdutoDiv">
                     <label for="fotosProduto">Fotos do produto:</label>
                     <p id='qntdImagens'>Máximo: 5 fotos</p>
                     <input class="form-control-file" id="fotos" type="file" name="produtos[]" oninput="checkQntdFotosProduto(this)" onChange="contarArquivos()" max-uploads="5" accept="image/png, image/jpeg, image/jpg, image/bmp, image/gif" multiple>
@@ -389,11 +406,11 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
           <img class="img-fluid" src="../img/logo/DaRoca.svg" alt="">
         </div>
 
-        <div class="col-md-2">
+        <div class="col-md-2 rodapeCol">
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="../views/login.php">Entrar</a>
+              <a href="">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -409,9 +426,10 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
             </li>
           </ul>
         </div>
-        <div class="col-md-2">
+
+        <div class="col-md-2 rodapeCol">
           <h4>Mais buscados</h4>
-          <div class="col-md-2 colBuscados" style="float: left;">
+          <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frutas</a>
@@ -427,7 +445,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
               </li>
             </ul>
           </div>
-          <div class="col-md-2 colBuscados" style="float: right;">
+          <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
                 <a href="">Frios</a>
@@ -439,7 +457,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
           </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
               <a href="" class="m-2">

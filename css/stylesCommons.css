@@ -30,32 +30,37 @@ body {
     padding-top: 20px;
 }
 
-
-.btn{
+.btn {
     align-self: stretch;
 }
 
 footer {
     color: white;
-  }
+}
 
-  img{
-      image-rendering: auto;
-  }
+img {
+    image-rendering: auto;
+}
 
-  .isDisabled {
+.isDisabled {
     color: currentColor;
     cursor: not-allowed;
     text-decoration: none;
     pointer-events: none;
-  }
+}
 
-  .isDisabled > a {
+.isDisabled>a {
     color: currentColor;
-    display: inline-block;  /* For IE11/ MS Edge bug */
+    display: inline-block;
+    /* For IE11/ MS Edge bug */
     pointer-events: none;
     text-decoration: none;
-  }
+}
+
+/* .corpo .main{
+    min-height: 794px!important;
+} */
+
 /* =============== Nav ===============*/
 
 /* estilo da navbar */
@@ -196,11 +201,11 @@ nav.navbar-style {
 
 /* =============== Breadcumb  */
 
-.breadcrumb{
+.breadcrumb {
     background-color: unset;
 }
 
-.breadcrumb-item a{
+.breadcrumb-item a {
     color: #8c8c8c;
 }
 
@@ -266,6 +271,15 @@ nav.navbar-style {
     padding-left: 0;
 }
 
+#colBuscadosD{
+    float: right;
+}
+
+
+#colBuscadosE{
+    float: left;
+}
+
 footer {
     background: #000;
     padding: 50px 0px 20px 0px;
@@ -302,16 +316,34 @@ footer .col-md-6 img {
     width: 100%;
 }
 
-.colBuscados1{
+.colBuscados1 {
     float: left;
 }
 
-.colBuscados2{
+.colBuscados2 {
     float: right;
+}
+
+
+.tableCarrinho{
+    border-bottom: 1px dashed black;
+}
+
+.tdCarrinhoPrecoProd{
+    padding-left: 2px; 
+    padding-right: 2px;
+}
+
+.tdCarrinhoPrecoTotal{
+    text-align-last: right;
+}
+
+.redesSociaisCol{
+    margin-top: 20px;
 }
 /* =============== responsive ===============*/
 
-@media (min-width: 300px) and (max-width: 767.98px) {
+@media (max-width: 350px) {
     /* Container dentro da Navbar */
     .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
         justify-content: flex-start;
@@ -323,7 +355,7 @@ footer .col-md-6 img {
     }
     /* posicionamento do dropdown do carrinho */
     .dropdown-menu {
-        left: -160%;
+        left: -555%;
     }
     /* tamanho do espaço da searchBar */
     .form-inline .form-control {
@@ -332,8 +364,335 @@ footer .col-md-6 img {
     .corpo .main {
         margin-top: 29%;
     }
-
     footer .navbar-nav a {
         font-size: 1.2em;
     }
+    #searchBarTop {
+        margin-left: 10px!important;
+        font-family: auto!important;
+    }
+    .rodapeCol {
+        margin-top: 15px;
+        margin-left: 30px;
+    }
+    #logoFooter {
+        text-align: center;
+    }
+    .redesSociaisCol {
+        margin-right: 15.5%;
+    }
+    #toggleButton {
+        padding-right: 2px;
+        padding-left: 0px;
+    }
+    .car_button {
+        margin-left: 0px;
+    }
+    .car_button>i {
+        margin-left: 0px;
+    }
 }
+
+@media (min-width: 350px) and (max-width: 410px) {
+    /* Container dentro da Navbar */
+    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
+        justify-content: flex-start;
+    }
+    /* Dropdown do carrinho */
+    .dropdown {
+        margin-right: 5%;
+        padding: 0;
+    }
+    /* posicionamento do dropdown do carrinho */
+    .dropdown-menu {
+        left: -550%;
+    }
+    /* tamanho do espaço da searchBar */
+    .form-inline .form-control {
+        width: 23ch;
+    }
+    .corpo .main {
+        margin-top: 29%;
+    }
+    footer .navbar-nav a {
+        font-size: 1.2em;
+    }
+    #searchBarTop {
+        margin-left: 20px!important;
+        font-family: auto!important;
+    }
+    .rodapeCol {
+        margin-top: 15px;
+        margin-left: 30px;
+    }
+    #logoFooter {
+        text-align: center;
+    }
+    .redesSociaisCol {
+        margin-right: 20.5%;
+    }
+    #toggleButton {
+        padding-right: 2px;
+        padding-left: 0px;
+    }
+    .car_button {
+        margin-left: 0px;
+    }
+    .car_button>i {
+        margin-left: 0px;
+    }
+}
+
+
+
+@media (min-width: 410px) and (max-width: 539px) {
+    /* Container dentro da Navbar */
+    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
+        justify-content: flex-start;
+    }
+    /* Dropdown do carrinho */
+    .dropdown {
+        margin-right: 5%;
+        padding: 0;
+    }
+    /* posicionamento do dropdown do carrinho */
+    .dropdown-menu {
+        left: -550%;
+    }
+    /* tamanho do espaço da searchBar */
+    .form-inline .form-control {
+        inline-size: max-content;
+    }
+    .corpo .main {
+        margin-top: 29%;
+    }
+    footer .navbar-nav a {
+        font-size: 1.2em;
+    }
+    #searchBarTop {
+        margin-left: 20px!important;
+        font-family: auto!important;
+    }
+    .rodapeCol {
+        margin-top: 15px;
+        margin-left: 30px;
+        inline-size: min-content;
+    }
+    #logoFooter {
+        text-align: center;
+    }
+    .redesSociaisCol {
+        margin-right: 25%;
+    }
+    #toggleButton {
+        padding-right: 2px;
+        padding-left: 0px;
+    }
+    .car_button {
+        margin-left: 0px;
+    }
+    .car_button>i {
+        margin-left: 0px;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+
+@media (min-width: 539px) and (max-width: 767.98px) {
+    /* Container dentro da Navbar */
+    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
+        justify-content: flex-start;
+    }
+    /* Dropdown do carrinho */
+    .dropdown {
+        margin-right: 5%;
+        padding: 0;
+    }
+    /* posicionamento do dropdown do carrinho */
+    .dropdown-menu {
+        left: -550%;
+    }
+    /* tamanho do espaço da searchBar */
+    .form-inline .form-control {
+        width: 40ch;
+    }
+    .corpo .main {
+        margin-top: 29%;
+    }
+    footer .navbar-nav a {
+        font-size: 1.2em;
+    }
+
+    #searchBarTop {
+        margin-left: 35px!important;
+        font-family: auto!important;
+    }
+
+    .rodapeCol {
+        margin-top: 15px;
+        margin-left: 75px;
+        inline-size: auto;
+    }
+    #logoFooter {
+        text-align: center;
+    }
+    .redesSociaisCol {
+        margin-right: 29%;
+    }
+    #toggleButton {
+        padding-right: 2px;
+        padding-left: 20px;
+    }
+    .car_button {
+        margin-left: 0px;
+    }
+    .car_button>i {
+        margin-left: 0px;
+    }
+}
+
+/*  Medium devices (tablets, 768px and up) */
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    /* Container dentro da Navbar */
+    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
+        justify-content: flex-start;
+    }
+
+    nav.navbar-style{
+        padding: 25px 0px;
+    }
+
+    .navbar-brand{
+        display: none;
+    }
+
+    /* Dropdown do carrinho */
+    .dropdown {
+        margin-right: 2%;
+        margin-left: 2%;
+        padding: 0;
+        min-width: max-content;
+    }
+    /* posicionamento do dropdown do carrinho */
+    .dropdown-menu {
+        left: -550%;
+    }
+    /* tamanho do espaço da searchBar */
+    .form-inline .form-control {
+        width: 40ch;
+    }
+    
+    .corpo .main {
+        margin-top: 29%;
+    }
+    footer .navbar-nav a {
+        font-size: 1.2em;
+    }
+    #searchBarTop {
+        margin-left: 15px!important;
+        font-family: auto!important;
+        flex-flow: row;
+    }
+    .rodapeCol {
+        margin-top: 15px;
+        margin-left: 75px;
+        inline-size: auto;
+    }
+    
+    footer img{
+        width: auto;
+    }
+
+    #logoFooter {
+        text-align: center;
+    }
+    .redesSociaisCol {
+        margin-left: 15%;
+    }
+    #toggleButton {
+        padding-right: 2px;
+        padding-left: 20px;
+    }
+    .car_button {
+        margin-left: 0px;
+    }
+    .car_button>i {
+        margin-left: 0px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .corpo{
+        min-height: -webkit-fill-available!important;
+    }
+
+    /* Container dentro da Navbar */
+    .navbar .container, .navbar .container-fluid, .navbar .container-lg, .navbar .container-md, .navbar .container-sm, .navbar .container-xl {
+        justify-content: flex-start;
+    }
+
+    nav.navbar-style{
+        padding: 25px 0px;
+    }
+    /* Dropdown do carrinho */
+    .dropdown {
+        margin-right: 2%;
+        margin-left: 2%;
+        padding: 0;
+        min-width: max-content;
+    }
+    /* posicionamento do dropdown do carrinho */
+    .dropdown-menu {
+        left: -550%;
+    }
+    /* tamanho do espaço da searchBar */
+    .form-inline .form-control {
+        width: 40ch;
+    }
+    
+    .corpo .main {
+        margin-top: 29%;
+    }
+    footer .navbar-nav a {
+        font-size: 1.2em;
+    }
+    #searchBarTop {
+        margin-left: 15px!important;
+        font-family: auto!important;
+        flex-flow: row;
+    }
+    .rodapeCol {
+        margin-top: 15px;
+        margin-left: 75px;
+        inline-size: auto;
+    }
+    
+    footer img{
+        width: auto;
+    }
+
+    #logoFooter {
+        text-align: center;
+    }
+    .redesSociaisCol {
+        margin-left: 13%;
+    }
+    #toggleButton {
+        padding-right: 2px;
+        padding-left: 20px;
+    }
+    .car_button {
+        margin-left: 0px;
+    }
+    .car_button>i {
+        margin-left: 0px;
+    }
+
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+
+@media (min-width: 1200px) {}
