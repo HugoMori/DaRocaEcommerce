@@ -26,7 +26,7 @@ class controlRequest
         $result = $conn->loginCliente($email, $senha_user);
         
         if ($result == 0) {
-            echo "<script>console.log('Conexão bem sucedida' );</script>";
+            echo "<script>console.log('Login: ".$email."/Senha: ".$senha_user."' );</script>";
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível realizar o login!<br>Login ou senha inválida.</div>";
         }
 

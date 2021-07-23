@@ -267,39 +267,30 @@ class db_conect
     public function loginCliente($email, $pass)
     {
         //query insert
-        $query = 'UPDATE cliente SET last_login = ? WHERE ( email = ? AND senha = ? )';
-        
+        $query = 'UPDATE `cliente` SET last_login = ? WHERE email = ? AND senha = ?';
         // Prepare a query for execution
         if ($resultSttmt = mysqli_prepare(self::$conn, $query)) {
             /*
-            Character	Description
-            i	corresponding variable has type integer
-            d	corresponding variable has type double
-            s	corresponding variable has type string
-            b	corresponding variable is a binary (such as image, PDF file, etc.)
-        */
+                Character	Description
+                i	corresponding variable has type integer
+                d	corresponding variable has type double
+                s	corresponding variable has type string
+                b	corresponding variable is a binary (such as image, PDF file, etc.)
+            */
             //bind param
-            mysqli_stmt_bind_param($resultSttmt, 'sss', date("d-m-Y h:i:sa"), $email, $pass);
-            mysqli_stmt_execute($resultSttmt);
+            mysqli_stmt_bind_param($resultSttmt,'sss', date("d-m-Y h:i:sa"), $email, $pass);
 
-            echo "<script>console.log('Conexão bem sucedida' );</script>";
+            mysqli_stmt_execute($resultSttmt);
 
             $success = mysqli_affected_rows(self::$conn);
             // Close statement
             mysqli_stmt_close($resultSttmt);
             //verificar se foi cadastrado
-            if($success == 1){
-                return 1;
-            }
-            else{
-                return 0;
-            }
-        }
-        else {
+            return $success;
+        } else {
+            echo "<script>console.log('Não foi possível realizar a operação (Login).\n Erro: " . mysqli_connect_error() . "' );</script>";
             // Close statement
             mysqli_stmt_close($resultSttmt);
-            //verificar se foi cadastrado
-            echo "<script>console.log('Não foi possível realizar o  login. Erro: " . mysqli_connect_error() . "' );</script>";
             return 0;
         }
     }
