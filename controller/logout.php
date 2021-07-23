@@ -21,6 +21,7 @@ if (ini_get("session.use_cookies")) {
     );
 }
 unset($_SESSION['log_id']);
+unset($_SESSION['db_conn']);
 // Por último, destrói a sessão
 session_destroy();
 header("Location: ../views/login.php");

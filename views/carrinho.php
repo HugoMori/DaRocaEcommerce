@@ -41,10 +41,11 @@ if ((!isset($_SESSION['log_id']) == true)) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- FontAwesome-->
@@ -107,12 +108,12 @@ if ((!isset($_SESSION['log_id']) == true)) {
         </div>
         <!-- /SideBar menu-->
 
-        <!-- Formulário -->
-        <form class="form-inline">
-          <input type="text" class="form-control" placeholder="Buscar no Da Roça">
-          <button class="btn btn-outline-success"><i class="fas fa-search"></i></button>
+        <!-- SearchBar -->
+        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+          <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
+          <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
-        <!-- /Formulário -->
+        <!-- /SearchBar -->
 
         <!-- carrinho -->
         <div class="dropdown">
@@ -237,7 +238,16 @@ if ((!isset($_SESSION['log_id']) == true)) {
                   <table class="table table-bordered table-hover">
                     <!-- corpo da tabela -->
                     <tbody>
-                      <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinho)) { ?>
+                      <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinho)) { 
+                      
+                        //setar foto padrão caso não tenha
+                        if ($carrinhoDados['foto'] == "" || $carrinhoDados['foto'] == null) {
+                          $img = "../img/produto/2/dadcacccac88c5a9f279e126e624690c.jpeg";
+                        } else {
+                          $img = $carrinhoDados['foto'];
+                        }
+                        
+                      ?>
 
                         <!-- table row -->
                         <tr>
@@ -259,11 +269,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
                           <td class="tb_foto">
                             <!-- foto do anuncio -->
                             <img id="foto_anuncio" class="img-fluid" 
-                            src="<?php if ($carrinhoDados['foto'] == "" || $carrinhoDados['foto'] == null) {
-                              echo '../img/veg_fruits/brocolisCartoonSurprised.svg';
-                            } else {
-                              echo $carrinhoDados['foto'];
-                            } ?>" alt="Foto do produto anúnciado">
+                            src="<?php echo $img; ?>" alt="Foto do produto anúnciado">
 
                           </td>
                           <!-- /divisão foto -->

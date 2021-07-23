@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 class db_conect
 {
 
@@ -8,6 +8,23 @@ class db_conect
     private $dbname;
     private $user;
     private $password;
+    private $view = 'CREATE VIEW produtos_cadastrados AS
+    SELECT DISTINCT * FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.email
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados;';
 
     public function __construct(
         $host = 'localhost',
@@ -34,7 +51,21 @@ class db_conect
             exit();
         } else {
             echo "<script>console.log('Conexão bem sucedida' );</script>";
+            //CRIAR VIEW
+            if(!isset($_SESSION['db_conn'])){
+                $this->createView();
+                unset($_SESSION['db_conn']);
+                $_SESSION['db_conn'] = 1;
+            }
         }
+    }
+
+    private function createView(){
+
+            $resultSttmt = mysqli_prepare(self::$conn, $this->view);
+            mysqli_stmt_execute($resultSttmt);
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
     }
 
     public function __destruct()
@@ -236,7 +267,9 @@ class db_conect
     public function loginCliente($email, $pass)
     {
         //query insert
-        $query = 'SELECT COUNT(cpf) AS valida FROM cliente WHERE email = ? AND senha = ?';
+        $query = 'UPDATE cliente SET last_login = ? WHERE ( email = ? AND senha = ? )';
+        
+        // Prepare a query for execution
         if ($resultSttmt = mysqli_prepare(self::$conn, $query)) {
             /*
             Character	Description
@@ -244,46 +277,25 @@ class db_conect
             d	corresponding variable has type double
             s	corresponding variable has type string
             b	corresponding variable is a binary (such as image, PDF file, etc.)
-            */
-
+        */
             //bind param
-            mysqli_stmt_bind_param($resultSttmt, 'ss', $email, $pass);
+            mysqli_stmt_bind_param($resultSttmt, 'sss', date("d-m-Y h:i:sa"), $email, $pass);
             mysqli_stmt_execute($resultSttmt);
-            $result = mysqli_stmt_get_result($resultSttmt);
-            $rows = mysqli_fetch_assoc($result);
 
-            if ($rows['valida'] == 1) {
-                //query insert
-                $query = 'UPDATE cliente SET last_login = ? WHERE email = ?';
-                // Prepare a query for execution
-                if ($resultSttmt = mysqli_prepare(self::$conn, $query)) {
-                    /*
-                    Character	Description
-                    i	corresponding variable has type integer
-                    d	corresponding variable has type double
-                    s	corresponding variable has type string
-                    b	corresponding variable is a binary (such as image, PDF file, etc.)
-                */
-                    //bind param
-                    mysqli_stmt_bind_param($resultSttmt, 'sss', date("d-m-Y h:i:sa"), $email, $pass);
-                    mysqli_stmt_execute($resultSttmt);
+            echo "<script>console.log('Conexão bem sucedida' );</script>";
 
-                    echo "<script>console.log('Conexão bem sucedida' );</script>";
-
-                    $success = mysqli_affected_rows(self::$conn);
-                    // Close statement
-                    mysqli_stmt_close($resultSttmt);
-                    //verificar se foi cadastrado
-                    return $success;
-                }
-            } else {
-                // Close statement
-                mysqli_stmt_close($resultSttmt);
-                //verificar se foi cadastrado
-                echo "<script>console.log('Não foi possível realizar o  login. Erro: " . mysqli_connect_error() . "' );</script>";
+            $success = mysqli_affected_rows(self::$conn);
+            // Close statement
+            mysqli_stmt_close($resultSttmt);
+            //verificar se foi cadastrado
+            if($success == 1){
+                return 1;
+            }
+            else{
                 return 0;
             }
-        } else {
+        }
+        else {
             // Close statement
             mysqli_stmt_close($resultSttmt);
             //verificar se foi cadastrado

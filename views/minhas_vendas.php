@@ -53,10 +53,11 @@ if ((!isset($_SESSION['log_id']) == true)) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- FontAwesome-->
@@ -118,12 +119,12 @@ if ((!isset($_SESSION['log_id']) == true)) {
         </div>
         <!-- /SideBar menu-->
 
-        <!-- Formulário -->
-        <form class="form-inline">
-          <input type="text" class="form-control" placeholder="Buscar no Da Roça">
-          <button class="btn btn-outline-success"><i class="fas fa-search"></i></button>
+        <!-- SearchBar -->
+        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+          <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
+          <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
-        <!-- /Formulário -->
+        <!-- /SearchBar -->
 
         <!-- carrinho -->
         <div class="dropdown">
@@ -247,7 +248,16 @@ if ((!isset($_SESSION['log_id']) == true)) {
                   <!-- corpo da tabela -->
                   <tbody>
 
-                    <?php while ($rows = mysqli_fetch_assoc($result)) {?>
+                    <?php while ($rows = mysqli_fetch_assoc($result)) {
+                      
+                      //setar foto padrão caso não tenha
+                      if ($rows['foto_produto'] == "" || $rows['foto_produto'] == null) {
+                        $img = "../img/produto/2/dadcacccac88c5a9f279e126e624690c.jpeg";
+                      } else {
+                        $img = $rows['foto_produto'];
+                      }  
+                      
+                    ?>
                       
                       <!-- table row -->
                       <tr style="display: table-row;">
@@ -256,12 +266,7 @@ if ((!isset($_SESSION['log_id']) == true)) {
                         <td class="tb_foto">
                           <a class="nav-link" href="../views/produtoStore.php?produto=<?php echo $rows['produto_id']; ?>">
                             <img id="foto_produto" class="img-fluid" 
-                            src="<?php 
-                            if ($rows['foto_produto'] == "" || $rows['foto_produto'] == null) {
-                              echo '../img/veg_fruits/brocolisCartoonSurprised.svg';} 
-                            else {
-                                    echo $rows['foto_produto'];
-                            } ?>" alt="Foto do produto anúnciado">
+                            src="<?php echo $img; ?>" alt="Foto do produto anúnciado">
                           </a>
                         </td>
                         <!-- divisão infos prod -->

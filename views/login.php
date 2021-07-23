@@ -15,17 +15,16 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
     if ($conn->login($email_user, $senha_user)) {
       $_SESSION['log_id'] = $email_user;
       header("Location: ../views/minha_conta.php");
-    } else {
-      header("Location: ../controller/logout.php");
-    }
+    } 
   }
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- FontAwesome-->
@@ -87,12 +86,12 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
         </div>
         <!-- /SideBar menu-->
 
-        <!-- Formulário -->
-        <form class="form-inline">
-          <input type="text" class="form-control" placeholder="Buscar no Da Roça">
-          <button class="btn btn-outline-success"><i class="fas fa-search"></i></button>
+        <!-- SearchBar -->
+        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+          <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
+          <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
-        <!-- /Formulário -->
+        <!-- /SearchBar -->
 
         <!-- carrinho -->
         <div class="dropdown">
@@ -209,10 +208,10 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
                   <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
 
                     <div class="form-group">
-                      <input id="emailUser" class="form-control" type="email" name="email_user" placeholder="Digite seu e-mail" required>
+                      <input id="emailUser" class="form-control" type="email" name="email_user" placeholder="Digite seu e-mail" autocomplete="off" required>
                     </div>
                     <div class="form-group">
-                      <input id="senhaUser" class="form-control" type="password" name="senha_user" placeholder="Digite sua senha" required>
+                      <input id="senhaUser" class="form-control" type="password" name="senha_user" placeholder="Digite sua senha" autocomplete="off" required>
                     </div>
 
                     <input class="btn btn-primary" type="submit" name="commit" value="Login">

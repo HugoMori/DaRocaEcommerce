@@ -79,10 +79,11 @@ else {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- FontAwesome-->
@@ -144,12 +145,12 @@ else {
         </div>
         <!-- /SideBar menu-->
 
-        <!-- Formulário -->
-        <form class="form-inline">
-          <input type="text" class="form-control" placeholder="Buscar no Da Roça">
-          <button class="btn btn-outline-success"><i class="fas fa-search"></i></button>
+        <!-- SearchBar -->
+        <form method="get" action="../views/produtos.php" class="form-inline" enctype="multipart/form-data">
+          <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
+          <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
-        <!-- /Formulário -->
+        <!-- /SearchBar -->
 
         <!-- carrinho -->
         <div class="dropdown">
@@ -252,15 +253,13 @@ else {
                 <li class="breadcrumb-item">
                   <a href="javascript:history.back()">Voltar</a>
                 </li>
-                <li class="breadcrumb-item">
+                <li class="breadcrumb-item isDisabled">
                   <a href="#"><?php echo $conn->categoriaProduto($DadosProduto['categoria']); ?></a>
                 </li>
                 <li class="breadcrumb-item">
-                  <a href="#">
-                  <?php if(strstr($DadosProduto['produto'], ' ', true)){
-                    echo strstr($DadosProduto['produto'], ' ', true);
-                    }else{ echo $DadosProduto['produto'];} ?>
-                  </a>
+                  <?php if(strstr($DadosProduto['produto'], ' ', true)){ $nomeProd = strstr($DadosProduto['produto'], ' ', true);}
+                    else{ $nomeProd = $DadosProduto['produto'];} ?>
+                  <a href="../views/produtos.php?prod=<?php echo $nomeProd;?>"><?php echo $nomeProd;?></a>
                 </li>
               </ol>
 

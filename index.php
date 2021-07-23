@@ -3,21 +3,24 @@ session_start();
 if (!isset($_SESSION['log_id'])) {
   unset($_SESSION['log_id']);
 }
-else{
-  //inclui o php que contém a conexão com o banco e o php de request/send dados
-  include 'controller/controlRequest.php';
-  $conn = new controlRequest();
-  //carrinho dropdow
+
+//inclui o php que contém a conexão com o banco e o php de request/send dados
+include 'controller/controlRequest.php';
+$conn = new controlRequest();
+//carrinho dropdow
+if (isset($_SESSION['log_id'])) {
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
   $carrinhoDropDow = $conn->requestDadosCarrinho($_SESSION['log_id']);
 }
+
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
   <!-- FontAwesome-->
@@ -59,84 +62,94 @@ else{
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
           <div class="row">
-            <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo '<a class="mySidenav-link" href="href="views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
-                }
-                else{
-                  echo '<a class="mySidenav-link" href="href="views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-                }
-              ?>
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="href="views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="href="views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+            }
+            ?>
           </div>
           <div class="row">
-            <?php 
-              if(isset($_SESSION['log_id'])){
-                echo '<a class="mySidenav-link" href="views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
-              }
-              else{
-                echo '<a class="mySidenav-link" href="views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
-              }
+            <?php
+            if (isset($_SESSION['log_id'])) {
+              echo '<a class="mySidenav-link" href="views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
+            } else {
+              echo '<a class="mySidenav-link" href="views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+            }
             ?>
           </div>
         </div>
         <!-- /SideBar menu-->
 
-        <!-- Formulário -->
-        <form class="form-inline">
-          <input type="text" class="form-control" placeholder="Buscar no Da Roça">
-          <button class="btn btn-outline-success"><i class="fas fa-search"></i></button>
+        <!-- SearchBar -->
+        <form method="get" action="views/produtos.php" class="form-inline" enctype="multipart/form-data">
+          <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
+          <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
         </form>
-        <!-- /Formulário -->
+        <!-- /SearchBar -->
 
-        <!-- carrinho -->
-        <div class="dropdown">
-          <a href="#" class="car_button" data-toggle="dropdown">
-            <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
-            <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
-          </a>
-          <div class="dropdown-menu">
-            
-            <table class="table table-light" style="border-bottom: 1px dashed black;">
+        <?php
+        if (!isset($_SESSION['log_id'])) {
+          echo $conn->unsetCarrinho();
+        }
+        ?>
+
+        <?php if (isset($_SESSION['log_id'])) { ?>
+
+          <!-- carrinho -->
+          <div class="dropdown">
+            <a href="#" class="car_button" data-toggle="dropdown">
+              <i id="carrinho_icon" class="fa fa-shopping-cart"></i>
+              <span class="badge badge-success"><?php echo $carrinho_QntdProdutos_Valor['qntd_produtos']; ?></span><br>
+            </a>
+            <div class="dropdown-menu">
+
+              <table class="table table-light" style="border-bottom: 1px dashed black;">
                 <tbody>
                   <th>Produto</th>
                   <th>Quantidade</th>
                   <th>Custo</th>
                   <?php while ($carrinhoDados = mysqli_fetch_assoc($carrinhoDropDow)) { ?>
-                  <tr>
-                    <td>
-                      <?php if(strstr($carrinhoDados['produto'], ' ', true)){
-                      echo strstr($carrinhoDados['produto'], ' ', true)." ";
-                      }else{ echo $carrinhoDados['produto'];}?>
-                    </td>
-                    <td>
-                      <?php echo $carrinhoDados['qntd']." ".$conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
-                    </td>
-                    <td style="padding-left: 2px; padding-right: 2px;">
-                      <?php echo "R$ ".round(($carrinhoDados['qntd']*$carrinhoDados['preco']),2); ?>
-                    </td>
-                  </tr>
-                  <?php } ?> 
+                    <tr>
+                      <td>
+                        <?php if (strstr($carrinhoDados['produto'], ' ', true)) {
+                          echo strstr($carrinhoDados['produto'], ' ', true) . " ";
+                        } else {
+                          echo $carrinhoDados['produto'];
+                        } ?>
+                      </td>
+                      <td>
+                        <?php echo $carrinhoDados['qntd'] . " " . $conn->tipoVendaProduto($carrinhoDados['tipo_venda']); ?>
+                      </td>
+                      <td style="padding-left: 2px; padding-right: 2px;">
+                        <?php echo "R$ " . round(($carrinhoDados['qntd'] * $carrinhoDados['preco']), 2); ?>
+                      </td>
+                    </tr>
+                  <?php } ?>
                 </tbody>
               </table>
-            
-            <table class="table table-light">
-              <tbody>
-                <tr>
-                  <td>
-                    <strong>Total:</strong>
-                  </td>
-                  <td style="text-align-last: right;">
-                    R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
 
-            <a id="checkout" class="dropdown-item" href="views/carrinho.php">Pagar</a>
+              <table class="table table-light">
+                <tbody>
+                  <tr>
+                    <td>
+                      <strong>Total:</strong>
+                    </td>
+                    <td style="text-align-last: right;">
+                      R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
+              <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Pagar</a>
+
+            </div>
           </div>
-        </div>
-        <!-- /carrinho -->
+          <!-- /carrinho -->
+
+        <?php } ?>
 
         <!-- Nav-principal -->
         <div id="nav-principal" class="collapse navbar-collapse">
@@ -144,25 +157,23 @@ else{
 
             <li class="nav-item divisor"></li>
             <li class="nav-item">
-              <?php 
-                if(isset($_SESSION['log_id'])){
-                  echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
-                }
-                else{
-                  echo '<a class="nav-link" href="views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
-                }
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+              } else {
+                echo '<a class="nav-link" href="views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
+              }
               ?>
             </li>
 
             <li class="nav-item">
-                <?php 
-                  if(isset($_SESSION['log_id'])){
-                    echo '<a class="nav-link" href="views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
-                  }
-                  else{
-                    echo '<a class="nav-link" href="views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-                  }
-                ?>
+              <?php
+              if (isset($_SESSION['log_id'])) {
+                echo '<a class="nav-link" href="views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
+              } else {
+                echo '<a class="nav-link" href="views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
+              }
+              ?>
             </li>
 
           </ul>
@@ -253,12 +264,13 @@ else{
         <!-- Search bar e categorias -->
         <div id="searchCategories" class="col-md-6">
           <h2>Encontre fresquinho o que deseja!</h2><br>
-          <!-- Formulário -->
-          <form class="form-inline searchBarForm">
-            <input type="text" class="form-control searchBarForm-input" placeholder="Buscar no Da Roça">
-            <button class="btn btn-outline-success searchBarForm-btn"><i class="fas fa-search"></i></button>
+          
+          <!-- SearchBar -->
+          <form method="get" action="views/produtos.php" class="form-inline" enctype="multipart/form-data">
+            <input name="prod" type="text" class="form-control" placeholder="Buscar no Da Roça">
+            <button type="submit" class="btn btn-outline-success"><i class="fas fa-search"></i></button>
           </form>
-          <!-- /Formulário -->
+          <!-- /SearchBar -->
 
           <h5>Categorias mais procuradas</h5>
 

@@ -38,6 +38,24 @@ body {
 footer {
     color: white;
   }
+
+  img{
+      image-rendering: auto;
+  }
+
+  .isDisabled {
+    color: currentColor;
+    cursor: not-allowed;
+    text-decoration: none;
+    pointer-events: none;
+  }
+
+  .isDisabled > a {
+    color: currentColor;
+    display: inline-block;  /* For IE11/ MS Edge bug */
+    pointer-events: none;
+    text-decoration: none;
+  }
 /* =============== Nav ===============*/
 
 /* estilo da navbar */

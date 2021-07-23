@@ -177,3 +177,79 @@ BEGIN
   	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
   ORDER BY compras.data_compra ASC LIMIT pagina, itens_por_pagina;
 END $$
+
+
+
+CREATE VIEW produtos_cadastrados AS
+SELECT DISTINCT * FROM (SELECT
+	produto.nome AS produto,
+    produto.codigo AS produto_id,
+    produto.categoria,
+    produto.tipo_venda,
+    produto.qntd_disponivel,
+    produto.preco,
+    produto.data_cadastro AS data_anuncio,
+    cliente.cidade,
+    cliente.estado,
+    img_produto.caminho_foto AS foto
+FROM
+	produto
+INNER JOIN cliente ON produto.produtor_fk = cliente.email
+INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados;
+
+
+SELECT * FROM produtos_cadastrados
+
+
+SELECT * FROM produtos_cadastrados
+WHERE
+	LOWER(produtos_cadastrados.produto) LIKE LOWER('BANANA%')
+OR
+	LOWER(produtos_cadastrados.produto) LIKE LOWER('%Fuji%')
+
+//QNTD DE PRODUTOS ANUNCIADOS
+SELECT DISTINCT COUNT(produto_id) FROM produtos_cadastrados
+
+//SELECAO DE CATEGORIAS
+SELECT DISTINCT categoria FROM produtos_cadastrados
+
+//SELECAO DE CIDADES
+SELECT DISTINCT cidade FROM produtos_cadastrados
+
+//SELECAO ESTADO
+SELECT DISTINCT estado FROM produtos_cadastrados
+
+//SELECAO DE PRECOS
+SELECT DISTINCT 
+    MAX(preco) AS maior_preco,
+    MIN(preco) AS menor_preco
+FROM produtos_cadastrados
+
+
+SELECT DISTINCT * FROM (SELECT
+	produto.nome AS produto,
+    produto.codigo AS produto_id,
+    produto.categoria,
+    produto.tipo_venda,
+    produto.qntd_disponivel,
+    produto.preco,
+    produto.data_cadastro AS data_anuncio,
+    cliente.cidade,
+    cliente.estado,
+    img_produto.caminho_foto AS foto
+FROM
+	produto
+INNER JOIN cliente ON produto.produtor_fk = cliente.email
+INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados
+WHERE
+	(LOWER(produtos_cadastrados.produto) LIKE LOWER('BANANA%')
+OR
+	LOWER(produtos_cadastrados.produto) LIKE LOWER('%Fuji%'))
+AND
+	(LOWER(produtos_cadastrados.cidade) LIKE LOWER('Sorocaba%')
+OR 
+     LOWER(produtos_cadastrados.produto) LIKE LOWER('São%'))
+ORDER BY  
+	produtos_cadastrados.data_anuncio ASC
