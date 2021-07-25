@@ -84,11 +84,11 @@ else {
 if (isset($_SESSION['log_id'])) {
 
   //menu option (SIDE BAR MENU)
-  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+  $sideBarOption1 = '<a class="mySidenav-link" href="../views/minhas_compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
   $sideBarOption2 = '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
 
   // NavBar Itens
-  $NavBarOption1 = '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+  $NavBarOption1 = '<a class="nav-link" href="../views/minhas_compras.php"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
   $NavBarOption2 = '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
 
 }
@@ -96,7 +96,7 @@ if (isset($_SESSION['log_id'])) {
 else {
 
   //menu option (SIDE BAR MENU)
-  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+  $sideBarOption1 = '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
   $sideBarOption2 = '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
 
   // NavBar Itens
@@ -135,7 +135,7 @@ else {
     <!-- fixed bar -->
     <nav class="navbar navbar-expand-md navbar-light fixed-top navbar-style">
       <!-- Container -->
-      <div class="container">
+      <div class="container top-container">
 
         <!-- Logo -->
         <a href="../index.php" class="navbar-brand">
@@ -144,7 +144,7 @@ else {
         <!-- /Logo -->
 
         <!-- Menu Toogle -->
-        <button id="toggleButton" class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
+        <button id="toggleButton" class="navbar-toggler d-md-block d-lg-none" data-toggle="collapse" onclick="openNav()">
           <i class="fas fa-bars text-white"></i>
         </button>
         <!-- /Menu Toogle -->
@@ -298,7 +298,7 @@ else {
           <!-- container -->
           <div class="container basic-container">
             <!-- row -->
-            <div class="d-flex flex-row">
+            <div class="d-flex flex-row" id="rowProduto">
 
               <!-- coluna com as fotos/informações do produto/descrição -->
               <div class="col-md-7">
@@ -326,7 +326,7 @@ else {
                 <!-- /ROW imagens -->
 
                 <!-- Tabela com as informações do produto -->
-                <table class="table table-light">
+                <table class="table table-light" id="tb-caracteristicaProd">
                   <tbody>
                     <th>Características do produto</th>
                     
@@ -336,9 +336,7 @@ else {
                         <!-- Foto categoria -->
                         <span class="caracteristica-span">
                           <img class="img-fluid" src="../img/logo/categoria.svg" alt="categoria imagem">
-                        </span>
-                        <span>
-                          Categoria:&nbsp;<strong><?php echo $conn->categoriaProduto($DadosProduto['categoria']); ?></strong>
+                            Categoria:&nbsp;<strong><?php echo $conn->categoriaProduto($DadosProduto['categoria']); ?></strong>
                         </span>
                       </td>
                     </tr>
@@ -349,8 +347,6 @@ else {
                         <!-- Foto qntd minima -->
                         <span class="caracteristica-span">
                           <img class="img-fluid" src="../img/logo/qntd_min.svg" alt="categoria imagem">
-                        </span>
-                        <span>
                           Mínima quantidade comprada:&nbsp;
                           <strong>
                             <?php echo $DadosProduto['qntd_min_vendida'] . " " . $conn->tipoVendaProduto($DadosProduto['tipo_venda']); ?>
@@ -383,7 +379,7 @@ else {
                 <!-- /Tabela com as informações do produto -->
 
                 <!-- Tabela com descriçaõ -->
-                <table class="table table-light">
+                <table class="table table-light" id="tb-descricao">
                   <tbody>
                     <th>Descrição</th>
                     <tr>
@@ -394,7 +390,7 @@ else {
                 <!-- /Tabela com descriçaõ -->
 
                 <!-- Tabela de perguntas -->
-                <table class="table table-light">
+                <table class="table table-light" id="tb-perguntas">
                   <tbody>
                     <th>Dúvidas e perguntas</th>
                     <tr>
@@ -408,7 +404,7 @@ else {
               <!-- col md 7 -->
 
               <!-- Coluna com formulário p/compra ou add carrinho e quantidade do produto-->
-              <div class="col-md-5">
+              <div class="col-md-5" id="tb-ProdutoPrice">
 
                 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])."?produto=".$codigo; ?>" enctype="multipart/form-data">
 

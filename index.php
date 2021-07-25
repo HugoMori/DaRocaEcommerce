@@ -71,7 +71,7 @@ else {
     <!-- fixed bar -->
     <nav class="navbar navbar-expand-md navbar-light fixed-top navbar-style">
       <!-- Container -->
-      <div class="container">
+      <div class="container top-container">
 
         <!-- Logo -->
         <a href="index.php" class="navbar-brand">
@@ -80,7 +80,7 @@ else {
         <!-- /Logo -->
 
         <!-- Menu Toogle -->
-        <button id="toggleButton" class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
+        <button id="toggleButton" class="navbar-toggler d-md-block d-lg-none" data-toggle="collapse" onclick="openNav()">
           <i class="fas fa-bars text-white"></i>
         </button>
         <!-- /Menu Toogle -->

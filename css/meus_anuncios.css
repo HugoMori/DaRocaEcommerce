@@ -37,17 +37,107 @@
     margin-top: 20px;
 }
 
- /* Extra small devices (portrait phones, less than 576px) */
- @media (max-width: 575.98px) {  }
+/* MARGIN TOP PAGE */
 
+/* Low cust smartphones */
+/* Devices: G4/S5/Iphone 5,6,7,8, X */
+@media (min-width: 300px) and (max-width: 410px) {
+    .corpo .main {
+        margin-top: 21%!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        text-align: -webkit-left;
+    }
+
+    #breadcrumb .breadcrumb-tree {
+        margin-top: 15px;
+    }
+}
+
+/* Medium cust smartphones */
+/* Devices: Pixel 2, XL/Iphone 6 Plus, 7 Plus, 8 Plus/ Surface Duo */
+ @media (min-width: 410px) and (max-width: 575.98px) { 
+    .corpo .main {
+        margin-top: 17%!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        text-align: -webkit-left;
+    }
+
+    #breadcrumb .breadcrumb-tree {
+        margin-top: 15px;
+    }
+    .corpo section .container .row {
+        font-size: large;
+    }
+
+    #foto_anuncio {
+        visibility: hidden;
+    }
+
+  }
+
+/* High and Medium cust smartphones */
  /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) and (max-width: 767.98px) {  }
+@media (min-width: 576px) and (max-width: 767.98px) { 
 
-/*  Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991.98px) {  }
+ }
 
- /* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) and (max-width: 1199.98px) {  }
+/* Tablets */
+/*  Ipad 1, 2, Pro  */
+@media (min-width: 768px) and (max-width: 991.98px) { 
 
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {  }
+    .corpo .main {
+        margin-top: 12%!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: xx-large;
+    }
+
+    .corpo section .container .row {
+        font-size: large;
+    }
+}
+
+ /* Standart monitor*/
+@media (min-width: 992px) and (max-width: 1199.98px) { 
+
+    .corpo .main {
+        margin-top: 14%!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: xx-large;
+    }
+
+    #breadcrumb .breadcrumb-tree li a{
+        font-size: large;
+    }
+
+}
+
+@media (min-width: 1200px) and (max-width: 1439.98px){
+}
+
+@media (min-width: 1440px) and (max-width: 2500.98px){
+
+}
+
+@media (min-width: 2501px) {
+
+    .corpo{
+        min-height: -webkit-fill-available!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: 100px;
+    }
+
+    #breadcrumb .breadcrumb-tree li a {
+        font-size: 35px;
+    }
+
+}

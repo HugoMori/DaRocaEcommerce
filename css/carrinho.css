@@ -67,17 +67,58 @@
     text-align: center;
 }
 
- /* Extra small devices (portrait phones, less than 576px) */
- @media (max-width: 575.98px) {  }
+/* MARGIN TOP PAGE */
 
+/* Low cust smartphones */
+/* Devices: G4/S5/Iphone 5,6,7,8, X */
+@media (min-width: 300px) and (max-width: 410px) {
+    .corpo .main {
+        margin-top: 21%!important;
+    }
+
+    #removerCarrinho{
+        position: absolute!important;
+        margin-left: -265px!important;
+        margin-top: 152px!important;
+    }
+}
+
+/* Medium cust smartphones */
+/* Devices: Pixel 2, XL/Iphone 6 Plus, 7 Plus, 8 Plus/ Surface Duo */
+ @media (min-width: 410px) and (max-width: 539.98px) { 
+    .corpo .main {
+        margin-top: 17%!important;
+    }
+
+    #removerCarrinho{
+        position: absolute!important;
+        margin-left: -210px!important;
+        margin-top: 152px!important;
+    }
+  }
+
+/* High and Medium cust smartphones */
  /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) and (max-width: 767.98px) {  }
+@media (min-width: 540px) and (max-width: 600.98px) {
+ }
 
-/*  Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991.98px) {  }
+ @media (min-width: 601px) and (max-width: 767.98px) { 
+ }
 
- /* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) and (max-width: 1199.98px) {  }
+/* Tablets */
+/*  Ipad 1, 2, Pro  */
+@media (min-width: 768px) and (max-width: 991.98px) { 
+    .corpo .main {
+        margin-top: 12%!important;
+    }
+}
 
-/* Extra large devices (large desktops, 1200px and up) */
+ /* Standart monitor*/
+@media (min-width: 992px) and (max-width: 1199.98px) { 
+    .corpo .main {
+        margin-top: 14%!important;
+    }
+ }
+
+ /* large monitor*/
 @media (min-width: 1200px) {  }

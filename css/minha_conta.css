@@ -117,17 +117,136 @@
     }
 }
 
- /* Extra small devices (portrait phones, less than 576px) */
- @media (max-width: 575.98px) {  }
+  
+/* MARGIN TOP PAGE */
 
+/* Low cust smartphones */
+/* Devices: G4/S5/Iphone 5,6,7,8, X */
+@media (min-width: 300px) and (max-width: 410px) {
+    .corpo .main {
+        margin-top: 21%!important;
+    }
+
+    #anuncieAqui{
+        width: 90px;
+    }
+
+    #Foto_perfil {
+        height: 37%;
+    }
+
+    #DadosConta-col img {
+        width: 90%;
+        height: 19%;]
+    }
+
+    .img_aval {
+        width: 75%!important;
+        height: 20px!important;
+    }
+}
+
+/* Medium cust smartphones */
+/* Devices: Pixel 2, XL/Iphone 6 Plus, 7 Plus, 8 Plus/ Surface Duo */
+ @media (min-width: 410px) and (max-width: 575.98px) { 
+    .corpo .main {
+        margin-top: 17%!important;
+    }
+
+    #anuncieAqui{
+        width: 90px;
+    }
+
+    #Foto_perfil {
+        height: 37%;
+    }
+
+    #DadosConta-col img {
+        width: 90%;
+        height: 19%;]
+    }
+
+    .img_aval {
+        width: 75%!important;
+        height: 20px!important;
+    }
+
+    .btn-secondary {
+        font-size: 18px!important;
+    }
+
+    section{
+        font-size: larger!important;
+    }
+  }
+
+/* High and Medium cust smartphones */
  /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) and (max-width: 767.98px) {  }
+@media (min-width: 576px) and (max-width: 767.98px) { 
 
-/*  Medium devices (tablets, 768px and up) */
-@media (min-width: 768px) and (max-width: 991.98px) {  }
+ }
 
- /* Large devices (desktops, 992px and up) */
-@media (min-width: 992px) and (max-width: 1199.98px) {  }
+/* Tablets */
+/*  Ipad 1, 2, Pro  */
+@media (min-width: 768px) and (max-width: 991.98px) { 
 
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {  }
+    .corpo .main {
+        margin-top: 12%!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: xx-large;
+    }
+
+    #anuncieAqui{
+        width: 122px;
+    }
+
+    #Foto_perfil {
+        height: 37%;
+    }
+}
+
+ /* Standart monitor*/
+@media (min-width: 992px) and (max-width: 1199.98px) { 
+
+    .corpo .main {
+        margin-top: 14%!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: xx-large;
+    }
+
+    .form-group {
+        font-size: x-large;
+    }
+
+    #breadcrumb .breadcrumb-tree li a{
+        font-size: large;
+    }
+
+}
+
+@media (min-width: 1200px) and (max-width: 1439.98px){
+}
+
+@media (min-width: 1440px) and (max-width: 2500.98px){
+
+}
+
+@media (min-width: 2501px) {
+
+    .corpo{
+        min-height: -webkit-fill-available!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: 100px;
+    }
+
+    #breadcrumb .breadcrumb-tree li a {
+        font-size: 35px;
+    }
+
+}

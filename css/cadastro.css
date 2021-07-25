@@ -33,12 +33,6 @@
     margin-bottom: 20px;
 }
 
-@media (min-width: 300px) and (max-width: 410px) {
-    .corpo .main {
-        margin-top: 21%!important;
-    }
-}
-
 @media (min-width: 300px) and (max-width: 767.98px) {
     #btnSubmit {
         margin-top: 30px;
@@ -46,29 +40,142 @@
     }
 }
 
- /* Extra small devices (portrait phones, less than 576px) */
+/* MARGIN TOP PAGE */
+
+/* Low cust smartphones */
+/* Devices: G4/S5/Iphone 5,6,7,8, X */
+@media (min-width: 300px) and (max-width: 410px) {
+    .corpo .main {
+        margin-top: 21%!important;
+    }
+}
+
+/* Medium cust smartphones */
+/* Devices: Pixel 2, XL/Iphone 6 Plus, 7 Plus, 8 Plus/ Surface Duo */
  @media (min-width: 410px) and (max-width: 575.98px) { 
     .corpo .main {
         margin-top: 17%!important;
     }
   }
 
+/* High and Medium cust smartphones */
  /* Small devices (landscape phones, 576px and up) */
-@media (min-width: 576px) and (max-width: 767.98px) {  }
+@media (min-width: 576px) and (max-width: 767.98px) { 
 
-/*  Medium devices (tablets, 768px and up) */
+ }
+
+/* Tablets */
+/*  Ipad 1, 2, Pro  */
 @media (min-width: 768px) and (max-width: 991.98px) { 
-    .corpo .main {
-        margin-top: 12%!important;
+
+    #breadcrumb .breadcrumb-header {
+        font-size: xx-large;
+    }
+
+    .form-group {
+        font-size: larger;
+    }
+
+    #btnSubmit {
+        font-size: larger;
+    }
+
+    #breadcrumb .breadcrumb-tree li a{
+        font-size: initial;
+    }
+
+    #qntdImagens {
+        font-size: large;
+    }
+
+    .form-control {
+        font-size: large;
+    }
+
+    .custom-file-label {
+        font-size: large;
+    }
+
+    #labelFoto {
+        font-size: larger;
     }
 }
 
- /* Large devices (desktops, 992px and up) */
+ /* Standart monitor*/
 @media (min-width: 992px) and (max-width: 1199.98px) { 
-    .corpo .main {
-        margin-top: 14%!important;
+
+    #breadcrumb .breadcrumb-header {
+        font-size: xx-large;
+    }
+
+    .form-group {
+        font-size: x-large;
+    }
+
+    #btnSubmit {
+        font-size: x-large;
+    }
+
+    #breadcrumb .breadcrumb-tree li a{
+        font-size: large;
+    }
+
+    #qntdImagens {
+        font-size: large;
+    }
+
+    .custom-file-label {
+        font-size: large;
+    }
+
+    #labelFoto {
+        font-size: x-large;
     }
  }
 
-/* Extra large devices (large desktops, 1200px and up) */
-@media (min-width: 1200px) {  }
+@media (min-width: 411px) and (max-width: 539.98px) {
+
+    .cadastro-section{
+        font-size: larger;
+    }
+
+    .form-control {
+        font-size: inherit;
+    }
+
+    #btnSubmit {
+        font-size: larger;
+    }
+
+    #breadcrumb .breadcrumb-tree li a {
+        font-size: initial;
+    }
+}
+
+@media (min-width: 1440px) and (max-width: 2500.98px){
+    
+    .corpo .main {
+        margin-top: 10%!important;
+    }
+
+}
+
+@media (min-width: 2501px) {
+
+    .corpo .main {
+        margin-top: 9%!important;
+    }
+
+    .corpo{
+        min-height: -webkit-fill-available!important;
+    }
+
+    #breadcrumb .breadcrumb-header {
+        font-size: 100px;
+    }
+
+    #breadcrumb .breadcrumb-tree li a {
+        font-size: 35px;
+    }
+
+}

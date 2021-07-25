@@ -67,11 +67,11 @@ else {
 if (isset($_SESSION['log_id'])) {
 
   //menu option (SIDE BAR MENU)
-  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+  $sideBarOption1 = '<a class="mySidenav-link" href="../views/minhas_compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
   $sideBarOption2 = '<a class="mySidenav-link" href="../views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
 
   // NavBar Itens
-  $NavBarOption1 = '<a class="nav-link" href="#"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
+  $NavBarOption1 = '<a class="nav-link" href="../views/minhas_compras.php"><i class="far fa-list-alt">&nbsp&nbspMeus pedidos</i></a>';
   $NavBarOption2 = '<a class="nav-link" href="../views/minha_conta.php"><i class="fas fa-user">&nbsp&nbspMinha conta</i></a>';
 
   //NamePage
@@ -81,7 +81,7 @@ if (isset($_SESSION['log_id'])) {
 else {
 
   //menu option (SIDE BAR MENU)
-  $sideBarOption1 = '<a class="mySidenav-link" href="href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+  $sideBarOption1 = '<a class="mySidenav-link" href="../views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
   $sideBarOption2 = '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
 
   // NavBar Itens
@@ -129,7 +129,7 @@ else{
     <!-- fixed bar -->
     <nav class="navbar navbar-expand-md navbar-light fixed-top navbar-style">
       <!-- Container -->
-      <div class="container">
+      <div class="container top-container">
 
         <!-- Logo -->
         <a href="../index.php" class="navbar-brand">
@@ -138,7 +138,7 @@ else{
         <!-- /Logo -->
 
         <!-- Menu Toogle -->
-        <button id="toggleButton" class="navbar-toggler" data-toggle="collapse" onclick="openNav()">
+        <button id="toggleButton" class="navbar-toggler d-md-block d-lg-none" data-toggle="collapse" onclick="openNav()">
           <i class="fas fa-bars text-white"></i>
         </button>
         <!-- /Menu Toogle -->
@@ -273,12 +273,12 @@ else{
               </span>
 
               <!-- Tabela de filtros (Preço/localização/categoria) -->
-              <table class="table table-light">
+              <table class="table table-light tb-filtros">
                 <tbody>
 
                   <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])."?prod=".$_GET['prod']; ?>" enctype="multipart/form-data">
 
-                    <th>Filtros</th>
+                    <th id="th-filtros" >Filtros</th>
 
                     <tr>
 
@@ -400,7 +400,7 @@ else{
 
                             <table class="table table-light">
                               <tbody>
-                                <tr>
+                                <tr id="tr-price">
 
                                   <td class="tbPrecos" id="tbPrecoMenor">
                                     <label for="precoMin">
@@ -439,7 +439,7 @@ else{
 
                     </tr>
 
-                    <tr>
+                    <tr id="tr-input">
 
                       <td id="tdInput">
                         <button type="submit" name="filtros" 

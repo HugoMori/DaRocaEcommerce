@@ -142,3 +142,348 @@ table{
 
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {  }
+
+
+
+/* MARGIN TOP PAGE */
+
+/* Low cust smartphones */
+/* Devices: G4/S5/Iphone 5,6,7,8, X */
+@media (min-width: 300px) and (max-width: 321px) {
+    .corpo .main {
+        margin-top: 21%!important;
+    }
+
+    #rowProduto{
+        height: 2000px;
+    }
+
+    #tb-caracteristicaProd{
+        position: absolute;
+        margin-top: 1305px;
+        margin-left: 0px;
+        width: 259px;
+    }
+
+    #tb-descricao{
+        position: absolute;
+        margin-left: 0px;
+        margin-top: 1564px;
+        width: 259px;
+    }
+
+    #tb-perguntas{
+        visibility: hidden;
+    }
+
+    .cover img{
+            min-width: 200px;
+            min-height: 240px;
+    }  
+
+    .thumbs li img {
+        height: 60px;
+    }
+
+    #tb-ProdutoPrice{
+        position: absolute;
+        margin: 0px;
+        padding: 0px;
+        margin-left: 14px;
+        width: 259px;
+        margin-top: 360px;
+    }
+
+    #qntd-td {
+        inline-size: auto;
+        margin-right: 168px;
+    }
+
+    .caracteristica-span img {
+        width: 10%;
+    }
+
+
+    #tr-datas img {
+        width: 24%;
+    }
+    
+}
+
+@media (min-width: 321px) and (max-width: 409.98px) {
+    .corpo .main {
+        margin-top: 21%!important;
+    }
+
+    #rowProduto{
+        height: 2400px;
+    }
+
+    #tb-caracteristicaProd{
+        position: absolute;
+        margin-top: 1390px;
+        margin-left: 0px;
+        width: 310px;
+    }
+
+    #tb-descricao{
+        position: absolute;
+        margin-left: 0px;
+        margin-top: 1664px;
+        width: 310px;
+    }
+
+    #tb-perguntas{
+        visibility: hidden;
+    }
+
+    .cover img{
+            min-width: 300px;
+            min-height: 340px;
+    }  
+
+    .thumbs li img {
+        height: 80px;
+    }
+
+    #tb-ProdutoPrice{
+        position: absolute;
+        margin: 0px;
+        padding: 0px;
+        margin-left: 14px;
+        width: 310px;
+        margin-top: 453px;
+    }
+
+    #qntd-td {
+        inline-size: auto;
+        margin-right: 168px;
+    }
+
+    .caracteristica-span img {
+        width: 10%;
+    }
+
+
+    #tr-datas img {
+        width: 24%;
+    }
+    
+}
+
+/* Medium cust smartphones */
+/* Devices: Pixel 2, XL/Iphone 6 Plus, 7 Plus, 8 Plus/ Surface Duo */
+ @media (min-width: 410px) and (max-width: 539.98px) { 
+    .corpo .main {
+        margin-top: 17%!important;
+    }
+
+    .dropdown-menu {
+        left: -690%;
+    }
+
+    .table {
+        font-size: larger;
+    }
+
+    .img_aval {
+        width: 28%;
+    }
+
+    .infos-compra{
+        font-size: x-large;
+    }
+
+    .smallInfos {
+        font-size: large;
+    }
+
+    .form-group button {
+        font-size: inherit;
+    }
+
+    #rowProduto{
+        height: 2400px;
+    }
+
+    #frete {
+        width: 15%;
+    }
+
+    #tb-caracteristicaProd{
+        position: absolute;
+        margin-top: 1500px;
+        margin-left: 0px;
+        width: 310px;
+        font-size: large;
+    }
+
+    #tb-descricao{
+        position: absolute;
+        margin-left: 0px;
+        margin-top: 1780px;
+        width: 310px;
+        font-size: large;
+    }
+
+    #tb-perguntas{
+        visibility: hidden;
+    }
+
+    .cover img{
+            min-width: 300px;
+            min-height: 340px;
+    }  
+
+    .thumbs li img {
+        height: 80px;
+    }
+
+    #tb-ProdutoPrice{
+        position: absolute;
+        margin: 0px;
+        padding: 0px;
+        margin-left: 14px;
+        width: 310px;
+        margin-top: 453px;
+    }
+
+    #qntd-td {
+        inline-size: auto;
+        margin-right: 168px;
+    }
+
+    .caracteristica-span img {
+        width: 10%;
+    }
+
+
+    #tr-datas img {
+        width: 24%;
+    }
+  }
+
+/* High and Medium cust smartphones */
+ /* Small devices (landscape phones, 576px and up) */
+@media (min-width: 540px) and (max-width: 767.98px) { 
+    .corpo .main {
+        margin-top: 17%!important;
+    }
+
+    .dropdown-menu {
+        left: -690%;
+    }
+
+    .table {
+        font-size: larger;
+    }
+
+    .img_aval {
+        width: 28%;
+    }
+
+    .infos-compra{
+        font-size: x-large;
+    }
+
+    .smallInfos {
+        font-size: large;
+    }
+
+    .form-group button {
+        font-size: inherit;
+    }
+
+    #rowProduto{
+        height: 2400px;
+    }
+
+    #frete {
+        width: 15%;
+    }
+
+    #tb-caracteristicaProd{
+        position: absolute;
+        margin-top: 1600px;
+        margin-left: 0px;
+        width: 310px;
+        font-size: large;
+    }
+
+    #tb-descricao{
+        position: absolute;
+        margin-left: 0px;
+        margin-top: 1880px;
+        width: 310px;
+        font-size: large;
+    }
+
+    #tb-perguntas{
+        visibility: hidden;
+    }
+
+    .cover img{
+            min-width: 300px;
+            min-height: 340px;
+    }  
+
+    .thumbs li img {
+        height: 80px;
+    }
+
+    #tb-ProdutoPrice{
+        position: absolute;
+        margin: 0px;
+        padding: 0px;
+        margin-left: 14px;
+        width: 310px;
+        margin-top: 553px;
+    }
+
+    #qntd-td {
+        inline-size: auto;
+        margin-right: 168px;
+    }
+
+    .caracteristica-span img {
+        width: 10%;
+    }
+
+
+    #tr-datas img {
+        width: 24%;
+    }
+ }
+
+/* Tablets */
+/*  Ipad 1, 2, Pro  */
+@media (min-width: 768px) and (max-width: 991.98px) { 
+    
+    .cover img {
+        min-width: auto;
+    }
+
+    #qntd-td {
+        margin-top: -20px;
+        margin-right: 126px;
+    }
+    
+}
+
+ /* Standart monitor*/
+@media (min-width: 992px) and (max-width: 1199.98px) { 
+    .corpo .main {
+        margin-top: 14%!important;
+    }
+ }
+
+/* Extra large devices (large desktops, 1200px and up) */
+
+@media (min-width: 1200px) and (max-width: 1439.98px){
+}
+
+@media (min-width: 1440px) and (max-width: 2500.98px){
+}
+
+@media (min-width: 2501px) {
+}
