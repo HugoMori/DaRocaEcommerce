@@ -369,16 +369,9 @@ else {
 
                 <h1>Ops!!</h1>
                 <h3>
-                  Você ainda não realizou nenhum anúncio.<br>
+                  Você ainda não realizou nenhuma compra.<br>
                 </h3>
                 <img class="img-fluid" src="../img/logo/brocolisCartoonSurprised.svg" alt="Logo Da Roça">
-                <h4>
-                  Clique no botão para realizar seu anúncio.<br>
-                </h4>
-                <a href="../views/cadastro_produto2.php">
-                  <button type="button" class="btn btn-success btn-lg">Anunciar produto</button>
-                </a>
-
               </div>
             <?php } ?>
 
