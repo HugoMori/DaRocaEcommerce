@@ -5,6 +5,7 @@ session_start();
 //inclui o php que contém a conexão com o banco e o php de request/send dados
 include '../controller/controlRequest.php';
 $conn = new controlRequest();
+
 //carrinho dropdow
 if (isset($_SESSION['log_id'])) {
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
@@ -13,25 +14,35 @@ if (isset($_SESSION['log_id'])) {
 
 if (isset($_GET['prod']) && ($_GET['prod'] != null || $_GET['prod'] != '' || $_GET['prod'] != ' ')) {
 
+  //numero de itens puxados do bd p/pagina
+  $itensPorPagina = 10;
+  //pegar a pagina atual
+  if (count($_GET['pagina']) > 0) {
+    $page = intval($_GET['pagina']);
+  } else {
+    $page = 0;
+  }
+  if ($page == 0) {
+    $disable = 'disabled';
+  } else {
+    $disable = '';
+  }
+
   //realizar pesquisa
-  $result = $conn->pesquisar($_GET['prod']);
+  $result = $conn->pesquisar($_GET['prod'], $page, $itensPorPagina);
 
   //se a pesquisar tiver dado certo
   $numRowsProd = mysqli_num_rows($result);
+
   if ($numRowsProd > 0) {
     //filtros
-    echo "<script>console.log(Posts: " . count($_POST) . "' );</script>";
     if (count($_POST) > 0) {
       //POST filtros
-      if(isset($_POST['filtros'])){
+      if (isset($_POST['filtros'])) {
         $result = $conn->pesquisarFiltros($_POST['checkCategoria'], $_POST['precoMax'], $_POST['precoMin'], $_POST['checkCidade']);
         $numRowsProd = mysqli_num_rows($result);
         unset($_POST['filtros']);
       }
-      //POST ordenar
-      // if(){
-        
-      // }
     }
 
     //selecionar as categorias
@@ -47,6 +58,11 @@ if (isset($_GET['prod']) && ($_GET['prod'] != null || $_GET['prod'] != '' || $_G
     $qntdProdutos = $conn->pesquisarQntdProdutos();
     $qntdResultados = mysqli_fetch_assoc($qntdProdutos);
     $numRowsQtdProdutos = mysqli_num_rows($qntdProdutos);
+
+    //num de produtos no bd
+    $pagesDB = $numRowsQtdProdutos;
+    //num de paginas
+    $paginas = ceil($pagesDB / $itensPorPagina);
 
     unset($_SESSION['consulta']);
     unset($_SESSION['subConsulta']);
@@ -87,13 +103,11 @@ else {
   // NavBar Itens
   $NavBarOption1 = '<a class="nav-link" href="../views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
   $NavBarOption2 = '<a class="nav-link" href="../views/login.php"><i class="fas fa-sign-in-alt">&nbsp&nbspEntrar</i></a>';
-
 }
 
-if(isset($_GET['prod']) && $_GET['prod'] != ''){
+if (isset($_GET['prod']) && $_GET['prod'] != '') {
   $nomeProduto = ucfirst(mb_strtolower($_GET['prod'], 'UTF-8'));
-}
-else{
+} else {
   $nomeProduto = "Todos os produtos";
 }
 
@@ -211,7 +225,7 @@ else{
                     <td>
                       <strong>Total:</strong>
                     </td>
-                    <td  class="tdCarrinhoPrecoTotal">
+                    <td class="tdCarrinhoPrecoTotal">
                       R$ <?php echo $carrinho_QntdProdutos_Valor['total']; ?>
                     </td>
                   </tr>
@@ -233,12 +247,12 @@ else{
             <li class="nav-item divisor"></li>
             <li class="nav-item">
               <!-- NavBar Itens -->
-              <?php echo $NavBarOption1;?>
+              <?php echo $NavBarOption1; ?>
             </li>
 
             <!-- NavBar Itens -->
             <li class="nav-item">
-              <?php echo $NavBarOption2;?>
+              <?php echo $NavBarOption2; ?>
             </li>
 
           </ul>
@@ -265,7 +279,7 @@ else{
 
               <!-- Nome do que está sendo pesquisado -->
               <h1 id="h1NomeProd">
-                <?php echo $nomeProduto;?>
+                <?php echo $nomeProduto; ?>
               </h1>
               <!-- Qntd de produtos -->
               <span id="spanQntdResultados">
@@ -276,9 +290,9 @@ else{
               <table class="table table-light tb-filtros">
                 <tbody>
 
-                  <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"])."?prod=".$_GET['prod']; ?>" enctype="multipart/form-data">
+                  <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?prod=" . $_GET['prod']; ?>" enctype="multipart/form-data">
 
-                    <th id="th-filtros" >Filtros</th>
+                    <th id="th-filtros">Filtros</th>
 
                     <tr>
 
@@ -292,30 +306,27 @@ else{
                           <?php if ($numRowsCategoria) { ?>
 
                             <!-- while com checkbox -->
-                            <?php while ($rows = mysqli_fetch_assoc($categorias)) { 
-                              
+                            <?php while ($rows = mysqli_fetch_assoc($categorias)) {
+
                               //categoria
-                              if(isset($_POST['checkCategoria'])){
-                                  $i = 0;
-                                  while($i < count($_POST['checkCategoria'])){
-                                      if($rows['categoria'] == $_POST['checkCategoria'][$i]){
-                                        $check = "checked";
-                                      }
-                                      $i++; 
+                              if (isset($_POST['checkCategoria'])) {
+                                $i = 0;
+                                while ($i < count($_POST['checkCategoria'])) {
+                                  if ($rows['categoria'] == $_POST['checkCategoria'][$i]) {
+                                    $check = "checked";
                                   }
-                              }
-                              else{
+                                  $i++;
+                                }
+                              } else {
                                 $check = "";
                               }
-                            
+
                             ?>
 
                               <div class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                name="checkCategoria[]" value="<?php echo $rows['categoria']; ?>" id="checkCategoria"
-                                <?php echo $check; ?>>
+                                <input class="form-check-input" type="checkbox" name="checkCategoria[]" value="<?php echo $rows['categoria']; ?>" id="checkCategoria" <?php echo $check; ?>>
                                 <label class="form-check-label" for="checkCategoria">
-                                  <?php echo $conn->categoriaProduto($rows['categoria']); ?>
+                                  <?php echo $rows['categoria']; ?>
                                 </label>
                               </div>
 
@@ -344,28 +355,25 @@ else{
                           <?php if ($numRowsCidades) { ?>
 
                             <!-- while com checkbox -->
-                            <?php while ($rows = mysqli_fetch_assoc($cidades)) { 
-                              
+                            <?php while ($rows = mysqli_fetch_assoc($cidades)) {
+
                               //localizacao
-                              if(isset($_POST['checkCidade'])){
+                              if (isset($_POST['checkCidade'])) {
                                 $i = 0;
-                                while($i < count($_POST['checkCidade'])){
-                                    if($rows['cidade'] == $_POST['checkCidade'][$i]){
-                                      $check = "checked";
-                                    }
-                                    $i++; 
+                                while ($i < count($_POST['checkCidade'])) {
+                                  if ($rows['cidade'] == $_POST['checkCidade'][$i]) {
+                                    $check = "checked";
+                                  }
+                                  $i++;
                                 }
-                              }
-                              else{
+                              } else {
                                 $check = "";
                               }
-                              
+
                             ?>
 
                               <div class="form-check">
-                                <input class="form-check-input" type="checkbox" 
-                                name="checkCidade[]" value="<?php echo $rows['cidade']; ?>" id="checkCidade"
-                                <?php echo $check; ?>>
+                                <input class="form-check-input" type="checkbox" name="checkCidade[]" value="<?php echo $rows['cidade']; ?>" id="checkCidade" <?php echo $check; ?>>
                                 <label class="form-check-label" for="checkCidade">
                                   <?php echo $rows['cidade']; ?>
                                 </label>
@@ -407,9 +415,7 @@ else{
                                       Mínimo:
                                     </label>
                                     <span class="spanPreco">
-                                      R$ <input class="inputPreco" type="number" name="precoMin" 
-                                      value="<?php echo $rows['menor_preco']; ?>" id="precoMin"
-                                      step="0.1">
+                                      R$ <input class="inputPreco" type="number" name="precoMin" value="<?php echo $rows['menor_preco']; ?>" id="precoMin" step="0.1">
                                     </span>
 
                                   </td>
@@ -419,9 +425,7 @@ else{
                                       Máximo:
                                     </label>
                                     <span class="spanPreco">
-                                      R$ <input class="inputPreco" type="number" name="precoMax" 
-                                      value="<?php echo $rows['maior_preco']; ?>" id="precoMax"
-                                      step="0.1">
+                                      R$ <input class="inputPreco" type="number" name="precoMax" value="<?php echo $rows['maior_preco']; ?>" id="precoMax" step="0.1">
                                     </span>
                                   </td>
 
@@ -442,8 +446,7 @@ else{
                     <tr id="tr-input">
 
                       <td id="tdInput">
-                        <button type="submit" name="filtros" 
-                        class="btn btn-secondary btn-sm">Pesquisar</button>
+                        <button type="submit" name="filtros" class="btn btn-secondary btn-sm">Pesquisar</button>
                       </td>
 
                     </tr>
@@ -520,7 +523,7 @@ else{
                             <!-- categoria -->
                             <li>
                               <span class="spanImgCategoria"><img src="../img/logo/categoria.svg" alt=""></span>
-                              <?php echo $conn->categoriaProduto($rows['categoria']); ?>
+                              <?php echo $rows['categoria']; ?>
                             </li>
 
                             <!-- tipo venda -->
@@ -550,19 +553,66 @@ else{
 
                     <?php } ?>
                     <!-- /Loop de produtos -->
-                  <?php } ?>
+                    <!-- <!php } ?> -->
 
                 </tbody>
               </table>
 
-              <?php ?>
-              <!-- /if(numRows != 0) -->
+              <div class="d-flex flex-row paginacao">
 
-              <!-- Se não tiver produtos-->
-              <?php ?>
+                <!-- paginação -->
+                <nav aria-label="...">
+                  <ul class="pagination">
+                    <li class="page-item <?php echo $disable; ?>">
+                      <a href="../views/produtos.php?prod=<?php echo $_GET['prod']; ?>&pagina=0">
+                        <span class="page-link">Primeira</span>
+                      </a>
+                    </li>
+                    <?php for ($i = 0; $i < $paginas; $i++) {
+                      $activePage = "";
+                      if ($paginas == $i) {
+                        $activePage = 'active';
+                      }
 
-              <?php ?>
-              <!-- /else numRows -->
+                      if ($paginas > $i + 1) {
+                        $disable = '';
+                        echo '<li class="page-item ' . $activePage . '">
+                            <a class="page-link" href="../views/produtos.php?prod=' . $_GET["prod"] . '&?pagina=' . $i . '">' . ($i + 1) . '</a>
+                            </li>';
+                      } else {
+                        $disable = 'disabled';
+                      }
+                    ?>
+                    <?php } ?>
+                    <li class="page-item <?php echo $disable; ?>">
+                      <a class="page-link" href="../views/produtos.php?prod=<?php echo $_GET['prod']; ?>&pagina=<?php echo $paginas - 1; ?>">Última</a>
+                    </li>
+                  </ul>
+                </nav>
+                <!-- /paginação -->
+
+              <?php } ?>
+              <!-- /if ($numRows > 0) -->
+              <?php if ($numRowsProd <= 0) { ?>
+                <!-- todo espaço da tela -->
+                <div class="col-md-12 capa">
+
+                  <h1>Ops!!</h1>
+                  <h3>
+                    Você ainda não realizou nenhum anúncio.<br>
+                  </h3>
+                  <img class="img-fluid" src="../img/logo/brocolisCartoonSurprised.svg" alt="Logo Da Roça">
+                  <h4>
+                    Clique no botão para realizar seu anúncio.<br>
+                  </h4>
+                  <a href="../views/cadastro_produto.php">
+                    <button type="button" class="btn btn-success btn-lg">Anunciar produto</button>
+                  </a>
+
+                </div>
+              <?php } ?>
+
+              </div>
 
             </article>
             <!-- /Produtos -->
@@ -589,7 +639,7 @@ else{
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="">Entrar</a>
+              <a href="../views/login.php">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -611,26 +661,26 @@ else{
           <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frutas</a>
+                <a href="../views/produtos.php?prod=Frutas">Frutas</a>
               </li>
               <li>
-                <a href="">Verduras</a>
+                <a href="../views/produtos.php?prod=Verduras">Verduras</a>
               </li>
               <li>
-                <a href="">Bebidas</a>
+                <a href="../views/produtos.php?prod=Bebidas">Bebidas</a>
               </li>
               <li>
-                <a href="">Legumes</a>
+                <a href="../views/produtos.php?prod=Legumes">Legumes</a>
               </li>
             </ul>
           </div>
           <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frios</a>
+                <a href="../views/produtos.php?prod=Frios">Frios</a>
               </li>
               <li>
-                <a href="">Especiarias</a>
+                <a href="../views/produtos.php?prod=Especiarias">Especiarias</a>
               </li>
             </ul>
           </div>
@@ -639,18 +689,18 @@ else{
         <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
-              <a href="" class="m-2">
+              <a href="https://www.facebook.com/hugo.mori.9" target='_blank' class="m-2">
                 <img src="../img/midias/facebook.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="../img/midias/twitter.png" alt="">
+              <a href="https://github.com/HugoMori/" target='_blank' class="m-2">
+                <img src="../img/midias/github.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="../img/midias/instagram.png" alt="">
+              <a href="https://www.linkedin.com/in/hugo-mori-a43a87132/" target='_blank' class="m-2">
+                <img src="../img/midias/linkedin.png" alt="">
               </a>
             </li>
           </ul>

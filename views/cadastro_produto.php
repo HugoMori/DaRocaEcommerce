@@ -10,19 +10,11 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
   $carrinho_QntdProdutos_Valor = $conn->valorTotalEQntdProdutosCarrinho();
   $carrinhoDropDow = $conn->requestDadosCarrinho($_SESSION['log_id']);
   if (count($_POST) > 0) {
-    //fazer atualizacao
-    $name_prod = filter_input(INPUT_POST, 'nome_Produto', FILTER_SANITIZE_STRING);
-    $preco_prod = filter_input(INPUT_POST, 'preco_Produto', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $qntd_prod = filter_input(INPUT_POST, 'qntd_Disponivel', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $categoria_prod = filter_input(INPUT_POST, 'categorias_produto', FILTER_SANITIZE_NUMBER_INT);
-    $tipo_venda_prod = filter_input(INPUT_POST, 'opcaoVenda_Produto', FILTER_SANITIZE_NUMBER_INT);
-    $qntd_min_prod = filter_input(INPUT_POST, 'qntd_Minima', FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-    $descricao = filter_input(INPUT_POST, 'descricao_Produto', FILTER_SANITIZE_STRING);
 
     //tentar realizar o cadastro
-    if ($conn->tratamentoDadosProduto($name_prod, $preco_prod, $qntd_prod, $categoria_prod,
-      $tipo_venda_prod, $qntd_min_prod, $descricao, $_POST['data_prod'], $_POST['data_validade'],
-      $_FILES['produtos'], 1 ) == 1) {
+    if ($conn->tratamentoDadosProduto($_POST['nome_Produto'], $_POST['preco_Produto'], $_POST['qntd_Disponivel'], 
+    $_POST['categorias_produto'], $_POST['opcaoVenda_Produto'], $_POST['qntd_Minima'], $_POST['descricao_Produto'], 
+    $_POST['data_prod'], $_POST['data_validade'], $_FILES['produtos'], 1 ) == 1) {
       //redirecionar para a paginá do produto
       header("Location: ../views/minha_conta.php");
     }
@@ -278,12 +270,12 @@ else {
                       <div class="form-group">
                         <label for="categoriaProduto">Categoria</label>
                         <select id="categoriaProduto" class="form-control" name="categorias_produto" required>
-                          <option value="1">Frutas</option>
-                          <option value="2">Verduras</option>
-                          <option value="3">Legumes</option>
-                          <option value="4">Bebidas</option>
-                          <option value="5">Frios</option>
-                          <option value="6">Especiarias</option>
+                          <option value="Frutas">Frutas</option>
+                          <option value="Verduras">Verduras</option>
+                          <option value="Legumes">Legumes</option>
+                          <option value="Bebidas">Bebidas</option>
+                          <option value="Frios">Frios</option>
+                          <option value="Especiarias">Especiarias</option>
                         </select>
                       </div>
                       <!-- /Produto - Categoria -->
@@ -410,7 +402,7 @@ else {
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="">Entrar</a>
+              <a href="../views/login.php">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -432,26 +424,26 @@ else {
           <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frutas</a>
+                <a href="../views/produtos.php?prod=Frutas">Frutas</a>
               </li>
               <li>
-                <a href="">Verduras</a>
+                <a href="../views/produtos.php?prod=Verduras">Verduras</a>
               </li>
               <li>
-                <a href="">Bebidas</a>
+                <a href="../views/produtos.php?prod=Bebidas">Bebidas</a>
               </li>
               <li>
-                <a href="">Legumes</a>
+                <a href="../views/produtos.php?prod=Legumes">Legumes</a>
               </li>
             </ul>
           </div>
           <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frios</a>
+                <a href="../views/produtos.php?prod=Frios">Frios</a>
               </li>
               <li>
-                <a href="">Especiarias</a>
+                <a href="../views/produtos.php?prod=Especiarias">Especiarias</a>
               </li>
             </ul>
           </div>
@@ -460,18 +452,18 @@ else {
         <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
-              <a href="" class="m-2">
+              <a href="https://www.facebook.com/hugo.mori.9" target='_blank' class="m-2">
                 <img src="../img/midias/facebook.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="../img/midias/twitter.png" alt="">
+              <a href="https://github.com/HugoMori/" target='_blank' class="m-2">
+                <img src="../img/midias/github.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="../img/midias/instagram.png" alt="">
+              <a href="https://www.linkedin.com/in/hugo-mori-a43a87132/" target='_blank' class="m-2">
+                <img src="../img/midias/linkedin.png" alt="">
               </a>
             </li>
           </ul>

@@ -29,9 +29,10 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
     //verificar telefone(custom query)
     if ($conn->verificarTelefone($tel_user, $result['telefone'])) {
       //tentar realizar o update
-      if ($conn->tratamentoDadosUsuario( $name_user, $_POST['data_nasc'], $cidade_User,
-        $estadoUser, $endereco_user, $cep_User, $tel_user, $email_user, $senha_user,
-        $cpf_user, $_FILES['foto_user'], 2 ) == 1) {
+      if ($conn->tratamentoDadosUsuario( $_POST['name_user'], $_POST['data_nasc'], $_POST['cidade_User'],
+        $_POST['estadoUser'], $_POST['endereco_user'], $_POST['cep_User'], $_POST['tel_user'], 
+        $_POST['email_user'], $_POST['senha_user'], $_POST['cpf_User'], $_FILES['foto_user'], 2 ) == 1) 
+        {
         //redirecionar
         header("Location: ../views/minha_conta.php");
       }
@@ -50,9 +51,10 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 //Cadastrar
 if (isset($_POST['cadastrar'])) {
   if ($conn->verificarCadastro($tel_user, $cpf_user, $email_user)) {
-    if ($conn->tratamentoDadosUsuario($name_user, $_POST['data_nasc'], $cidade_User,
-        $estadoUser, $endereco_user, $cep_User, $tel_user, $email_user, $senha_user,
-        $cpf_user, $_FILES['foto_user'], 1 ) == 1) {
+    if ($conn->tratamentoDadosUsuario($_POST['name_user'], $_POST['data_nasc'], $_POST['cidade_User'],
+    $_POST['estadoUser'], $_POST['endereco_user'], $_POST['cep_User'], $_POST['tel_user'], 
+    $_POST['email_user'], $_POST['senha_user'], $_POST['cpf_User'], $_FILES['foto_user'], 1 ) == 1) 
+    {
       header("Location: ../views/minha_conta.php");
     } else {
       session_destroy();
@@ -99,7 +101,7 @@ if (isset($_SESSION['log_id'])) {
   $telefoneCliente = "value = '" . $result['telefone'] . "'";
 
   //Email Cliente
-  $emailCliente = "value = '" . $_SESSION['log_id'] . "' readonly";
+  $emailCliente = "value = '" . $result['email'] . "' readonly";
 
   //CPF cliente
   $cpfCliente = "value = '" . $result['cpf'] . "' readonly";
@@ -494,7 +496,7 @@ else {
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="">Entrar</a>
+              <a href="../views/login.php">Entrar</a>
             </li>
             <li>
               <a href="../views/cadastro.php">Cadastre-se</a>
@@ -516,26 +518,26 @@ else {
           <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frutas</a>
+                <a href="../views/produtos.php?prod=Frutas">Frutas</a>
               </li>
               <li>
-                <a href="">Verduras</a>
+                <a href="../views/produtos.php?prod=Verduras">Verduras</a>
               </li>
               <li>
-                <a href="">Bebidas</a>
+                <a href="../views/produtos.php?prod=Bebidas">Bebidas</a>
               </li>
               <li>
-                <a href="">Legumes</a>
+                <a href="../views/produtos.php?prod=Legumes">Legumes</a>
               </li>
             </ul>
           </div>
           <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frios</a>
+                <a href="../views/produtos.php?prod=Frios">Frios</a>
               </li>
               <li>
-                <a href="">Especiarias</a>
+                <a href="../views/produtos.php?prod=Especiarias">Especiarias</a>
               </li>
             </ul>
           </div>
@@ -544,18 +546,18 @@ else {
         <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
-              <a href="" class="m-2">
+              <a href="https://www.facebook.com/hugo.mori.9" target='_blank' class="m-2">
                 <img src="../img/midias/facebook.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="../img/midias/twitter.png" alt="">
+              <a href="https://github.com/HugoMori/" target='_blank' class="m-2">
+                <img src="../img/midias/github.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="../img/midias/instagram.png" alt="">
+              <a href="https://www.linkedin.com/in/hugo-mori-a43a87132/" target='_blank' class="m-2">
+                <img src="../img/midias/linkedin.png" alt="">
               </a>
             </li>
           </ul>

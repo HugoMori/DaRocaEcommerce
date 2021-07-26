@@ -21,7 +21,7 @@ if (isset($_SESSION['log_id'])) {
 if (isset($_SESSION['log_id'])) {
 
   //menu option (SIDE BAR MENU)
-  $sideBarOption1 = '<a class="mySidenav-link" href="href="views/minhas_compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
+  $sideBarOption1 = '<a class="mySidenav-link" href="views/minhas_compras.php"><i class="far fa-list-alt"> Meus pedidos</i></a>';
   $sideBarOption2 = '<a class="mySidenav-link" href="views/minha_conta.php"><i class="fas fa-user"> Minha conta</i></a>';
 
   // NavBar Itens
@@ -32,8 +32,8 @@ if (isset($_SESSION['log_id'])) {
 else {
 
   //menu option (SIDE BAR MENU)
-  $sideBarOption1 = '<a class="mySidenav-link" href="href="views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
-  $sideBarOption2 = '<a class="mySidenav-link" href="../views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
+  $sideBarOption1 = '<a class="mySidenav-link" href="views/cadastro.php"><i class="far fa-edit"> Cadastrar-se</i></a>';
+  $sideBarOption2 = '<a class="mySidenav-link" href="views/login.php"><i class="fas fa-sign-in-alt"> Entrar</i></a>';
 
   // NavBar Itens
   $NavBarOption1 = '<a class="nav-link" href="views/cadastro.php"><i class="far fa-edit">&nbsp&nbspCadastrar-se</i></a>';
@@ -160,7 +160,7 @@ else {
                 </tbody>
               </table>
 
-              <a id="checkout" class="dropdown-item" href="../views/carrinho.php">Pagar</a>
+              <a id="checkout" class="dropdown-item" href="views/carrinho.php">Pagar</a>
 
             </div>
           </div>
@@ -288,15 +288,15 @@ else {
               <ul class="navbar-nav navCategories">
 
                 <li class="nav-item navCategories-item">
-                  <a class="nav-link navCategories-link" href="#">Frutas</a>
+                  <a class="nav-link navCategories-link" href="views/produtos.php?prod=Frutas">Frutas</a>
                 </li>
 
                 <li class="nav-item navCategories-item">
-                  <a class="nav-link navCategories-link" href="#">Verduras</a>
+                  <a class="nav-link navCategories-link" href="views/produtos.php?prod=Verduras">Verduras</a>
                 </li>
 
                 <li class="nav-item navCategories-item">
-                  <a class="nav-link navCategories-link" href="#">Bebidas</a>
+                  <a class="nav-link navCategories-link" href="views/produtos.php?prod=Bebidas">Bebidas</a>
                 </li>
               </ul>
             </div>
@@ -305,15 +305,15 @@ else {
               <ul class="navbar-nav navCategories">
 
                 <li class="nav-item navCategories-item">
-                  <a class="nav-link navCategories-link" href="#">Legumes</a>
+                  <a class="nav-link navCategories-link" href="views/produtos.php?prod=Legumes">Legumes</a>
                 </li>
 
                 <li class="nav-item navCategories-item">
-                  <a class="nav-link navCategories-link" href="#">Frios</a>
+                  <a class="nav-link navCategories-link" href="views/produtos.php?prod=Frios">Frios</a>
                 </li>
 
                 <li class="nav-item navCategories-item">
-                  <a class="nav-link navCategories-link" href="#">Especiarias</a>
+                  <a class="nav-link navCategories-link" href="views/produtos.php?prod=Especiarias">Especiarias</a>
                 </li>
               </ul>
             </div>
@@ -338,7 +338,7 @@ else {
           <h4>Company</h4>
           <ul class="navbar-nav">
             <li>
-              <a href="">Entrar</a>
+              <a href="views/login.php">Entrar</a>
             </li>
             <li>
               <a href="views/cadastro.php">Cadastre-se</a>
@@ -360,26 +360,26 @@ else {
           <div class="col-md-2 colBuscados" id="colBuscadosE">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frutas</a>
+                <a href="views/produtos.php?prod=Frutas">Frutas</a>
               </li>
               <li>
-                <a href="">Verduras</a>
+                <a href="views/produtos.php?prod=Verduras">Verduras</a>
               </li>
               <li>
-                <a href="">Bebidas</a>
+                <a href="views/produtos.php?prod=Bebidas">Bebidas</a>
               </li>
               <li>
-                <a href="">Legumes</a>
+                <a href="views/produtos.php?prod=Legumes">Legumes</a>
               </li>
             </ul>
           </div>
           <div class="col-md-2 colBuscados" id="colBuscadosD">
             <ul class="navbar-nav">
               <li>
-                <a href="">Frios</a>
+                <a href="views/produtos.php?prod=Frios">Frios</a>
               </li>
               <li>
-                <a href="">Especiarias</a>
+                <a href="views/produtos.php?prod=Especiarias">Especiarias</a>
               </li>
             </ul>
           </div>
@@ -388,18 +388,18 @@ else {
         <div class="col-md-6 redesSociaisCol">
           <ul>
             <li>
-              <a href="" class="m-2">
+              <a href="https://www.facebook.com/hugo.mori.9" target='_blank' class="m-2">
                 <img src="img/midias/facebook.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="img/midias/twitter.png" alt="">
+              <a href="https://github.com/HugoMori/" target='_blank' class="m-2">
+                <img src="img/midias/github.png" alt="">
               </a>
             </li>
             <li>
-              <a href="" class="m-2">
-                <img src="img/midias/instagram.png" alt="">
+              <a href="https://www.linkedin.com/in/hugo-mori-a43a87132/" target='_blank' class="m-2">
+                <img src="img/midias/linkedin.png" alt="">
               </a>
             </li>
           </ul>

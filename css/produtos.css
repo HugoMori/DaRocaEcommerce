@@ -90,6 +90,11 @@
     color: darkgray;
 }
 
+
+.paginacao{
+    justify-content: center;
+}
+
 /* MARGIN TOP PAGE */
 
 /* Low cust smartphones */

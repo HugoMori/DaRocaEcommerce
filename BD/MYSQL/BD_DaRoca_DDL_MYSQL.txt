@@ -5,7 +5,6 @@ DROP TABLE IF EXISTS produto;
 DROP TABLE IF EXISTS cliente;
 -- **************** CLIENTE *************
 
-DROP TABLE IF EXISTS cliente;
 CREATE TABLE cliente(
 cpf VARCHAR(20) PRIMARY KEY,
 nome TEXT NOT NULL, 
@@ -47,10 +46,10 @@ codigo SERIAL PRIMARY KEY,
 nome VARCHAR(100) NOT NULL,
 preco NUMERIC(6,2) NOT NULL,
 qntd_disponivel NUMERIC(6,2) NOT NULL, 
-categoria SMALLINT NOT NULL,
+categoria VARCHAR(13) NOT NULL,
 tipo_venda SMALLINT NOT NULL,
 qntd_min_vendida NUMERIC(6,2) NOT NULL,
-produtor_fk VARCHAR(100) NOT NULL,
+produtor_fk VARCHAR(20) NOT NULL,
 data_producao DATE NOT NULL,
 data_validade DATE,
 descricao TEXT,
@@ -61,19 +60,19 @@ update_reg DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 avaliacao NUMERIC(6,2) DEFAULT 0,
 num_vendas INTEGER DEFAULT 0,
 num_visualizacao INTEGER DEFAULT 0,
-FOREIGN KEY (produtor_fk) REFERENCES cliente(email) ON UPDATE CASCADE ON DELETE CASCADE 
+FOREIGN KEY (produtor_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE 
 );
 
 ALTER TABLE produto ADD CHECK(preco > 0);
 ALTER TABLE produto ADD CHECK(qntd_disponivel > 0);
 
 ALTER TABLE produto ADD CHECK(
-	categoria = 1 OR
-	categoria = 2 OR
-	categoria = 3 OR
-	categoria = 4 OR
-	categoria = 5 OR
-	categoria = 6);
+	categoria = 'Fruta' OR
+	categoria = 'Verdura' OR
+	categoria = 'Legume' OR
+	categoria = 'Bebida' OR
+	categoria = 'Frios' OR
+	categoria = 'Especiarias');
 
 ALTER TABLE produto ADD CHECK(
 	tipo_venda = 1 OR
@@ -99,25 +98,25 @@ CREATE TABLE img_produto (
 -- **************** CARRINHO *************
 CREATE TABLE carrinho(
 id_carrinho SERIAL NOT NULL,
-cliente_fk VARCHAR(100) NOT NULL,
+cliente_fk VARCHAR(20) NOT NULL,
 produto_fk INTEGER NOT NULL,
 qntd_produto NUMERIC(6,2) NOT NULL,
 data_inclusao_produto DATETIME DEFAULT CURRENT_TIMESTAMP,
 data_update DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY (cliente_fk) REFERENCES cliente(email) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
 PRIMARY KEY(produto_fk, cliente_fk));
 
 -- **************** COMPRAS *************
 
 CREATE TABLE compras(
 id_compra SERIAL NOT NULL,
-cliente_fk VARCHAR(100) NOT NULL,
+cliente_fk VARCHAR(20) NOT NULL,
 produto_fk INTEGER NOT NULL,
 qntd_comprada NUMERIC(6,2) NOT NULL, 
 data_compra DATETIME DEFAULT CURRENT_TIMESTAMP,
 chat TEXT,
 FOREIGN KEY (produto_fk) REFERENCES produto(codigo) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY (cliente_fk) REFERENCES cliente(email) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY (cliente_fk) REFERENCES cliente(cpf) ON UPDATE CASCADE ON DELETE CASCADE,
 PRIMARY KEY(id_compra));
 

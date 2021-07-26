@@ -1,3 +1,6 @@
+
+-- ####################################################### TESTS
+
 CREATE PROCEDURE cadastro_cliente(IN _cpf VARCHAR(20), IN _nome TEXT, IN _data_nasc DATE,
 				IN _telefone VARCHAR(20), IN _email VARCHAR(100), IN _senha VARCHAR(12),
 				IN _endereco TEXT, IN _cep VARCHAR(20), IN _cidade VARCHAR(50), IN _estado CHAR(2), IN _caminho_foto_perfil TEXT)
@@ -12,9 +15,54 @@ END;
 
 SELECT produto.nome AS produto, produto.preco, qntd_disponivel, categoria, cliente.nome, produto.data_cadastro AS data_anuncio, produto.avaliacao AS avaliacao_produto, produto.num_vendas AS num_vendas_produto, produto.num_visualizacao AS visualizacoes, caminho_foto AS foto FROM produto INNER JOIN cliente ON cliente.email = produto.produtor_fk INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo WHERE produtor_fk = 'hugomori@live.com' AND caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = produto.codigo LIMIT 1) ORDER BY data_anuncio ASC LIMIT
 
+
+SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos FROM carrinho INNER JOIN produto ON produto.codigo = carrinho.produto_fk WHERE carrinho.cliente_fk = 'hugomori@live.com'
+
+
+
+SELECT DISTINCT * FROM (SELECT
+	produto.nome AS produto,
+    produto.codigo AS produto_id,
+    produto.categoria,
+    produto.tipo_venda,
+    produto.qntd_disponivel,
+    produto.preco,
+    produto.data_cadastro AS data_anuncio,
+    cliente.cidade,
+    cliente.estado,
+    img_produto.caminho_foto AS foto
+FROM
+	produto
+INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados
+WHERE
+	(LOWER(produtos_cadastrados.produto) LIKE LOWER('BANANA%')
+OR
+	LOWER(produtos_cadastrados.produto) LIKE LOWER('%Fuji%'))
+AND
+	(LOWER(produtos_cadastrados.cidade) LIKE LOWER('Sorocaba%')
+OR 
+     LOWER(produtos_cadastrados.produto) LIKE LOWER('São%'))
+ORDER BY  
+	produtos_cadastrados.data_anuncio ASC
+
+
+SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras INNER JOIN produto ON compras.produto_fk = produto.codigo WHERE produto.produtor_fk = '417.747.088-09'
+
+-- ####################################################### OFICIALS
+
 DROP PROCEDURE IF EXISTS requestAllDadosProduto;
+DROP PROCEDURE IF EXISTS requestDadosProduto;
+DROP PROCEDURE IF EXISTS requestDadosCarrinho;
+DROP PROCEDURE IF EXISTS requestAllVendas;
+DROP PROCEDURE IF EXISTS requestAllCompras;
+DROP VIEW produtos_cadastrados;
+
+-- ======== PROC REQUEST ALL DADOS PRODUTO
+
 DELIMITER $$
-CREATE PROCEDURE requestAllDadosProduto(pagina INT , itens_por_pagina INT, vendedor VARCHAR(100))
+CREATE PROCEDURE requestAllDadosProduto(pagina INT , itens_por_pagina INT, vendedor VARCHAR(20))
 BEGIN
   SELECT 
     produto.codigo AS codigo,
@@ -34,7 +82,7 @@ BEGIN
     produto.num_visualizacao AS visualizacoes, 
     caminho_foto AS foto 
   FROM produto 
-  INNER JOIN cliente ON cliente.email = produto.produtor_fk 
+  INNER JOIN cliente ON cliente.CPF = produto.produtor_fk 
   INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo 
   WHERE 
   	produtor_fk = vendedor 
@@ -45,9 +93,10 @@ END $$
 
 DELIMITER ;
 
-CALL requestAllDadosProduto(0, 10, 'hugomori@live.com');
+CALL requestAllDadosProduto(0, 10, '417.747.088-09');
 
-DROP PROCEDURE IF EXISTS requestDadosProduto;
+-- ======== PROC REQUEST DADOS PRODUTO
+
 DELIMITER $$
 CREATE PROCEDURE requestDadosProduto(codigo INT)
 BEGIN
@@ -72,7 +121,7 @@ BEGIN
     produto.num_visualizacao AS visualizacoes,
     caminho_foto AS foto 
   FROM produto 
-  INNER JOIN cliente ON cliente.email = produto.produtor_fk
+  INNER JOIN cliente ON cliente.cpf = produto.produtor_fk
   INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
   WHERE 
   	produto.codigo = codigo
@@ -84,10 +133,10 @@ DELIMITER ;
 
 CALL requestDadosProduto(2);
 
+-- ======== PROC REQUEST DADOS CARRINHO
 
-DROP PROCEDURE IF EXISTS requestDadosCarrinho;
 DELIMITER $$
-CREATE PROCEDURE requestDadosCarrinho(cliente_email VARCHAR(100))
+CREATE PROCEDURE requestDadosCarrinho(cliente_cpf VARCHAR(20))
 BEGIN
   SELECT 
     carrinho.id_carrinho AS carrinho,
@@ -103,26 +152,22 @@ BEGIN
     caminho_foto AS foto 
   FROM carrinho
   INNER JOIN produto ON produto.codigo = carrinho.produto_fk
-  INNER JOIN cliente ON cliente.email = produto.produtor_fk 
+  INNER JOIN cliente ON cliente.cpf = produto.produtor_fk 
   INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
   WHERE 
-  	carrinho.cliente_fk = cliente_email 
+  	carrinho.cliente_fk = cliente_cpf 
   AND 
   	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1);
 END $$
 
 DELIMITER ;
 
-CALL requestDadosCarrinho('natyborges@hotmail.com');
+CALL requestDadosCarrinho('417.747.088-09');
 
+-- ======== PROC REQUEST DADOS VENDAS
 
-SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos FROM carrinho INNER JOIN produto ON produto.codigo = carrinho.produto_fk WHERE carrinho.cliente_fk = 'hugomori@live.com'
-
-
-
-DROP PROCEDURE IF EXISTS requestAllVendas;
 DELIMITER $$
-CREATE PROCEDURE requestAllVendas(cliente_email VARCHAR(100), pagina INT, itens_por_pagina INT)
+CREATE PROCEDURE requestAllVendas(cliente_cpf VARCHAR(20), pagina INT, itens_por_pagina INT)
 BEGIN
   SELECT 
     compras.id_compra AS compra,
@@ -139,20 +184,20 @@ BEGIN
     caminho_foto AS foto_produto 
   FROM compras
   INNER JOIN produto ON produto.codigo = compras.produto_fk
-  INNER JOIN cliente ON cliente.email = compras.cliente_fk 
+  INNER JOIN cliente ON cliente.cpf = compras.cliente_fk 
   INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
   WHERE 
-  	produto.produtor_fk = cliente_email 
+  	produto.produtor_fk = cliente_cpf
   AND 
   	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
   ORDER BY compras.data_compra ASC LIMIT pagina, itens_por_pagina;
 END $$
 
-SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras INNER JOIN produto ON compras.produto_fk = produto.codigo WHERE produto.produtor_fk = 'hugomori@live.com'
 
-DROP PROCEDURE IF EXISTS requestAllCompras;
+-- ======== PROC REQUEST DADOS COMPRAS
+
 DELIMITER $$
-CREATE PROCEDURE requestAllCompras(cliente_email VARCHAR(100), pagina INT, itens_por_pagina INT)
+CREATE PROCEDURE requestAllCompras(cliente_cpf VARCHAR(20), pagina INT, itens_por_pagina INT)
 BEGIN
   SELECT 
     compras.id_compra AS compra,
@@ -169,20 +214,20 @@ BEGIN
     caminho_foto AS foto_produto 
   FROM compras
   INNER JOIN produto ON produto.codigo = compras.produto_fk
-  INNER JOIN cliente ON cliente.email = produto.produtor_fk 
+  INNER JOIN cliente ON cliente.cpf = produto.produtor_fk 
   INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
   WHERE 
-  	compras.cliente_fk = cliente_email 
+  	compras.cliente_fk = cliente_cpf 
   AND 
   	caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
   ORDER BY compras.data_compra ASC LIMIT pagina, itens_por_pagina;
 END $$
 
-
+-- ======== PROC REQUEST PRODUTOS CADASTRADOS
 
 CREATE VIEW produtos_cadastrados AS
 SELECT DISTINCT * FROM (SELECT
-	produto.nome AS produto,
+    produto.nome AS produto,
     produto.codigo AS produto_id,
     produto.categoria,
     produto.tipo_venda,
@@ -194,13 +239,14 @@ SELECT DISTINCT * FROM (SELECT
     img_produto.caminho_foto AS foto
 FROM
 	produto
-INNER JOIN cliente ON produto.produtor_fk = cliente.email
+INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
 INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
 WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados;
 
 
-SELECT * FROM produtos_cadastrados
+-- ======== PROC REQUEST PRODUTOS CADASTRADOS
 
+SELECT * FROM produtos_cadastrados
 
 SELECT * FROM produtos_cadastrados
 WHERE
@@ -226,30 +272,3 @@ SELECT DISTINCT
     MIN(preco) AS menor_preco
 FROM produtos_cadastrados
 
-
-SELECT DISTINCT * FROM (SELECT
-	produto.nome AS produto,
-    produto.codigo AS produto_id,
-    produto.categoria,
-    produto.tipo_venda,
-    produto.qntd_disponivel,
-    produto.preco,
-    produto.data_cadastro AS data_anuncio,
-    cliente.cidade,
-    cliente.estado,
-    img_produto.caminho_foto AS foto
-FROM
-	produto
-INNER JOIN cliente ON produto.produtor_fk = cliente.email
-INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
-WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados
-WHERE
-	(LOWER(produtos_cadastrados.produto) LIKE LOWER('BANANA%')
-OR
-	LOWER(produtos_cadastrados.produto) LIKE LOWER('%Fuji%'))
-AND
-	(LOWER(produtos_cadastrados.cidade) LIKE LOWER('Sorocaba%')
-OR 
-     LOWER(produtos_cadastrados.produto) LIKE LOWER('São%'))
-ORDER BY  
-	produtos_cadastrados.data_anuncio ASC

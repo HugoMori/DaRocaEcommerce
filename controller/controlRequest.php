@@ -29,6 +29,12 @@ class controlRequest
             // echo "<script>console.log('Login: ".$email."/Senha: ".$senha_user."' );</script>";
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível realizar o login!<br>Login ou senha inválida.</div>";
         }
+        else{
+            $query = "SELECT cpf FROM cliente WHERE email = '" . $email . "'";
+            $resultCpf = $conn->selectCustom($query);
+            $row = mysqli_fetch_assoc($resultCpf);
+            $_SESSION['log_id'] = base64_encode($row['cpf']);  
+        }
 
         return $result;
     }
@@ -46,7 +52,7 @@ class controlRequest
         $tel_user = "(" . substr($tel_user, 0, 2) . ")" . substr($tel_user, 2, 5) . "-" . substr($tel_user, 6);
 
         $conn = new db_conect();
-        $queryTel = "SELECT telefone FROM cliente WHERE email = '" . $_SESSION['log_id'] . "'";
+        $queryTel = "SELECT telefone FROM cliente WHERE cpf = '" . base64_decode($_SESSION['log_id']) . "'";
         $resultTel = $conn->selectCustom($queryTel);
         $row = mysqli_fetch_assoc($resultTel);
 
@@ -130,20 +136,10 @@ class controlRequest
 
     //Tratamento dos dados recebidos do POST para limpeza contra SQLI(0/1)
     //Chama a função de inserção ou update(1/2)
-    function tratamentoDadosUsuario(
-        $nome_user,
-        $data_nasc,
-        $cidade_User,
-        $estadoUser,
-        $endereco_user,
-        $cep_User,
-        $tel_user,
-        $email_user,
-        $senha_user,
-        $cpf_user,
-        $foto_user,
-        $tipo_function
-    ) {
+    function tratamentoDadosUsuario( $nome_user, $data_nasc, $cidade_User, $estadoUser, 
+    $endereco_user, $cep_User, $tel_user, $email_user, $senha_user, $cpf_user, $foto_user, 
+    $tipo_function ) 
+    {
         // limpar e verificar se o nome não tem números ou elementos de query ou html
         $nome_user = filter_var($nome_user, FILTER_SANITIZE_STRING);
         $nome_user = preg_replace("/[^a-zA-Z]+/", " ", $nome_user);
@@ -181,32 +177,12 @@ class controlRequest
 
         //1 -> INSERT / 2 -> UPDATE
         if ($tipo_function == 1) {
-            return $this->cadastrarUsuario(
-                $cpf_user,
-                $nome_user,
-                $data_nasc,
-                $tel_user,
-                $email_user,
-                $senha_user,
-                $endereco_user,
-                $cep_User,
-                $cidade_User,
-                $estadoUser,
-                $foto_user
-            );
+            return $this->cadastrarUsuario( $cpf_user, $nome_user, $data_nasc, $tel_user, 
+            $email_user, $senha_user, $endereco_user, $cep_User, $cidade_User, $estadoUser, 
+            $foto_user );
         } elseif ($tipo_function == 2) {
-            return $this->updateUsuario(
-                $cpf_user,
-                $nome_user,
-                $tel_user,
-                $email_user,
-                $senha_user,
-                $endereco_user,
-                $cep_User,
-                $cidade_User,
-                $estadoUser,
-                $foto_user
-            );
+            return $this->updateUsuario( $cpf_user, $nome_user, $tel_user, $email_user, $senha_user, 
+            $endereco_user, $cep_User, $cidade_User, $estadoUser, $foto_user );
         }
     }
 
@@ -214,37 +190,17 @@ class controlRequest
 
     //Dados repassados da função TRATAMENDO DE DADOS
     //RETORNA 0/1
-    function cadastrarUsuario(
-        $cpf,
-        $nome,
-        $data_nasc,
-        $telefone,
-        $email,
-        $senha,
-        $endereco,
-        $cep,
-        $cidade,
-        $estado,
-        $foto_perfil
-    ) {
+    function cadastrarUsuario( $cpf, $nome, $data_nasc, $telefone, $email, $senha, $endereco, 
+    $cep, $cidade, $estado, $foto_perfil ) 
+    {
         $conn = new db_conect();
         //Se tiver foto a ser salva
         if (!empty($foto_perfil["name"])) {
             //Se a foto não for salva, cancela o cadastramento
-            $diretorio = $this->guardarFoto($foto_perfil, $cpf, 0);
-            $result = $conn->insertCliente(
-                $cpf,
-                $nome,
-                $data_nasc,
-                $telefone,
-                $email,
-                $senha,
-                $endereco,
-                $cep,
-                $cidade,
-                $estado,
-                $diretorio
-            );
+            $diretorio = $this->guardarFoto($foto_perfil, base64_encode($cpf), 0);
+            $result = $conn->insertCliente( $cpf, $nome, $data_nasc, $telefone, $email, $senha, 
+            $endereco, $cep, $cidade, $estado, $diretorio );
+            
             if (!$result) {
                 $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível cadastrar!</div>";
                 return 0;
@@ -252,70 +208,30 @@ class controlRequest
         }
         //Se não tiver foto
         else {
-            $result = $conn->insertCliente(
-                $cpf,
-                $nome,
-                $data_nasc,
-                $telefone,
-                $email,
-                $senha,
-                $endereco,
-                $cep,
-                $cidade,
-                $estado,
-                $foto_perfil
-            );
+            $result = $conn->insertCliente( $cpf, $nome, $data_nasc, $telefone, $email, $senha, 
+            $endereco, $cep, $cidade, $estado, $foto_perfil );
             if (!$result) {
                 $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível cadastrar!</div>";
                 return 0;
             }
         }
-        $_SESSION['log_id'] = $email;
+        $_SESSION['log_id'] = base64_encode($cpf);
         return 1;
     }
 
     // ----------- UPDATE
 
-    function updateUsuario(
-        $cpf,
-        $nome,
-        $telefone,
-        $email,
-        $senha,
-        $endereco,
-        $cep,
-        $cidade,
-        $estado,
-        $foto_perfil
-    ) {
+    function updateUsuario( $cpf, $nome, $telefone, $email, $senha, $endereco, $cep, $cidade, 
+    $estado, $foto_perfil ) 
+    {
         $conn = new db_conect();
         if (!empty($foto_perfil["name"])) {
-            $diretorio = $this->guardarFoto($foto_perfil, $cpf, 1);
-            $result = $conn->updateCliente(
-                $nome,
-                $telefone,
-                $email,
-                $senha,
-                $endereco,
-                $cep,
-                $cidade,
-                $estado,
-                $diretorio,
-                1
-            );
+            $diretorio = $this->guardarFoto($foto_perfil, $_SESSION['log_id'], 1);
+            $result = $conn->updateCliente( $nome, $telefone, base64_decode($_SESSION['log_id']), $senha, $endereco, $cep, 
+            $cidade, $estado, $diretorio, 1 );
         } else {
-            $result = $conn->updateCliente(
-                $nome,
-                $telefone,
-                $email,
-                $senha,
-                $endereco,
-                $cep,
-                $cidade,
-                $estado,
-                null,
-                0
-            );
+            $result = $conn->updateCliente( $nome, $telefone, base64_decode($_SESSION['log_id']), $senha, $endereco, $cep, 
+            $cidade, $estado, null, 0 );
         }
 
         if (!$result) {
@@ -389,7 +305,7 @@ class controlRequest
                 //Recuperar caminho da antiga foto e deletar
                 if ($update) {
                     $conn = new db_conect();
-                    $query = 'SELECT caminho_foto_perfil FROM cliente WHERE email = "' . $_SESSION['log_id'] . '"';
+                    $query = 'SELECT caminho_foto_perfil FROM cliente WHERE cpf = "' . base64_decode($_SESSION['log_id']) . '"';
                     $result = $conn->selectCustom($query);
                     $row = mysqli_fetch_assoc($result);
                     if ($row['caminho_foto_perfil'] == null || $row['caminho_foto_perfil'] == "") {
@@ -418,7 +334,7 @@ class controlRequest
             //Recuperar caminho da antiga foto e deletar
             if ($update) {
                 $conn = new db_conect();
-                $query = 'SELECT caminho_foto_perfil FROM cliente WHERE email = "' . $_SESSION['log_id'] . '"';
+                $query = 'SELECT caminho_foto_perfil FROM cliente WHERE cpf = "' . base64_decode($_SESSION['log_id']) . '"';
                 $result = $conn->selectCustom($query);
                 $row = mysqli_fetch_assoc($result);
                 if ($row['caminho_foto_perfil'] == null || $row['caminho_foto_perfil'] == "") {
@@ -434,11 +350,11 @@ class controlRequest
 
     // ----------- REQUEST DADOS
 
-    function requestDadosUser($email)
+    function requestDadosUser($cpf)
     {
 
         $conn = new db_conect();
-        $result = $conn->requestDadosUser($email);
+        $result = $conn->requestDadosUser(base64_decode($cpf));
 
         return $result;
     }
@@ -447,19 +363,10 @@ class controlRequest
 
     // ----------- TRATAMENTO DE DADOS
 
-    function tratamentoDadosProduto(
-        $name_prod,
-        $preco_prod,
-        $qntd_prod,
-        $categoria_prod,
-        $tipo_venda_prod,
-        $qntd_min_prod,
-        $descricao,
-        $producao,
-        $validade,
-        $imgProdutos,
-        $tipo_function
-    ) {
+    function tratamentoDadosProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod,
+        $tipo_venda_prod, $qntd_min_prod, $descricao, $producao, $validade, $imgProdutos, 
+        $tipo_function) 
+    {
         // limpar o nome do produto para não correr risco de SQLI ou partes html
         $name_prod = filter_var($name_prod, FILTER_SANITIZE_STRING);
         // limpar o valor do produto p/conter apenas números
@@ -467,7 +374,7 @@ class controlRequest
         // limpar a qntd disponivel do produto p/conter apenas números
         $qntd_prod = filter_var($qntd_prod, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         // limpar a categoria do produto p/conter apenas números
-        $categoria_prod = filter_var($categoria_prod, FILTER_SANITIZE_NUMBER_INT);
+        $categoria_prod = filter_var($categoria_prod, FILTER_SANITIZE_STRING);
         // limpar o tipo de venda do produto p/conter apenas números
         $tipo_venda_prod = filter_var($tipo_venda_prod, FILTER_SANITIZE_NUMBER_INT);
         // limpar a qntd minima de venda do produto p/conter apenas números
@@ -480,63 +387,25 @@ class controlRequest
         $validade = preg_replace("([^0-9/-])", "", $validade);
 
         if ($tipo_function == 1) {
-            return $this->cadastrarProduto(
-                $name_prod,
-                $preco_prod,
-                $qntd_prod,
-                $categoria_prod,
-                $tipo_venda_prod,
-                $qntd_min_prod,
-                $descricao,
-                $producao,
-                $validade,
-                $imgProdutos
-            );
+            return $this->cadastrarProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+            $tipo_venda_prod, $qntd_min_prod, $descricao, $producao, $validade, $imgProdutos);
+
         } elseif ($tipo_function == 2) {
-            return $this->updateProduto(
-                $name_prod,
-                $preco_prod,
-                $qntd_prod,
-                $categoria_prod,
-                $tipo_venda_prod,
-                $qntd_min_prod,
-                $descricao,
-                $producao,
-                $validade,
-                $imgProdutos
-            );
+            return $this->updateProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod,
+             $tipo_venda_prod, $qntd_min_prod, $descricao, $producao, $validade, $imgProdutos);
         }
     }
 
     // ----------- CADASTRO 
 
-    function cadastrarProduto(
-        $name_prod,
-        $preco_prod,
-        $qntd_prod,
-        $categoria_prod,
-        $tipo_venda_prod,
-        $qntd_min_prod,
-        $descricao,
-        $producao,
-        $validade,
-        $imgProdutos
-    ) {
+    function cadastrarProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod, $tipo_venda_prod,
+    $qntd_min_prod, $descricao, $producao, $validade, $imgProdutos ) {
         $conn = new db_conect();
-        $produtor = $_SESSION['log_id'];
+        $produtor = base64_decode($_SESSION['log_id']);
 
-        $result = $conn->insertProduto(
-            $name_prod,
-            $preco_prod,
-            $qntd_prod,
-            $categoria_prod,
-            $tipo_venda_prod,
-            $qntd_min_prod,
-            $descricao,
-            $producao,
-            $validade,
-            $produtor
-        );
+        $result = $conn->insertProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+        $tipo_venda_prod, $qntd_min_prod, $descricao, $producao, $validade, $produtor );
+        
         if (!$result) {
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível cadastrar!</div>";
             // echo "<script>console.log('Não foi possível realizar a operação.);</script>";
@@ -558,30 +427,15 @@ class controlRequest
 
     // ----------- UPDATE
 
-    function updateProduto(
-        $name_prod,
-        $preco_prod,
-        $qntd_prod,
-        $categoria_prod,
-        $tipo_venda_prod,
-        $qntd_min_prod,
-        $descricao,
-        $imgProdutos
-    ) {
+    function updateProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod, $tipo_venda_prod, 
+    $qntd_min_prod, $descricao, $imgProdutos ) 
+    {
         $conn = new db_conect();
-        $produtor = $_SESSION['log_id'];
+        $produtor = base64_decode($_SESSION['log_id']);
 
-        $result = $conn->updateProduto(
-            $name_prod,
-            $preco_prod,
-            $qntd_prod,
-            $categoria_prod,
-            $tipo_venda_prod,
-            $qntd_min_prod,
-            $descricao,
-            $produtor,
-            $_SESSION['id_prod']
-        );
+        $result = $conn->updateProduto( $name_prod, $preco_prod, $qntd_prod, $categoria_prod, 
+        $tipo_venda_prod, $qntd_min_prod, $descricao, $produtor, $_SESSION['id_prod']);
+        
         if (!$result) {
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível realizar a alteração dos dados do produto!</div>";
             return 0;
@@ -711,7 +565,7 @@ class controlRequest
     {
 
         $conn = new db_conect();
-        $query = 'CALL requestAllDadosProduto(' . $page . ', ' . $itensPorPagina . ', "' . $_SESSION['log_id'] . '");';
+        $query = 'CALL requestAllDadosProduto(' . $page . ', ' . $itensPorPagina . ', "' . base64_decode($_SESSION['log_id']) . '");';
         $result = $conn->selectCustom($query);
         return $result;
     }
@@ -721,6 +575,8 @@ class controlRequest
     {
 
         $conn = new db_conect();
+        //Inserir visualizacao
+        $conn->visualizacaoProduto($produto_id);
         $query = 'CALL requestDadosProduto(' . $produto_id . ');';
         $result = $conn->selectCustom($query);
         return $result;
@@ -736,52 +592,26 @@ class controlRequest
         return $result;
     }
 
-    // ----------- RETORNAR CATEGORIA ESCRITA DO PRODUTO
-    function categoriaProduto($categoriaProd)
-    {
-        switch ($categoriaProd) {
-            case 1:
-                $categoria = 'Frutas';
-                break;
-            case 2:
-                $categoria = 'Verduras';
-                break;
-            case 3:
-                $categoria = 'Legumes';
-                break;
-            case 4:
-                $categoria = 'Bebidas';
-                break;
-            case 5:
-                $categoria = 'Frios';
-                break;
-            case 6:
-                $categoria = 'Especiarias';
-                break;
-        }
-        return $categoria;
-    }
-
     // ----------- RETORNAR O TIPO DE FABRICAÇÂO
     function tipoFabricacao($categoriaProd)
     {
         switch ($categoriaProd) {
-            case 1:
+            case 'Frutas':
                 $fraseCategoria = 'colheita';
                 break;
-            case 2:
+            case 'Verduras':
                 $fraseCategoria = 'colheita';
                 break;
-            case 3:
+            case 'Legumes':
                 $fraseCategoria = 'colheita';
                 break;
-            case 4:
+            case 'Bebidas':
                 $fraseCategoria = 'envase';
                 break;
-            case 5:
+            case 'Frios':
                 $fraseCategoria = 'produção';
                 break;
-            case 6:
+            case 'Especiarias':
                 $fraseCategoria = 'fabricação';
                 break;
         }
@@ -839,13 +669,14 @@ class controlRequest
     function qntdProdutosAnunciados()
     {
         //query paginas
-        $query = 'SELECT COUNT(codigo) AS qntd_itens FROM produto WHERE produtor_fk = "' . $_SESSION['log_id'] . '"';
+        $query = 'SELECT COUNT(codigo) AS qntd_itens FROM produto WHERE produtor_fk = "' . base64_decode($_SESSION['log_id']) . '"';
         //num de produtos no bd
         $pagesDB = $this->selectCustom($query);
         $pagesDB = mysqli_fetch_assoc($pagesDB);
 
         return $pagesDB['qntd_itens'];
     }
+    
 
     // ************************************** CARRINHO ****************************************************************************
 
@@ -896,7 +727,7 @@ class controlRequest
     function requestDadosCarrinho($email)
     {
         //query
-        $query = "CALL requestDadosCarrinho('" . $_SESSION['log_id'] . "');";
+        $query = "CALL requestDadosCarrinho('" . base64_decode($_SESSION['log_id']) . "');";
         //num de produtos no bd
         return $this->selectCustom($query);
     }
@@ -906,7 +737,7 @@ class controlRequest
     function insertUpdateFromPage($produto_codigo, $qntd)
     {
         //query paginas
-        $query = 'SELECT COUNT(id_carrinho) AS existe FROM carrinho WHERE cliente_fk = "' . $_SESSION['log_id'] . '" AND produto_fk = ' . $produto_codigo . '';
+        $query = 'SELECT COUNT(id_carrinho) AS existe FROM carrinho WHERE cliente_fk = "' . base64_decode($_SESSION['log_id']) . '" AND produto_fk = ' . $produto_codigo . '';
         //num de produtos no bd
         $verifica = $this->selectCustom($query);
         $verifica = mysqli_fetch_assoc($verifica);
@@ -923,7 +754,7 @@ class controlRequest
     {
         $conn = new db_conect();
         $qntd_prod = filter_var($qntd, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $result = $conn->insertDadosCarrinho($_SESSION['log_id'], $produto_codigo, $qntd_prod);
+        $result = $conn->insertDadosCarrinho(base64_decode($_SESSION['log_id']), $produto_codigo, $qntd_prod);
         return $result;
     }
 
@@ -932,7 +763,7 @@ class controlRequest
     {
         $conn = new db_conect();
         $qntd_prod = filter_var($qntd, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $result = $conn->updateDadosCarrinho($_SESSION['log_id'], $produto_codigo, $qntd_prod, $from);
+        $result = $conn->updateDadosCarrinho(base64_decode($_SESSION['log_id']), $produto_codigo, $qntd_prod, $from);
         return $result;
     }
 
@@ -943,7 +774,7 @@ class controlRequest
         $query = "SELECT IFNULL(ROUND(SUM(produto.preco * carrinho.qntd_produto),2),0) AS total, COUNT(id_carrinho) AS qntd_produtos
         FROM carrinho 
         INNER JOIN produto ON produto.codigo = carrinho.produto_fk 
-        WHERE carrinho.cliente_fk = '" . $_SESSION['log_id'] . "'";
+        WHERE carrinho.cliente_fk = '" . base64_decode($_SESSION['log_id']) . "'";
         $valorTotal = $this->selectCustom($query);
         $valorTotal = mysqli_fetch_assoc($valorTotal);
 
@@ -965,7 +796,7 @@ class controlRequest
         //realizo a compra e deleto o carrinho
         $qntd_comprada = filter_var($qntd_comprada, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $conn = new db_conect();
-        $result = $conn->realizarCompra($codProd, $qntd_comprada, $_SESSION['log_id']);
+        $result = $conn->realizarCompra($codProd, $qntd_comprada, base64_decode($_SESSION['log_id']));
         //se a compra for direta da pagina do produto o id do carrinho é -1 
         if ($result && ($id_carrinho != -1)) {
             $result = $conn->removerCarrinho($id_carrinho);
@@ -976,7 +807,7 @@ class controlRequest
     function requestAllVendas($pagina, $itens_por_pagina)
     {
         //query
-        $query = "CALL requestAllVendas('" . $_SESSION['log_id'] . "', " . $pagina . ", " . $itens_por_pagina . ");";
+        $query = "CALL requestAllVendas('" . base64_decode($_SESSION['log_id']) . "', " . $pagina . ", " . $itens_por_pagina . ");";
         //num de produtos no bd
         return $this->selectCustom($query);
     }
@@ -984,7 +815,7 @@ class controlRequest
     function requestAllCompras($pagina, $itens_por_pagina)
     {
         //query
-        $query = "CALL requestAllCompras('" . $_SESSION['log_id'] . "', " . $pagina . ", " . $itens_por_pagina . ");";
+        $query = "CALL requestAllCompras('" . base64_decode($_SESSION['log_id']) . "', " . $pagina . ", " . $itens_por_pagina . ");";
         //num de produtos no bd
         return $this->selectCustom($query);
     }
@@ -994,7 +825,7 @@ class controlRequest
         //query paginas
         $query = 'SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras 
     INNER JOIN produto ON compras.produto_fk = produto.codigo 
-    WHERE produto.produtor_fk = "' . $_SESSION['log_id'] . '";';
+    WHERE produto.produtor_fk = "' . base64_decode($_SESSION['log_id']) . '";';
         //num de produtos no bd
         $pagesDB = $this->selectCustom($query);
         $pagesDB = mysqli_fetch_assoc($pagesDB);
@@ -1006,7 +837,7 @@ class controlRequest
     {
         //query paginas
         $query = 'SELECT COUNT(compras.id_compra) AS qntd_vendas FROM compras 
-    WHERE compras.cliente_fk = "' . $_SESSION['log_id'] . '";';
+    WHERE compras.cliente_fk = "' . base64_decode($_SESSION['log_id']) . '";';
         //num de produtos no bd
         $pagesDB = $this->selectCustom($query);
         $pagesDB = mysqli_fetch_assoc($pagesDB);
@@ -1057,7 +888,7 @@ class controlRequest
 
     // ************************************** PESQUISAR ****************************************************************************
 
-    function pesquisar($produto_nome)
+    function pesquisar($produto_nome, $page, $itensPorPagina)
     {
         if (isset($_SESSION['consulta'])) {
             unset($_SESSION['consulta']);
@@ -1081,7 +912,7 @@ class controlRequest
             //compara com nomes de produto
             $query = $query . ' (LOWER(produtos_cadastrados.produto) LIKE LOWER("' . $produto_nome[$i] . '%")';
             //compara com categorias
-            //$query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.$produto_nome[$i].'%")';
+            $query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.substr($produto_nome[$i], 0, -1).'%")';
 
             $i = 1;
             //enquanto i < que a qntd de palavras do array separado
@@ -1091,8 +922,8 @@ class controlRequest
                 $query = $query . ' OR LOWER(produtos_cadastrados.produto) LIKE LOWER("' . $produto_nome[$i] . '%")';
 
                 //compara com categorias
-                //$query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("%'.$produto_nome[$i].'%")';
-                //$query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.$produto_nome[$i].'%")';
+                $query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("%'.substr($produto_nome[$i], 0, -1).'%")';
+                $query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.substr($produto_nome[$i], 0, -1).'%")';
                 $i++;
             }
             $query = $query . ")";
@@ -1100,13 +931,14 @@ class controlRequest
             //compara com nomes de produto
             $query = $query . ' (LOWER(produtos_cadastrados.produto) LIKE LOWER("' . $produto_nome[$i] . '%"))';
             //compara com categorias
-            //$query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.$produto_nome[$i].'%")';
+            $query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.substr($produto_nome[$i], 0, -1).'%")';
         }
 
         // echo "<script>console.log('GET: " . $produto_nome[$i] . "' );</script>";
         $_SESSION['consulta'] = $query;
+        $limit = ' LIMIT '.$page.', '.$itensPorPagina.'';
         //select custom
-        return $this->selectCustom($consulta . $query);
+        return $this->selectCustom($consulta . $query . $limit);
     }
 
     function pesquisarFiltros($categoria, $maiorPreco, $menorPreco, $localizacao)
