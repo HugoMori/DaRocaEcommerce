@@ -12,7 +12,7 @@ if (isset($_SESSION['log_id'])) {
   $carrinhoDropDow = $conn->requestDadosCarrinho($_SESSION['log_id']);
 }
 
-if (isset($_GET['prod']) && ($_GET['prod'] != null || $_GET['prod'] != '' || $_GET['prod'] != ' ')) {
+if (isset($_GET['prod']) && ($_GET['prod'] != null && $_GET['prod'] != '' && $_GET['prod'] != ' ')) {
 
   //numero de itens puxados do bd p/pagina
   $itensPorPagina = 10;
@@ -69,10 +69,12 @@ if (isset($_GET['prod']) && ($_GET['prod'] != null || $_GET['prod'] != '' || $_G
   }
   //se não, pagina de erro 
   else {
+    header("Location: ../views/produtoErro.php");
   }
 }
 //pagina de erro
 else {
+  header("Location: ../views/erro.php");
 }
 
 ?>
@@ -488,7 +490,7 @@ if (isset($_GET['prod']) && $_GET['prod'] != '') {
                     <?php while ($rows = mysqli_fetch_assoc($result)) {
                       //setar foto padrão caso não tenha
                       if ($rows['foto'] == "" || $rows['foto'] == null) {
-                        $img = "../img/produto/2/dadcacccac88c5a9f279e126e624690c.jpeg";
+                        $img = "../img/veg_fruits/semImagem.jpg";
                       } else {
                         $img = $rows['foto'];
                       }

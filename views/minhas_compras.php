@@ -272,7 +272,7 @@ else {
                       
                       //setar foto padrão caso não tenha
                       if ($rows['foto_produto'] == "" || $rows['foto_produto'] == null) {
-                        $img = "../img/produto/2/dadcacccac88c5a9f279e126e624690c.jpeg";
+                        $img = "../img/veg_fruits/semImagem.jpg";
                       } else {
                         $img = $rows['foto_produto'];
                       }  

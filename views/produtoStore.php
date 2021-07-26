@@ -68,13 +68,13 @@ if (count($_GET) > 0) {
   //Se não tiver puxado nenhum dado do produto 
   else {
     //esse produto não existe mais, pagina de erro
-    header("Location: ../views/meusAnuncios.php");
+    header("Location: ../views/produtoErro.php");
   }
 }
 //pagina de erro 
 else {
   //redireciona para a página de erro
-  header("Location: ../views/meusAnuncios.php");
+  header("Location: ../views/erro.php");
 }
 ?>
 <?php
@@ -306,10 +306,18 @@ else {
                 <!-- ROW imagens -->
                 <div class="content">
 
+                  <?php 
+                    if ($DadosProduto['foto'] == "" || $DadosProduto['foto'] == null) {
+                      $img = "../img/veg_fruits/semImagem.jpg";
+                    } else {
+                      $img = $DadosProduto['foto'];
+                    }
+                  ?>
+
                   <!-- cover -->
                   <div class="cover">
                     <!-- Foto principal (grande)-->
-                    <img id="imgCover" class="img-fluid" src="<?php echo $DadosProduto['foto']; ?>" alt="">
+                    <img id="imgCover" class="img-fluid" src="<?php echo $img['foto']; ?>" alt="">
                   </div>
                   <!-- /cover -->
 
