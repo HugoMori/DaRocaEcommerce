@@ -26,7 +26,7 @@ class controlRequest
         $result = $conn->loginCliente($email, $senha_user);
         
         if ($result == 0) {
-            echo "<script>console.log('Login: ".$email."/Senha: ".$senha_user."' );</script>";
+            // echo "<script>console.log('Login: ".$email."/Senha: ".$senha_user."' );</script>";
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível realizar o login!<br>Login ou senha inválida.</div>";
         }
 
@@ -539,7 +539,7 @@ class controlRequest
         );
         if (!$result) {
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível cadastrar!</div>";
-            echo "<script>console.log('Não foi possível realizar a operação.);</script>";
+            // echo "<script>console.log('Não foi possível realizar a operação.);</script>";
             return 0;
         } else {
             $query = $query = "SELECT codigo FROM produto 
@@ -699,7 +699,7 @@ class controlRequest
 
         if (!$result) {
             $_SESSION['msg'] = "<div class='alert alert-danger'>Não foi possível cadastrar!</div>";
-            echo "<script>console.log('Não foi possível realizar a operação.);</script>";
+            // echo "<script>console.log('Não foi possível realizar a operação.);</script>";
             return 0;
         }
         return 1;
@@ -1103,7 +1103,7 @@ class controlRequest
             //$query = $query.' OR LOWER(produtos_cadastrados.categoria) LIKE LOWER("'.$produto_nome[$i].'%")';
         }
 
-        echo "<script>console.log('GET: " . $produto_nome[$i] . "' );</script>";
+        // echo "<script>console.log('GET: " . $produto_nome[$i] . "' );</script>";
         $_SESSION['consulta'] = $query;
         //select custom
         return $this->selectCustom($consulta . $query);
@@ -1171,7 +1171,7 @@ class controlRequest
         // if (count($maiorPreco) <= 0 && count($menorPreco) <= 0) Mão faz nada
 
         $_SESSION['subConsulta'] = $subquery;
-        echo "<script>console.log('function Filtros: );</script>";
+        // echo "<script>console.log('function Filtros: );</script>";
         //select custom
         return $this->selectCustom($consulta.$subquery);
     }
