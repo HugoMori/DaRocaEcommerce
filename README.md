@@ -64,35 +64,40 @@ assim como conhecer as categorias de produtos que podem ser encontrados e pesqui
 <p>Conforme é realizado a busca, podendo ser o nome de um produto ou categoria, o site 
 nos mostrara os produtos que condizem com a pesquisa e os filtros que podem ser aplicados 
 para refinar a busca.</p>
+<p>On the index page it is possible to read a little about the general purpose of the site 
+as well as know the categories of products that can be found and search for them.</p>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/pesquisa.png"/>
 <br>
 
-<h2>Página do produto</h2>
+<h2>Página do produto/Product page</h2>
 <p>Na página de descrição do produto encontramos as opções de adicionar o produto ao 
 carrinho, assim como realizar sua compra, além das informações básicas sobre o produto e 
 o seu respectivo vendedor As informações do produto e vendedor são:</p>
+<p>On the product description page we find the options to add the product to cart, as well 
+as making your purchase, in addition to basic information about the product and your respective 
+seller The product and seller information are:</p>
 <ul>
-	<li>Produto: 
+	<li>Produto/Product: 
 		<ul>
-		    <li> Nome do produto </li>
-        <li> Avaliação do produto </li>
-        <li> Número de visualizações </li>
-        <li> Número de compras </li>
-        <li> Tipo do frete </li>
-        <li> Seleção de quantidade a ser comprada </li>
-        <li> Quantidade disponível </li>
-        <li> Preço do produto </li>
-        <li> Quantidade mínima que pode o vendedor realiza a venda </li>
-        <li> Data de produção e de validade </li>
-        <li> Descrição do produto </li>
+		    <li> Nome do produto/Product name</li>
+        <li> Avaliação do produto/Product Evaluation</li>
+        <li> Número de visualizações/Number of views</li>
+        <li> Número de compras/Number of Purchases</li>
+        <li> Tipo do frete/Shipping Type</li>
+        <li> Seleção de quantidade a ser comprada/Selection of quantity to be purchased</li>
+        <li> Quantidade disponível/Quantity available</li>
+        <li> Preço do produto/Product Price</li>
+        <li> Quantidade mínima que pode o vendedor realiza a venda/Minimum quantity the seller can sell</li>
+        <li> Data de produção e de validade/Production and validity data</li>
+        <li> Descrição do produto/Product Description</li>
 		</ul>
 	</li>
-	<li>Vendedor: 
+	<li>Vendedor/Seller: 
 		<ul>
-			<li> Nome do vendedor </li>
-      <li> Avaliação </li>
-      <li> Número de vendas </li>
-      <li> Cidade </li>
+			<li> Nome do vendedor/Seller Name</li>
+      <li> Avaliação/Evaluation</li>
+      <li> Número de vendas/ Number of sales</li>
+      <li> Cidade/City</li>
 		</ul>	
 	</li>
 </ul>
@@ -100,23 +105,27 @@ o seu respectivo vendedor As informações do produto e vendedor são:</p>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/pagina_produto.png"/>
 <br>
 
-<h2>Login/Cadastro</h2>
+<h2>Login/Cadastro(Register)</h2>
 <p>Para além da pesquisa de produtos, o usuário deve primeiro se cadastrar ou realizar o 
 login.
 </p>
+<p>To do anything other than search for products, the user must first register or perform the
+Log in.</p>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/login.png"/>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/cadastro.png"/>
 <br>
 
-<h2>Perfil do usuário</h2>
+<h2>Perfil do usuário/Personal page</h2>
 <p>Na página de perfil do usuário pode-se encontrar as principais funções do site e 
 seus respectivos direcionamentos, a partir dela podemos ir para:</p>
+<p>On the user's profile page you can find the main functions of the site and
+their respective directions, from there we can go to:</p>
 <ul>
-  <li> Carrinho </li>
-  <li> Minhas Compras </li>
-  <li> Meus Anúnicos </li>
-  <li> Minhas vendas </li>
-  <li> Cadastro de produtos </li>
+  <li> Carrinho/Checkout </li>
+  <li> Minhas Compras/My purchases</li>
+  <li> Meus Anúncios/My Advertised Products</li>
+  <li> Minhas vendas/My sales</li>
+  <li> Cadastro de produtos/Product registration</li>
 </ul>
 
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/perfil.png"/>
@@ -133,6 +142,8 @@ seus respectivos direcionamentos, a partir dela podemos ir para:</p>
 
 <p>O site ainda não está completo, algumas funcionalidades e páginas não foram feitas, assim como banco de dados, 
 que não pode ter a utilização de Trigger, procedures, views, pela utilização de um servidor free.</p>
+<p>The site is not yet complete, some features and pages have not been made, as well as the database,
+that cannot have the use of Trigger, procedures, views, by using a free server.</p>
 
 ## Source
 
