@@ -56,6 +56,8 @@ não deve ser levado além do que material de aprendizado pessoal.</p>
 <p>Na página index é possível ler um pouco sobre o intuito geral do site 
 assim como conhecer as categorias de produtos que podem ser encontrados e pesquisa-los.
 </p>
+<p>On the index page it is possible to read a little about the general purpose of the site 
+as well as know the categories of products that can be found and search for them.</p>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/index.png"/>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/index_2.png"/>
 <br>
@@ -64,8 +66,9 @@ assim como conhecer as categorias de produtos que podem ser encontrados e pesqui
 <p>Conforme é realizado a busca, podendo ser o nome de um produto ou categoria, o site 
 nos mostrara os produtos que condizem com a pesquisa e os filtros que podem ser aplicados 
 para refinar a busca.</p>
-<p>On the index page it is possible to read a little about the general purpose of the site 
-as well as know the categories of products that can be found and search for them.</p>
+<p>As the search is performed, which may be the name of a product or category, the site
+will show us the products that match the search and the filters that can be competent
+to refine the search.</p>
 <img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/pesquisa.png"/>
 <br>
 
