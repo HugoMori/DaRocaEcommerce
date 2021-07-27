@@ -56,15 +56,15 @@ não deve ser levado além do que material de aprendizado pessoal.</p>
 <p>Na página index é possível ler um pouco sobre o intuito geral do site 
 assim como conhecer as categorias de produtos que podem ser encontrados e pesquisa-los.
 </p>
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/index.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/index_2.png"/>
 <br>
 
 <h2>Pesquisa de produtos</h2>
 <p>Conforme é realizado a busca, podendo ser o nome de um produto ou categoria, o site 
 nos mostrara os produtos que condizem com a pesquisa e os filtros que podem ser aplicados 
 para refinar a busca.</p>
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/pesquisa.png"/>
 <br>
 
 <h2>Página do produto</h2>
@@ -97,15 +97,15 @@ o seu respectivo vendedor As informações do produto e vendedor são:</p>
 	</li>
 </ul>
 <br>
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/pagina_produto.png"/>
 <br>
 
 <h2>Login/Cadastro</h2>
 <p>Para além da pesquisa de produtos, o usuário deve primeiro se cadastrar ou realizar o 
 login.
 </p>
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/login.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/cadastro.png"/>
 <br>
 
 <h2>Perfil do usuário</h2>
@@ -119,13 +119,20 @@ seus respectivos direcionamentos, a partir dela podemos ir para:</p>
   <li> Cadastro de produtos </li>
 </ul>
 
-<img src="https://images2.imgbox.com/83/ab/GqBOeACb_o.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/perfil.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/anuncios.png"/>
+<img src="https://github.com/HugoMori/DaRocaEcommerce/blob/master/prints/checkout(carrinho).png"/>
 <br>
 
 ## Hosting
 
 <p>Visit: <a href="http://daroca.infinityfreeapp.com">Link</a></p>
 (How is used free hostage, wait for reload the datas)
+
+## Ps
+
+<p>O site ainda não está completo, algumas funcionalidades e páginas não foram feitas, assim como banco de dados, 
+que não pode ter a utilização de Trigger, procedures, views, pela utilização de um servidor free.</p>
 
 ## Source
 
