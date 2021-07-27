@@ -3,18 +3,6 @@ session_start();
 include '../controller/controlRequest.php';
 $conn = new controlRequest();
 
-if (isset($_POST['alterarCadastro']) || isset($_POST['cadastrar'])) {
-  //fazer atualizacao
-  $name_user = filter_input(INPUT_POST, 'name_user', FILTER_SANITIZE_STRING);
-  $endereco_user = filter_input(INPUT_POST, 'endereco_user', FILTER_SANITIZE_STRING);
-  $cidade_User = filter_input(INPUT_POST, 'cidade_User', FILTER_SANITIZE_STRING);
-  $estadoUser = filter_input(INPUT_POST, 'estadoUser', FILTER_SANITIZE_STRING);
-  $cep_User = filter_input(INPUT_POST, 'cep_User', FILTER_SANITIZE_STRING);
-  $tel_user = filter_input(INPUT_POST, 'tel_user', FILTER_SANITIZE_STRING);
-  $email_user = filter_input(INPUT_POST, 'email_user', FILTER_SANITIZE_EMAIL);
-  $senha_user = filter_input(INPUT_POST, 'senha_user', FILTER_SANITIZE_STRING);
-  $cpf_user = filter_input(INPUT_POST, 'cpf_User', FILTER_SANITIZE_STRING);
-}
 //Se estiver logado
 if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
   // fazer requisição de dados
@@ -50,7 +38,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 }
 //Cadastrar
 if (isset($_POST['cadastrar'])) {
-  if ($conn->verificarCadastro($tel_user, $cpf_user, $email_user)) {
+  if ($conn->verificarCadastro($_POST['tel_user'], $_POST['cpf_User'], $_POST['email_user'])) {
     if ($conn->tratamentoDadosUsuario($_POST['name_user'], $_POST['data_nasc'], $_POST['cidade_User'],
     $_POST['estadoUser'], $_POST['endereco_user'], $_POST['cep_User'], $_POST['tel_user'], 
     $_POST['email_user'], $_POST['senha_user'], $_POST['cpf_User'], $_FILES['foto_user'], 1 ) == 1) 
@@ -66,7 +54,7 @@ if (isset($_POST['cadastrar'])) {
 unset($_POST);
 ?>
 <?php
-
+$sideBarOption = '<a class="mySidenav-link" href="../index.php"><i class="fas fa-home"> Home</i></a>';
 //operações
 //Se estiver logado
 if (isset($_SESSION['log_id'])) {
@@ -198,6 +186,10 @@ else {
         <!-- SideBar menu-->
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <!-- Menu option -->
+          <div class="row">
+            <?php echo $sideBarOption; ?>
+          </div>
           <!-- Menu option -->
           <div class="row">
             <?php echo $sideBarOption1; ?>

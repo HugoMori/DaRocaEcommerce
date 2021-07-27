@@ -29,7 +29,7 @@ if ((session_status() !== PHP_SESSION_NONE) && isset($_SESSION['log_id'])) {
 }
 ?>
 <?php
-
+$sideBarOption = '<a class="mySidenav-link" href="../index.php"><i class="fas fa-home"> Home</i></a>';
 //operações
 //Se estiver logado
 if (isset($_SESSION['log_id'])) {
@@ -107,6 +107,10 @@ else {
         <!-- SideBar menu-->
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <!-- Menu option -->
+          <div class="row">
+            <?php echo $sideBarOption; ?>
+          </div>
           <!-- Menu option -->
           <div class="row">
             <?php echo $sideBarOption1; ?>

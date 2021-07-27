@@ -79,7 +79,7 @@ else {
 
 ?>
 <?php
-
+$sideBarOption = '<a class="mySidenav-link" href="../index.php"><i class="fas fa-home"> Home</i></a>';
 //operações
 //Se estiver logado
 if (isset($_SESSION['log_id'])) {
@@ -162,6 +162,10 @@ if (isset($_GET['prod']) && $_GET['prod'] != '') {
         <!-- SideBar menu-->
         <div id="mySidenav" class="sidenav">
           <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+          <!-- Menu option -->
+          <div class="row">
+            <?php echo $sideBarOption; ?>
+          </div>
           <!-- Menu option -->
           <div class="row">
             <?php echo $sideBarOption1; ?>

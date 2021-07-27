@@ -405,7 +405,7 @@ footer .col-md-6 img {
 
 @media (min-width: 540px) and (max-width: 1199.98px){
 
-    /* tamanho do espaço da searchBar */
+    /* tamanho do espaÃ§o da searchBar */
     .form-inline .form-control {
         width: 30ch;
     }
@@ -497,7 +497,7 @@ footer .col-md-6 img {
         left: -555%;
     }
 
-    /* tamanho do espaço da searchBar */
+    /* tamanho do espaÃ§o da searchBar */
     .form-inline .form-control {
         width: 20ch;
     }
@@ -513,7 +513,7 @@ footer .col-md-6 img {
 
 @media (min-width: 351px) and (max-width: 410.98px) {
 
-    /* tamanho do espaço da searchBar */
+    /* tamanho do espaÃ§o da searchBar */
     .form-inline .form-control {
         width: 23ch;
     }
@@ -521,13 +521,22 @@ footer .col-md-6 img {
     .redesSociaisCol {
         margin-right: 20.5%;
     }
+
+
+    .dropdown {
+        margin-right: 4%!important;
+    }
+
+    #searchBarTop {
+        margin-left: 10px!important;
+    }
 }
 
 
 
 @media (min-width: 411px) and (max-width: 539.98px) {
 
-    /* tamanho do espaço da searchBar */
+    /* tamanho do espaÃ§o da searchBar */
     .form-inline .form-control {
         inline-size: max-content;
     }
@@ -773,4 +782,4 @@ footer .col-md-6 img {
     footer .col-md-6 img {
         width: 135%;
     }
-}
+}		

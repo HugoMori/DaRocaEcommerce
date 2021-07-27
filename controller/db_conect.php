@@ -8,25 +8,7 @@ class db_conect
     private $dbname;
     private $user;
     private $password;
-    private $view = 'CREATE OR REPLACE VIEW produtos_cadastrados AS
-    SELECT DISTINCT * FROM (SELECT
-        produto.nome AS produto,
-        produto.codigo AS produto_id,
-        produto.categoria,
-        produto.tipo_venda,
-        produto.qntd_disponivel,
-        produto.preco,
-        produto.data_cadastro AS data_anuncio,
-        cliente.nome AS vendedor,
-        cliente.cidade,
-        cliente.estado,
-        img_produto.caminho_foto AS foto
-    FROM
-        produto
-    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
-    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
-    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados;';
-
+    
     public function __construct( $host = 'localhost', $dbname = 'daroca', $user = 'root', 
     $password = '' ) 
     {
@@ -47,23 +29,7 @@ class db_conect
         if (mysqli_connect_errno()) {
             // echo "<script>console.log('Não foi possível conectar. Erro: " . mysqli_connect_error() . "' );</script>";
             exit();
-        } else {
-            // echo "<script>console.log('Conexão bem sucedida' );</script>";
-            //CRIAR VIEW
-            if(!isset($_SESSION['db_conn'])){
-                $this->createView();
-                unset($_SESSION['db_conn']);
-                $_SESSION['db_conn'] = 1;
-            }
         }
-    }
-
-    private function createView(){
-
-            $resultSttmt = mysqli_prepare(self::$conn, $this->view);
-            mysqli_stmt_execute($resultSttmt);
-            // Close statement
-            mysqli_stmt_close($resultSttmt);
     }
 
     public function __destruct()
@@ -627,6 +593,43 @@ class db_conect
                 $success = mysqli_affected_rows(self::$conn);
                 // Close statement
                 mysqli_stmt_close($resultSttmt);
+
+
+                if($success){
+                    //query UPDATE QNTD DISPONIVEL
+                    $query = 'UPDATE produto SET qntd_disponivel = qntd_disponivel - ?
+                    WHERE codigo = ?';
+                    // Prepare a query for execution
+                    $resultSttmt = mysqli_prepare(self::$conn, $query);
+                    //bind param
+                    mysqli_stmt_bind_param($resultSttmt,'di', $codProd, $qntd_comprada);
+                    mysqli_stmt_execute($resultSttmt);
+                    // Close statement
+                    mysqli_stmt_close($resultSttmt);
+
+                    //query UPDATE QNTD DISPONIVEL
+                    $query = 'UPDATE produto SET num_vendas = num_vendas + 1
+                    WHERE codigo = ?';
+                    // Prepare a query for execution
+                    $resultSttmt = mysqli_prepare(self::$conn, $query);
+                    //bind param
+                    mysqli_stmt_bind_param($resultSttmt,'i', $codProd);
+                    mysqli_stmt_execute($resultSttmt);
+                    // Close statement
+                    mysqli_stmt_close($resultSttmt);
+
+                    //query UPDATE QNTD DISPONIVEL
+                    $query = 'UPDATE cliente SET num_vendas = num_vendas + 1
+                    WHERE cpf = (SELECT produtor_fk FROM produto WHERE codigo = ?)';
+                    // Prepare a query for execution
+                    $resultSttmt = mysqli_prepare(self::$conn, $query);
+                    //bind param
+                    mysqli_stmt_bind_param($resultSttmt,'i', $codProd);
+                    mysqli_stmt_execute($resultSttmt);
+                    // Close statement
+                    mysqli_stmt_close($resultSttmt);
+
+                }
                 //verificar se foi cadastrado
                 return $success;
             } else {

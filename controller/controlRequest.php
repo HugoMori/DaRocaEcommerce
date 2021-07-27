@@ -565,7 +565,33 @@ class controlRequest
     {
 
         $conn = new db_conect();
-        $query = 'CALL requestAllDadosProduto(' . $page . ', ' . $itensPorPagina . ', "' . base64_decode($_SESSION['log_id']) . '");';
+        $query = 'SELECT 
+        produto.codigo AS codigo,
+        produto.nome AS produto, 
+        produto.preco, 
+        qntd_disponivel,
+        qntd_min_vendida,
+        categoria,
+        tipo_venda,
+        data_producao,
+        data_validade,
+        cliente.cpf AS vendedor_fk, 
+        cliente.nome AS vendedor, 
+        produto.data_cadastro AS data_anuncio, 
+        produto.avaliacao AS avaliacao_produto, 
+        produto.num_vendas AS num_vendas_produto, 
+        produto.num_visualizacao AS visualizacoes, 
+        caminho_foto AS foto 
+      FROM produto 
+      INNER JOIN cliente ON cliente.CPF = produto.produtor_fk 
+      INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo 
+      WHERE 
+          produtor_fk = "' . base64_decode($_SESSION['log_id']) . '" 
+      AND 
+          caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = produto.codigo LIMIT 1) 
+            ORDER BY data_anuncio ASC LIMIT ' . $page . ', ' . $itensPorPagina . ';';
+
+
         $result = $conn->selectCustom($query);
         return $result;
     }
@@ -577,7 +603,35 @@ class controlRequest
         $conn = new db_conect();
         //Inserir visualizacao
         $conn->visualizacaoProduto($produto_id);
-        $query = 'CALL requestDadosProduto(' . $produto_id . ');';
+
+        $query = 'SELECT 
+        produto.nome AS produto, 
+        produto.preco, 
+        qntd_disponivel,
+        qntd_min_vendida, 
+        categoria,
+        tipo_venda,
+        data_producao,
+        data_validade,
+        descricao,
+        cliente.nome AS vendedor,
+        cliente.num_vendas AS vendas_vendedor,
+        cliente.avaliacao AS vendedor_avaliacao,
+        cliente.cidade,
+        cliente.estado,
+        produto.data_cadastro AS data_anuncio, 
+        produto.avaliacao AS avaliacao_produto, 
+        produto.num_vendas AS num_vendas_produto, 
+        produto.num_visualizacao AS visualizacoes,
+        caminho_foto AS foto 
+      FROM produto 
+      INNER JOIN cliente ON cliente.cpf = produto.produtor_fk
+      INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+      WHERE 
+          produto.codigo = ' . $produto_id . '
+      AND 
+          caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1);';
+
         $result = $conn->selectCustom($query);
         return $result;
     }
@@ -724,10 +778,31 @@ class controlRequest
     }
 
     // ----------- PRODUTOS QUE ESTÃO NO CARRINHO DO CLIENTE
-    function requestDadosCarrinho($email)
+    function requestDadosCarrinho($cpf)
     {
         //query
-        $query = "CALL requestDadosCarrinho('" . base64_decode($_SESSION['log_id']) . "');";
+        $query = 'SELECT 
+        carrinho.id_carrinho AS carrinho,
+        produto.nome AS produto, 
+        produto.preco,
+        carrinho.qntd_produto AS qntd,
+        categoria,
+        tipo_venda,
+        produto.codigo AS produto_id,
+        cliente.nome AS vendedor,
+        cliente.cidade,
+        cliente.estado,
+        caminho_foto AS foto 
+      FROM carrinho
+      INNER JOIN produto ON produto.codigo = carrinho.produto_fk
+      INNER JOIN cliente ON cliente.cpf = produto.produtor_fk 
+      INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+      WHERE 
+          carrinho.cliente_fk = "'.base64_decode($_SESSION["log_id"]).'" 
+      AND 
+          caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1);';
+
+
         //num de produtos no bd
         return $this->selectCustom($query);
     }
@@ -807,7 +882,29 @@ class controlRequest
     function requestAllVendas($pagina, $itens_por_pagina)
     {
         //query
-        $query = "CALL requestAllVendas('" . base64_decode($_SESSION['log_id']) . "', " . $pagina . ", " . $itens_por_pagina . ");";
+        $query = 'SELECT 
+        compras.id_compra AS compra,
+        compras.qntd_comprada,
+        compras.data_compra,
+        produto.codigo AS produto_id,
+        produto.nome AS produto, 
+        produto.preco,
+        produto.tipo_venda, 
+        produto.categoria,
+        cliente.nome AS comprador,
+        cliente.cidade,
+        cliente.estado,
+        caminho_foto AS foto_produto 
+      FROM compras
+      INNER JOIN produto ON produto.codigo = compras.produto_fk
+      INNER JOIN cliente ON cliente.cpf = compras.cliente_fk 
+      INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+      WHERE 
+          produto.produtor_fk = "'.base64_decode($_SESSION['log_id']).'"
+      AND 
+          caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
+      ORDER BY compras.data_compra ASC LIMIT '.$pagina.', '.$itens_por_pagina.';';
+
         //num de produtos no bd
         return $this->selectCustom($query);
     }
@@ -815,7 +912,29 @@ class controlRequest
     function requestAllCompras($pagina, $itens_por_pagina)
     {
         //query
-        $query = "CALL requestAllCompras('" . base64_decode($_SESSION['log_id']) . "', " . $pagina . ", " . $itens_por_pagina . ");";
+        $query = 'SELECT 
+        compras.id_compra AS compra,
+        compras.qntd_comprada,
+        compras.data_compra,
+        produto.codigo AS produto_id,
+        produto.nome AS produto, 
+        produto.preco,
+        produto.tipo_venda, 
+        produto.categoria,
+        cliente.nome AS vendedor,
+        cliente.cidade,
+        cliente.estado,
+        caminho_foto AS foto_produto 
+      FROM compras
+      INNER JOIN produto ON produto.codigo = compras.produto_fk
+      INNER JOIN cliente ON cliente.cpf = produto.produtor_fk 
+      INNER JOIN img_produto ON img_produto.produto_fk = produto.codigo  
+      WHERE 
+          compras.cliente_fk = "'.base64_decode($_SESSION['log_id']).'" 
+      AND 
+          caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto_fk = codigo LIMIT 1)
+      ORDER BY compras.data_compra ASC LIMIT '.$pagina.', '.$itens_por_pagina.';';
+
         //num de produtos no bd
         return $this->selectCustom($query);
     }
@@ -905,7 +1024,26 @@ class controlRequest
         //copia do nome para realizar uma pesquisa com nome inteiro
         //separa em vários array delimitados por ' '
         $produto_nome = explode(" ", $produto_nome);
-        $consulta = "SELECT * FROM produtos_cadastrados";
+
+
+        $consulta = "SELECT DISTINCT * FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
+
+
         $query = " WHERE";
         $i = 0;
         if (count($produto_nome) > 1) {
@@ -947,7 +1085,24 @@ class controlRequest
             unset($_SESSION['subConsulta']);
         }
         
-        $consulta = "SELECT * FROM produtos_cadastrados";
+        $consulta = "SELECT DISTINCT * FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
+
+
         $consulta = $consulta.$_SESSION['consulta'];
 
         $subquery = "";
@@ -1010,7 +1165,22 @@ class controlRequest
 
     function pesquisarCategorias()
     {
-        $consulta = "SELECT DISTINCT categoria FROM produtos_cadastrados";
+        $consulta = "SELECT DISTINCT categoria FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
 
         if(isset($_SESSION['subConsulta'])){
             $consulta = $consulta.$_SESSION['consulta'].$_SESSION['subConsulta'];
@@ -1024,7 +1194,22 @@ class controlRequest
 
     function pesquisarCidade()
     {
-        $consulta = "SELECT DISTINCT cidade FROM produtos_cadastrados";
+        $consulta = "SELECT DISTINCT cidade FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
         
         if(isset($_SESSION['subConsulta'])){
             $consulta = $consulta.$_SESSION['consulta'].$_SESSION['subConsulta'];
@@ -1038,7 +1223,22 @@ class controlRequest
 
     function pesquisarEstado()
     {
-        $consulta = "SELECT DISTINCT estado FROM produtos_cadastrados";
+        $consulta = "SELECT DISTINCT estado FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
         
         if(isset($_SESSION['subConsulta'])){
             $consulta = $consulta.$_SESSION['consulta'].$_SESSION['subConsulta'];
@@ -1052,7 +1252,22 @@ class controlRequest
 
     function pesquisarPrecos()
     {
-        $consulta = "SELECT DISTINCT MAX(preco) AS maior_preco, MIN(preco) AS menor_preco FROM produtos_cadastrados";
+        $consulta = "SELECT DISTINCT MAX(preco) AS maior_preco, MIN(preco) AS menor_preco FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
         
         if(isset($_SESSION['subConsulta'])){
             $consulta = $consulta.$_SESSION['consulta'].$_SESSION['subConsulta'];
@@ -1066,7 +1281,22 @@ class controlRequest
 
     function pesquisarQntdProdutos()
     {
-        $consulta = "SELECT DISTINCT COUNT(produto_id) AS qntd_resultados FROM produtos_cadastrados";
+        $consulta = "SELECT DISTINCT COUNT(produto_id) AS qntd_resultados FROM (SELECT
+        produto.nome AS produto,
+        produto.codigo AS produto_id,
+        produto.categoria,
+        produto.tipo_venda,
+        produto.qntd_disponivel,
+        produto.preco,
+        produto.data_cadastro AS data_anuncio,
+        cliente.cidade,
+        cliente.estado,
+        img_produto.caminho_foto AS foto
+    FROM
+        produto
+    INNER JOIN cliente ON produto.produtor_fk = cliente.cpf
+    INNER JOIN img_produto ON produto.codigo = img_produto.produto_fk
+    WHERE caminho_foto = (SELECT caminho_foto FROM img_produto WHERE produto.codigo = img_produto.produto_fk LIMIT 1)) AS produtos_cadastrados";
         
         if(isset($_SESSION['subConsulta'])){
             $consulta = $consulta.$_SESSION['consulta'].$_SESSION['subConsulta'];
