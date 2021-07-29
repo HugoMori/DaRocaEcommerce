@@ -27,20 +27,15 @@ não deve ser levado além do que material de aprendizado pessoal.</p>
 ## Tools list
 
 <ul>
-	<li>Backend - IDE used for SQL 
+	<li>Backend - used for SQL
 		<ul>
 		    <li>pgAdmin - MYSQL</li>
 		</ul>
 	</li>
-	<li>Frontend - IDE used for PHP/HTML 
+	<li>Frontend - used for PHP/HTML 
 		<ul>
 			<li>VS Studio Code</li>
 		</ul>	
-	</li>
-	<li>RESTful services
-		<ul>
-			<li>Postman</li>
-		</ul>
 	</li>
 	<li>Hosting
 		<ul>
